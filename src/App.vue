@@ -1,32 +1,40 @@
 <template>
-  <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </div>
-    <router-view/>
-  </div>
+  <v-app>
+    <v-main>
+      <!-- NOTIFICACION -->
+      <Notification />
+
+      <!-- LOADING -->
+      <Loading />
+
+      <router-view/>
+    </v-main>
+  </v-app>
 </template>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
+<script>
 
-#nav {
-  padding: 30px;
-}
+import Loading from '@/components/Commons/Loading'
+import Notification from '@/components/Commons/Notification'
+import {mapMutations} from 'vuex'
 
-#nav a {
-  font-weight: bold;
-  color: #2c3e50;
-}
+export default {
+  name: 'App',
 
-#nav a.router-link-exact-active {
-  color: #42b983;
-}
-</style>
+  data: () => ({
+    //
+  }),
+   components: {
+    Loading,
+    Notification
+  },
+  beforeCreate() {
+    if (!sessionStorage.getItem('jwt')) {
+      this.$router.push('/Login')
+    }
+  },
+  methods:{
+    ...mapMutations(['showNotification']),
+  },
+};
+</script>
