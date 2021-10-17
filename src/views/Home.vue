@@ -1,22 +1,23 @@
 <template>
   <v-container fluid class="container-personalizado" v-if="true">
+    <BarraNavegacion />
     <v-row>
       <v-col sm12>
         <v-stepper v-model="e1" non-linear>
           <v-stepper-header>
-            <v-stepper-step editable step="1">
+            <v-stepper-step @click="LimpiarIds()" editable step="1">
               Módulo de Exámen
             </v-stepper-step>
 
             <v-divider></v-divider>
 
-            <v-stepper-step editable step="2">
+            <v-stepper-step @click="AsignarModulo({id : 0})" editable step="2">
               Secciones por Módulo
             </v-stepper-step>
 
             <v-divider></v-divider>
 
-            <v-stepper-step editable step="3">
+            <v-stepper-step @click="AsignarSeccion({id : 0})" editable step="3">
               Preguntas y Respuestas
             </v-stepper-step>
           </v-stepper-header>
@@ -43,6 +44,7 @@
                   :items="listaDeModulos"
                   :search="search"
                   class="elevation-1"
+                  @click:row="AsignarModulo"
                 >
                   <template v-slot:items="props">
                     <tr>
@@ -66,29 +68,37 @@
                 <v-toolbar flat color="white">
                   <v-spacer></v-spacer>
                   <v-text-field
-                    v-model="search"
+                    v-model="search1"
                     append-icon="search"
                     label="Buscar"
                     single-line
                     hide-details
                   ></v-text-field>
                   <v-spacer></v-spacer>
-                  <v-btn dark color="primary" @click="abrirDialogSeccion"
+                  <v-btn dark color="primary" @click="abrirDialogSeccion" v-show="itemModelSeccion.idTestModule > 0"
                     >Nueva Sección</v-btn
                   >
                 </v-toolbar>
                 <v-data-table
-                  :headers="headers"
-                  :items="listaDePreguntas"
+                  :headers="headersSeccion"
+                  :items="listaDeSecciones"
                   :search="search"
                   class="elevation-1"
+                  @click:row="AsignarSeccion"
                 >
-                  <!-- <template v-slot:items="props">
-        <tr>
-          <td></td>
-          <td></td>
-        </tr>
-      </template> -->
+                <template  v-slot:items="props">
+                  <tr>
+                      <td>{{ props.item.name }}</td>
+                    </tr>
+                  </template>
+                  <template v-slot:item.opciones="{ item }">
+                    <v-icon medium class="mr-2" @click="editarSeccion(item)">
+                      mdi-pencil
+                    </v-icon>
+                    <v-icon medium @click="eliminarSeccion(item)">
+                      mdi-delete
+                    </v-icon>
+                  </template>
                 </v-data-table>
               </v-card>
             </v-stepper-content>
@@ -98,7 +108,7 @@
                 <v-toolbar flat color="white">
                   <v-spacer></v-spacer>
                   <v-text-field
-                    v-model="search"
+                    v-model="search2"
                     append-icon="search"
                     label="Buscar"
                     single-line
@@ -110,20 +120,28 @@
                   >
                 </v-toolbar>
                 <v-data-table
-                  :headers="headers"
+                  :headers="headersPreguntas"
                   :items="listaDePreguntas"
                   :search="search"
                   class="elevation-1"
                 >
-                  <!-- <template v-slot:items="props">
-        <tr>
-          <td></td>
-          <td></td>
-        </tr>
-      </template> -->
+                  <template  v-slot:items="props">
+                  <tr>
+                      <td>{{ props.item.text }}</td>
+                    </tr>
+                  </template>
+                  <template v-slot:item.opciones="{ item }">
+                    <v-icon medium class="mr-2" @click="editarModulo(item)">
+                      mdi-pencil
+                    </v-icon>
+                    <v-icon medium @click="eliminarModulo(item)">
+                      mdi-delete
+                    </v-icon>
+                  </template>
                 </v-data-table>
               </v-card>
             </v-stepper-content>
+
           </v-stepper-items>
         </v-stepper>
       </v-col>
@@ -158,8 +176,8 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn dark color="primary" @click="CerrarModulo">Cancelar</v-btn>
           <v-btn dark color="primary" @click="GuardarModulo">Guardar</v-btn>
+          <v-btn dark color="primary" @click="CerrarModulo">Cancelar</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -169,11 +187,32 @@
         <v-toolbar>
           <v-toolbar-title>Mantenimiento de Secciones</v-toolbar-title>
         </v-toolbar>
-        <v-card-text> </v-card-text>
+        <v-card-text>
+          <v-row>
+            <v-col class="pt-5" sm="6">
+              <v-text-field
+                v-model="itemModelSeccion.name"
+                type="text"
+                label="Nombre de la Sección"
+              >
+              </v-text-field>
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col sm="12">
+              <v-switch
+                v-model="itemModelSeccion.active"
+                label="Activo"
+                color="primary"
+              >
+              </v-switch>
+            </v-col>
+          </v-row>  
+        </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn dark color="primary" @click="CerrarSeccion">Cancelar</v-btn>
           <v-btn dark color="primary" @click="GuardarSeccion">Guardar</v-btn>
+          <v-btn dark color="primary" @click="CerrarSeccion">Cancelar</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -183,11 +222,137 @@
         <v-toolbar>
           <v-toolbar-title>Mantenimiento de Preguntas</v-toolbar-title>
         </v-toolbar>
-        <v-card-text> </v-card-text>
+        <v-card-text class="pt-5"> 
+        <v-row>
+          <v-col sm="3">
+            <v-combobox
+              v-model="itemModelPregunta.type"
+              :items="listaDeTiposPregunta"
+              label="Tipo de Pregunta"
+              hint="Eliga el tipo de pregunta que desea crear"
+              item-value = "id"
+				      item-text = "description"
+              clearable
+              filled
+              hide-selected
+              outlined
+              persistent-hint
+            ></v-combobox>
+          </v-col>
+          <v-col sm="3">
+            <v-text-field
+              v-model="itemModelPregunta.image"
+              label="Nombre de Imagen"
+              filled
+              outlined
+              placeholder="Ej: Bandera.png"
+              hint="Incluya la extensión de la imagen"
+              persistent-hint
+          ></v-text-field>
+          </v-col>
+          <v-col sm="3">
+            <v-text-field
+              v-model="itemModelPregunta.score"
+              type="number"
+              label="Puntaje"
+              filled
+              outlined
+          ></v-text-field>
+          </v-col>
+          <v-col sm="3">
+            <v-text-field
+              v-model="itemModelPregunta.timeLimit"
+              type="number"
+              label="Tiempo Límite"
+              filled
+              outlined
+              hint="El tiempo está en minutos"
+              persistent-hint
+          ></v-text-field>
+          </v-col>
+          <v-col sm="12">
+            <v-toolbar flat color="white">
+                  <v-toolbar-title>Lista de Preguntas</v-toolbar-title>
+                  <v-spacer></v-spacer>
+                  <v-icon large color="blue" @click="AgregarLineaVacia">add</v-icon>
+                </v-toolbar>
+                <v-data-table
+                  :headers="headersRespuestas"
+                  :items="listaDeRespuestas"
+                  class="elevation-1"
+                >
+                    <template v-slot:item.text="props">
+                      <v-edit-dialog
+                        :return-value.sync="props.item.text"
+                        @save="save"
+                        @cancel="cancel"
+                        @open="open"
+                        @close="close"
+                      >
+                        {{ props.item.text }}
+                        <template v-slot:input>
+                          <v-text-field
+                            v-model="props.item.text"
+                            label="Texto de Respuesta"
+                            single-line
+                          ></v-text-field>
+                        </template>
+                      </v-edit-dialog>
+                    </template>
+                    <template v-slot:item.image="props">
+                      <v-edit-dialog
+                        :return-value.sync="props.item.image"
+                        @save="save"
+                        @cancel="cancel"
+                        @open="open"
+                        @close="close"
+                      >
+                        {{ props.item.image }}
+                        <template v-slot:input>
+                          <v-text-field
+                            v-model="props.item.image"
+                            label="Nombre Imagen"
+                            single-line
+                          ></v-text-field>
+                        </template>
+                      </v-edit-dialog>
+                    </template>
+                    <template v-slot:item.isCorrect="props">
+                      <v-edit-dialog
+                        :return-value.sync="props.item.isCorrect"
+                        @save="save(props.item.isCorrect, props.index)"
+                        @cancel="cancel"
+                        @open="open"
+                        @close="closeIsCorrect(props.item.isCorrect, props.index)"
+                      >
+                        {{ props.item.isCorrect }}
+                        <template v-slot:input>
+                          <v-text-field
+                            v-model="props.item.isCorrect"
+                            label="¿Es la respuesta correcta?"
+                            single-line
+                            :rules="[rules.trueOrFalse]"
+                            hint="1: correcta , 0: incorrecta"
+                            persistent-hint
+                          ></v-text-field>
+                        </template>
+                      </v-edit-dialog>
+                    </template>
+                  <template v-slot:item.opciones="{ item, index }">
+                    <v-icon medium @click="eliminarRespuesta(index)">
+                      mdi-delete
+                    </v-icon>
+                  </template>
+                </v-data-table>
+          </v-col>
+        </v-row>
+        
+
+        </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn dark color="primary" @click="CerrarPregunta">Cancelar</v-btn>
           <v-btn dark color="primary" @click="GuardarPregunta">Guardar</v-btn>
+          <v-btn dark color="primary" @click="CerrarPregunta">Cancelar</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -199,6 +364,7 @@
 <script>
 import axios from "axios";
 import { mapMutations } from "vuex";
+import BarraNavegacion from "../components/NavBar";
 
 export default {
   name: "Home",
@@ -209,6 +375,8 @@ export default {
     dialogSeccion: false,
     dialogPregunta: false,
     search: "",
+    search1: "",
+    search2: "",
     headersModulos: [
       {
         text: "Nombre",
@@ -218,36 +386,106 @@ export default {
       },
       { text: "Opciones", align: "right", sortable: false, value: "opciones" }
     ],
-    headers: [
+    headersSeccion: [
       {
-        text: "Historia Clinica",
+        text: "Nombre",
         align: "left",
         sortable: false,
-        value: "NroHistoriaClinica"
+        value: "name"
       },
-      { text: "Paciente", align: "left", value: "Paciente" }
+      { text: "Opciones", align: "right", sortable: false, value: "opciones" }
     ],
-    listaDePreguntas: [],
+    headersPreguntas: [
+      {
+        text: "Nombre",
+        align: "left",
+        sortable: false,
+        value: "name"
+      },
+      { text: "Opciones", align: "right", sortable: false, value: "opciones" }
+    ],
+    headersRespuestas: [
+      {
+        text: "Texto",
+        align: "left",
+        sortable: false,
+        value: "text"
+      },
+      {
+        text: "Imagen",
+        align: "left",
+        sortable: false,
+        value: "image"
+      },
+      {
+        text: "Es Correcta",
+        align: "left",
+        sortable: false,
+        value: "isCorrect"
+      },
+      { text: "Opciones", align: "right", sortable: false, value: "opciones" }
+    ],
     listaDeModulos: [],
+    listaDeSecciones: [],
+    listaDePreguntas: [],
+    listaDeRespuestas: [],
     itemModelModulo: {
       id: "",
       name: "",
-      active: false
+      active: true
     },
     editModulo: false,
     itemModelSeccion: {
+      idTestModule: "",
       id: "",
       name: "",
-      active: false
+      active: true
     },
     editSeccion: false,
     itemModelPregunta: {
-      id: "",
-      name: "",
-      active: false
+      idTestPart: "",
+      type: "",
+      text: "",
+      image: "",
+      score: "",
+      timeLimit: "",
+      answers: []
     },
-    editPregunta: false
+    editPregunta: false,
+    listaDeTiposPregunta: [
+      {
+        id: 1,
+        description: "Tipo: 1"
+      },
+      {
+        id: 2,
+        description: "Tipo: 2"
+      },
+      {
+        id: 3,
+        description: "Tipo: 3"
+      },
+      {
+        id: 4,
+        description: "Tipo: 4"
+      },
+      {
+        id: 5,
+        description: "Tipo: 5"
+      },
+      {
+        id: 6,
+        description: "Tipo: 6"
+      }
+    ],
+    rules: {
+      trueOrFalse: value => value == 1 || value == 0 || 'solo puede poner valor 0 y 1',
+    },
+    existeCorrecta: false
   }),
+  components: {
+    BarraNavegacion
+  },
   created() {
     if (this.$session.exists()) {
       this.usuario = this.$session.get("user");
@@ -263,6 +501,15 @@ export default {
   },
   methods: {
     ...mapMutations(["showLoading", "hideLoading", "showNotification"]),
+    LimpiarIds() {
+      this.itemModelSeccion.idTestModule = 0;
+      this.itemModelPregunta.idTestPart = 0;
+    },
+    AsignarModulo(item) {
+      this.itemModelSeccion.idTestModule = item.id;
+      this.editModulo ? this.e1 = 1 : this.e1 = 2;
+      this.ListarSeccion(this.itemModelSeccion.idTestModule);
+    },
     abrirDialogModulo() {
       this.dialogModulo = true;
     },
@@ -301,7 +548,7 @@ export default {
       });
       try {
         let response = await axios.delete(
-          `${this.$urlApi}TestModule/${this.itemModelModulo.id}`,
+          `${this.$urlApi}TestModule/${item.id}`,
           {
             headers: {
               "Content-Type": "application/json",
@@ -315,6 +562,7 @@ export default {
             "El módulo ha sido eliminado con éxito",
             "success"
           );
+          this.ListarModulo()
         } else {
           this.$swal(
             "¡Error!",
@@ -322,26 +570,112 @@ export default {
             "error"
           );
         }
+        this.e1 = 1
       } catch (error) {
         console.log(error);
       } finally {
         this.hideLoading();
       }
     },
+    AsignarSeccion(item) {
+      this.itemModelPregunta.idTestPart = item.id;
+      this.editSeccion ? this.e1 = 2 : this.e1 = 3;
+      this.ListarPregunta(this.itemModelPregunta.idTestPart);
+    },
     abrirDialogSeccion() {
       this.dialogSeccion = true;
     },
-    editarSeccion() {
+    async ListarSeccion(idTestModule) {
+      this.showLoading({
+        title: "Accediendo a la información",
+        color: "secondary"
+      });
+      try {
+        let response = await axios.get(
+          `${this.$urlApi}TestPart/${idTestModule}`,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + sessionStorage.getItem("jwt")
+            }
+          }
+        );
+        this.listaDeSecciones = response.data;
+      } catch (error) {
+        console.log(error);
+      } finally {
+        this.hideLoading();
+      }
+    },
+    editarSeccion(item) {
       this.editSeccion = true;
       if (this.editSeccion) {
-        this.itemModelModulo.id = item.id;
-        this.itemModelModulo.name = item.name;
-        this.itemModelModulo.active = item.active;
+        this.itemModelSeccion.id = item.id;
+        this.itemModelSeccion.name = item.name;
+        this.itemModelSeccion.active = item.active;
         this.dialogSeccion = true;
+      }
+    },
+    async eliminarSeccion(item) {
+      this.showLoading({
+        title: "Accediendo a la información",
+        color: "secondary"
+      });
+      try {
+        let response = await axios.delete(
+          `${this.$urlApi}TestPart/${item.id}`,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + sessionStorage.getItem("jwt")
+            }
+          }
+        );
+        if (response.data > 0) {
+          this.$swal(
+            "Eliminado!",
+            "La Sección ha sido eliminada con éxito",
+            "success"
+          );
+          this.ListarSeccion(this.itemModelSeccion.idTestModule)
+        } else {
+          this.$swal(
+            "¡Error!",
+            "La Sección no ha sido eliminada correctamente, comuniquese con soporte",
+            "error"
+          );
+        }
+        this.e1 = 2
+      } catch (error) {
+        console.log(error);
+      } finally {
+        this.hideLoading();
       }
     },
     abrirDialogPregunta() {
       this.dialogPregunta = true;
+    },
+    async ListarPregunta(idTestPart) {
+      this.showLoading({
+        title: "Accediendo a la información",
+        color: "secondary"
+      });
+      try {
+        let response = await axios.get(
+          `${this.$urlApi}Question/${idTestPart}`,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + sessionStorage.getItem("jwt")
+            }
+          }
+        );
+        this.listaDePreguntas = response.data;
+      } catch (error) {
+        console.log(error);
+      } finally {
+        this.hideLoading();
+      }
     },
     editarPregunta() {
       this.editPregunta = true;
@@ -352,33 +686,71 @@ export default {
         this.dialogPregunta = true;
       }
     },
-    async GuardarModulo() {
-      var response = ''
+    async eliminarPregunta(item) {
       this.showLoading({
         title: "Accediendo a la información",
         color: "secondary"
       });
       try {
-        if( this.editModulo ){
-          response = await axios.put(
-          `${this.$urlApi}TestModule`,
-          this.itemModelModulo,
+        let response = await axios.delete(
+          `${this.$urlApi}Question/${item.id}`,
           {
             headers: {
               "Content-Type": "application/json",
               Authorization: "Bearer " + sessionStorage.getItem("jwt")
             }
-          });
+          }
+        );
+        if (response.data > 0) {
+          this.$swal(
+            "Eliminado!",
+            "La pregunta ha sido eliminado con éxito",
+            "success"
+          );
+          this.ListarPreguntas(this.itemModelSeccion.idTestPart)
+        } else {
+          this.$swal(
+            "¡Error!",
+            "La pregunta no ha sido eliminado correctamente, comuniquese con soporte",
+            "error"
+          );
+        }
+        this.e1 = 3
+      } catch (error) {
+        console.log(error);
+      } finally {
+        this.hideLoading();
+      }
+    },
+    async GuardarModulo() {
+      var response = "";
+      this.showLoading({
+        title: "Accediendo a la información",
+        color: "secondary"
+      });
+      try {
+        if (this.editModulo) {
+          response = await axios.put(
+            `${this.$urlApi}TestModule`,
+            this.itemModelModulo,
+            {
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: "Bearer " + sessionStorage.getItem("jwt")
+              }
+            }
+          );
         } else {
           response = await axios.post(
-          `${this.$urlApi}TestModule`,
-          this.itemModelModulo,
-          {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: "Bearer " + sessionStorage.getItem("jwt")
+            `${this.$urlApi}TestModule`,
+            this.itemModelModulo,
+            {
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: "Bearer " + sessionStorage.getItem("jwt")
+              }
             }
-          });
+          );
         }
         if (response.data > 0) {
           this.$swal(
@@ -386,8 +758,8 @@ export default {
             "El módulo ha sido guardado con éxito",
             "success"
           );
-          this.ListarModulo()
-          this.CerrarModulo()
+          this.ListarModulo();
+          this.CerrarModulo();
         } else {
           this.$swal(
             "¡Error!",
@@ -402,28 +774,43 @@ export default {
       }
     },
     async GuardarSeccion() {
-      var act = this.editSeccion ? "axios.put" : "axios.post";
+      var response = "";
       this.showLoading({
         title: "Accediendo a la información",
         color: "secondary"
       });
       try {
-        let response = await act(
-          `${this.$urlApi}TestPart`,
-          this.itemModelSeccion,
-          {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: "Bearer " + sessionStorage.getItem("jwt")
+        if (this.editSeccion) {
+          response = await axios.put(
+            `${this.$urlApi}TestPart`,
+            this.itemModelSeccion,
+            {
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: "Bearer " + sessionStorage.getItem("jwt")
+              }
             }
-          }
-        );
+          );
+        } else {
+          response = await axios.post(
+            `${this.$urlApi}TestPart`,
+            this.itemModelSeccion,
+            {
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: "Bearer " + sessionStorage.getItem("jwt")
+              }
+            }
+          );
+        }
         if (response.data > 0) {
           this.$swal(
             "Guardado!",
             "La sección ha sido guardada con éxito",
             "success"
           );
+          this.ListarSeccion(this.itemModelSeccion.idTestModule);
+          this.CerrarSeccion();
         } else {
           this.$swal(
             "¡Error!",
@@ -438,28 +825,48 @@ export default {
       }
     },
     async GuardarPregunta() {
-      var act = this.editPregunta ? "axios.put" : "axios.post";
+      var response = "";
+      this.itemModelPregunta.answers = this.listaDeRespuestas
+      this.itemModelPregunta.type = this.itemModelPregunta.type.description
+      this.listaDeRespuestas.forEach(element => {
+          element.isCorrect = element.isCorrect == "1" ? true : false
+      });
       this.showLoading({
         title: "Accediendo a la información",
         color: "secondary"
       });
       try {
-        let response = await act(
-          `${this.$urlApi}Question`,
-          this.itemModelPregunta,
-          {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: "Bearer " + sessionStorage.getItem("jwt")
+        if (this.editPregunta) {
+          response = await axios.put(
+            `${this.$urlApi}Question`,
+            this.itemModelPregunta,
+            {
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: "Bearer " + sessionStorage.getItem("jwt")
+              }
             }
-          }
-        );
+          );
+        } else {
+          response = await axios.post(
+            `${this.$urlApi}Question`,
+            this.itemModelPregunta,
+            {
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: "Bearer " + sessionStorage.getItem("jwt")
+              }
+            }
+          );
+        }
         if (response.data > 0) {
           this.$swal(
             "Guardado!",
             "La pregunta ha sido guardada con éxito",
             "success"
           );
+          this.ListarPregunta(this.itemModelSeccion.idTestPart);
+          this.CerrarPregunta();
         } else {
           this.$swal(
             "¡Error!",
@@ -476,15 +883,56 @@ export default {
     CerrarModulo() {
       this.dialogModulo = false;
       this.editModulo = false;
+      this.itemModelModulo.id = "";
+      this.itemModelModulo.name = "";
+      this.itemModelModulo.active = true;
     },
     CerrarSeccion() {
       this.dialogSeccion = false;
       this.editSeccion = false;
+      this.itemModelSeccion.id = "";
+      this.itemModelSeccion.name = "";
+      this.itemModelSeccion.active = true;
     },
     CerrarPregunta() {
       this.dialogPregunta = false;
       this.editPregunta = false;
-    }
+    },
+    AgregarLineaVacia(){
+      this.listaDeRespuestas.push({
+        text : "",
+        imagen : "",
+        isCorrect : ""
+      })
+    },
+      save (value,index) {
+        
+      },
+      cancel () {
+      },
+      open () {
+      },
+      close () {
+      },
+      closeIsCorrect(value,index){
+        for (let ind = 0; ind < this.listaDeRespuestas.length; ind++) {
+            if (this.listaDeRespuestas[ind].isCorrect == 1) {
+                this.existeCorrecta = true;
+                break;
+            }else {
+              this.existeCorrecta = false
+            }
+        }
+        // console.log(this.existeCorrecta)
+        // if(value > 1 || this.existeCorrecta){
+        //   this.listaDeRespuestas[index].isCorrect = 0
+        // } else{
+        //   this.listaDeRespuestas[index].isCorrect = 1
+        // }
+      },
+      eliminarRespuesta(index){
+       this.listaDeRespuestas.splice(index, 1);
+      }
   }
 };
 </script>
