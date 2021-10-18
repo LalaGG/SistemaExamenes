@@ -9,6 +9,13 @@ import VueSession from 'vue-session'
 import {settings} from './config.js'
 import 'sweetalert2/dist/sweetalert2.min.css'
 import 'material-design-icons-iconfont/dist/material-design-icons.css'
+import IdleVue from 'idle-vue'
+
+const eventsHub = new Vue()
+Vue.use(IdleVue, {
+  eventEmitter: eventsHub,
+  idleTime: 900000
+})
 
 Vue.use(VueSweetalert2)
 Vue.use(axios)
@@ -25,5 +32,10 @@ new Vue({
   router,
   store,
   vuetify,
+  onIdle() {
+    sessionStorage.clear()
+    this.$session.destroy()
+    this.$router.push('/Login')
+  },
   render: h => h(App)
 }).$mount('#app')

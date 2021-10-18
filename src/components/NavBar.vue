@@ -2,7 +2,7 @@
   <nav>
     <v-toolbar v-bind:style="{ backgroundColor: '#1E88E5'}" flat>
       <v-toolbar-title class="text-uppercase white--text">
-        <span class="font-weigth-light">GRADE</span>
+        <span class="font-weigth-light"></span>
       </v-toolbar-title>
       <v-spacer></v-spacer>
       <v-btn color="success" @click="cerrarSesion">

@@ -239,55 +239,59 @@
               hide-details
           ></v-text-field>
           </v-col>
-          <v-col sm="3">
-            <v-combobox
-              v-model="itemModelPregunta.type"
-              :items="listaDeTiposPregunta"
-              label="Tipo de Pregunta"
-              hint="Eliga el tipo de pregunta que desea crear"
-              item-value = "id"
-				      item-text = "description"
-              clearable
-              filled
-              hide-selected
-              outlined
-              persistent-hint
-              hide-details
-            ></v-combobox>
+          <v-col sm="6">
+            <v-row>
+              <v-col sm="6">
+                <v-combobox
+                  v-model="itemModelPregunta.type"
+                  :items="listaDeTiposPregunta"
+                  label="Tipo de Pregunta"
+                  hint="Eliga el tipo de pregunta que desea crear"
+                  item-value = "id"
+                  item-text = "description"
+                  clearable
+                  filled
+                  hide-selected
+                  outlined
+                  persistent-hint
+                  hide-details
+                ></v-combobox>
+              </v-col>
+              <v-col sm="6">
+                <v-file-input
+                  v-model="itemModelPregunta.image"
+                  accept="image/*"
+                  label="Imagen"
+                  outlined
+                  @change="previewImage"
+                ></v-file-input>
+              </v-col>
+              <v-col sm="6">
+                <v-text-field
+                  v-model="itemModelPregunta.score"
+                  type="number"
+                  label="Puntaje"
+                  filled
+                  outlined
+                  hide-details
+              ></v-text-field>
+              </v-col>
+              <v-col sm="6">
+                <v-text-field
+                  v-model="itemModelPregunta.timeLimit"
+                  type="number"
+                  label="Tiempo Límite"
+                  filled
+                  outlined
+                  hint="El tiempo está en minutos"
+                  persistent-hint
+                  hide-details
+              ></v-text-field>
+              </v-col>
+            </v-row>
           </v-col>
-          <v-col sm="3">
-            <v-text-field
-              v-model="itemModelPregunta.image"
-              label="Nombre de Imagen"
-              filled
-              outlined
-              placeholder="Ej: Bandera.png"
-              hint="Incluya la extensión de la imagen"
-              persistent-hint
-              hide-details
-          ></v-text-field>
-          </v-col>
-          <v-col sm="3">
-            <v-text-field
-              v-model="itemModelPregunta.score"
-              type="number"
-              label="Puntaje"
-              filled
-              outlined
-              hide-details
-          ></v-text-field>
-          </v-col>
-          <v-col sm="3">
-            <v-text-field
-              v-model="itemModelPregunta.timeLimit"
-              type="number"
-              label="Tiempo Límite"
-              filled
-              outlined
-              hint="El tiempo está en minutos"
-              persistent-hint
-              hide-details
-          ></v-text-field>
+          <v-col class="justify-center" sm="6">
+            <v-img class="align-self-center" max-height="200" max-width="300" :src="itemModelPregunta.url"></v-img>
           </v-col>
           <v-col sm="12">
             <v-toolbar flat color="white">
@@ -328,11 +332,17 @@
                       >
                         {{ props.item.image }}
                         <template v-slot:input>
-                          <v-text-field
+                          <!-- <v-text-field
                             v-model="props.item.image"
+                            type="file"
                             label="Nombre Imagen"
                             single-line
-                          ></v-text-field>
+                          ></v-text-field> -->
+                           <v-file-input
+                            v-model="props.item.image"
+                            accept="image/*"
+                            label="Imagen"
+                          ></v-file-input>
                         </template>
                       </v-edit-dialog>
                     </template>
@@ -496,6 +506,7 @@ export default {
       image: "",
       score: "",
       timeLimit: "",
+      url: "",
       answers: []
     },
     editPregunta: false,
@@ -529,7 +540,8 @@ export default {
       trueOrFalse: value =>
         value == 1 || value == 0 || "solo puede poner valor 0 y 1"
     },
-    existeCorrecta: false
+    existeCorrecta: false,
+    
   }),
   components: {
     BarraNavegacion
@@ -877,12 +889,29 @@ export default {
       }
     },
     async GuardarPregunta() {
-      var response = "";
+      var response = ""
       this.itemModelPregunta.answers = this.listaDeRespuestas;
       this.itemModelPregunta.type = this.itemModelPregunta.type.description;
       this.listaDeRespuestas.forEach(element => {
         element.isCorrect = element.isCorrect == "1" ? true : false;
       });
+      var listaDeRespuestasImagenes = []
+        this.listaDeRespuestas.forEach((element) => {
+            var imgFd = new FormData();
+            imgFd.append('text', element.text)
+            imgFd.append('isCorrect', element.isCorrect)
+            imgFd.append('image', element.image, element.image.name)
+            listaDeRespuestasImagenes.push(imgFd)
+        });
+      const fd = new FormData();
+      fd.append('image', this.itemModelPregunta.image, this.itemModelPregunta.image.name)
+      fd.append('idTestPart', this.itemModelPregunta.idTestPart)
+      fd.append('type', this.itemModelPregunta.type)
+      fd.append('text', this.itemModelPregunta.text)
+      fd.append('score', this.itemModelPregunta.score)
+      fd.append('timeLimit', this.itemModelPregunta.timeLimit)
+      fd.append('answer', this.listaDeRespuestas)
+
       this.showLoading({
         title: "Accediendo a la información",
         color: "secondary"
@@ -891,10 +920,10 @@ export default {
         if (this.editPregunta) {
           response = await axios.put(
             `${this.$urlApi}Question`,
-            this.itemModelPregunta,
+            fd,
             {
               headers: {
-                "Content-Type": "application/json",
+                "Content-Type": 'multipart/form-data',
                 Authorization: "Bearer " + sessionStorage.getItem("jwt")
               }
             }
@@ -902,10 +931,10 @@ export default {
         } else {
           response = await axios.post(
             `${this.$urlApi}Question`,
-            this.itemModelPregunta,
+            fd,
             {
               headers: {
-                "Content-Type": "application/json",
+                "Content-Type": 'multipart/form-data',
                 Authorization: "Bearer " + sessionStorage.getItem("jwt")
               }
             }
@@ -970,15 +999,12 @@ export default {
           this.existeCorrecta = false;
         }
       }
-      // console.log(this.existeCorrecta)
-      // if(value > 1 || this.existeCorrecta){
-      //   this.listaDeRespuestas[index].isCorrect = 0
-      // } else{
-      //   this.listaDeRespuestas[index].isCorrect = 1
-      // }
     },
     eliminarRespuesta(index) {
       this.listaDeRespuestas.splice(index, 1);
+    },
+    previewImage() {
+      this.itemModelPregunta.url= URL.createObjectURL(this.itemModelPregunta.image)
     }
   }
 };
