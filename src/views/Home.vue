@@ -541,7 +541,7 @@ export default {
         value == 1 || value == 0 || "solo puede poner valor 0 y 1"
     },
     existeCorrecta: false,
-    
+    listaDeRespuestasImagenes: []
   }),
   components: {
     BarraNavegacion
@@ -895,13 +895,12 @@ export default {
       this.listaDeRespuestas.forEach(element => {
         element.isCorrect = element.isCorrect == "1" ? true : false;
       });
-      var listaDeRespuestasImagenes = []
         this.listaDeRespuestas.forEach((element) => {
             var imgFd = new FormData();
             imgFd.append('text', element.text)
             imgFd.append('isCorrect', element.isCorrect)
             imgFd.append('image', element.image, element.image.name)
-            listaDeRespuestasImagenes.push(imgFd)
+            this.listaDeRespuestasImagenes.push(imgFd)
         });
       const fd = new FormData();
       fd.append('image', this.itemModelPregunta.image, this.itemModelPregunta.image.name)
@@ -910,7 +909,7 @@ export default {
       fd.append('text', this.itemModelPregunta.text)
       fd.append('score', this.itemModelPregunta.score)
       fd.append('timeLimit', this.itemModelPregunta.timeLimit)
-      fd.append('answer', this.listaDeRespuestas)
+      fd.append('answer', this.listaDeRespuestasImagenes)
 
       this.showLoading({
         title: "Accediendo a la información",
