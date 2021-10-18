@@ -88,6 +88,7 @@
                 >
                 <template  v-slot:items="props">
                   <tr>
+                      <td>{{ props.item.idTestModule }}</td>
                       <td>{{ props.item.name }}</td>
                     </tr>
                   </template>
@@ -127,14 +128,18 @@
                 >
                   <template  v-slot:items="props">
                   <tr>
+                      <td>{{ props.item.type }}</td>
                       <td>{{ props.item.text }}</td>
+                      <td>{{ props.item.image }}</td>
+                      <td>{{ props.item.score }}</td>
+                      <td>{{ props.item.timeLimit }}</td>
                     </tr>
                   </template>
                   <template v-slot:item.opciones="{ item }">
-                    <v-icon medium class="mr-2" @click="editarModulo(item)">
+                    <v-icon medium class="mr-2" @click="editarPregunta(item)">
                       mdi-pencil
                     </v-icon>
-                    <v-icon medium @click="eliminarModulo(item)">
+                    <v-icon medium @click="eliminarPregunta(item)">
                       mdi-delete
                     </v-icon>
                   </template>
@@ -224,6 +229,16 @@
         </v-toolbar>
         <v-card-text class="pt-5"> 
         <v-row>
+          <v-col sm="12">
+            <v-text-field
+              v-model="itemModelPregunta.text"
+              label="Texto Pregunta"
+              filled
+              outlined
+              placeholder="Ej: ¿Que simbolo patrio observas en la imagen?"
+              hide-details
+          ></v-text-field>
+          </v-col>
           <v-col sm="3">
             <v-combobox
               v-model="itemModelPregunta.type"
@@ -237,6 +252,7 @@
               hide-selected
               outlined
               persistent-hint
+              hide-details
             ></v-combobox>
           </v-col>
           <v-col sm="3">
@@ -248,6 +264,7 @@
               placeholder="Ej: Bandera.png"
               hint="Incluya la extensión de la imagen"
               persistent-hint
+              hide-details
           ></v-text-field>
           </v-col>
           <v-col sm="3">
@@ -257,6 +274,7 @@
               label="Puntaje"
               filled
               outlined
+              hide-details
           ></v-text-field>
           </v-col>
           <v-col sm="3">
@@ -268,6 +286,7 @@
               outlined
               hint="El tiempo está en minutos"
               persistent-hint
+              hide-details
           ></v-text-field>
           </v-col>
           <v-col sm="12">
@@ -346,8 +365,6 @@
                 </v-data-table>
           </v-col>
         </v-row>
-        
-
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
@@ -388,6 +405,12 @@ export default {
     ],
     headersSeccion: [
       {
+        text: "id Módulo",
+        align: "left",
+        sortable: false,
+        value: "idTestModule"
+      },
+      {
         text: "Nombre",
         align: "left",
         sortable: false,
@@ -397,10 +420,34 @@ export default {
     ],
     headersPreguntas: [
       {
-        text: "Nombre",
+        text: "Tipo Pregunta",
         align: "left",
         sortable: false,
-        value: "name"
+        value: "type"
+      },
+      {
+        text: "Texto Pregunta",
+        align: "left",
+        sortable: false,
+        value: "text"
+      },
+      {
+        text: "Imagen",
+        align: "left",
+        sortable: false,
+        value: "image"
+      },
+      {
+        text: "Puntaje",
+        align: "left",
+        sortable: false,
+        value: "score"
+      },
+      {
+        text: "Tiempo Límite",
+        align: "left",
+        sortable: false,
+        value: "timeLimit"
       },
       { text: "Opciones", align: "right", sortable: false, value: "opciones" }
     ],
@@ -479,7 +526,8 @@ export default {
       }
     ],
     rules: {
-      trueOrFalse: value => value == 1 || value == 0 || 'solo puede poner valor 0 y 1',
+      trueOrFalse: value =>
+        value == 1 || value == 0 || "solo puede poner valor 0 y 1"
     },
     existeCorrecta: false
   }),
@@ -507,7 +555,7 @@ export default {
     },
     AsignarModulo(item) {
       this.itemModelSeccion.idTestModule = item.id;
-      this.editModulo ? this.e1 = 1 : this.e1 = 2;
+      this.editModulo ? (this.e1 = 1) : (this.e1 = 2);
       this.ListarSeccion(this.itemModelSeccion.idTestModule);
     },
     abrirDialogModulo() {
@@ -562,7 +610,7 @@ export default {
             "El módulo ha sido eliminado con éxito",
             "success"
           );
-          this.ListarModulo()
+          this.ListarModulo();
         } else {
           this.$swal(
             "¡Error!",
@@ -570,7 +618,7 @@ export default {
             "error"
           );
         }
-        this.e1 = 1
+        this.e1 = 1;
       } catch (error) {
         console.log(error);
       } finally {
@@ -579,7 +627,7 @@ export default {
     },
     AsignarSeccion(item) {
       this.itemModelPregunta.idTestPart = item.id;
-      this.editSeccion ? this.e1 = 2 : this.e1 = 3;
+      this.editSeccion ? (this.e1 = 2) : (this.e1 = 3);
       this.ListarPregunta(this.itemModelPregunta.idTestPart);
     },
     abrirDialogSeccion() {
@@ -637,7 +685,7 @@ export default {
             "La Sección ha sido eliminada con éxito",
             "success"
           );
-          this.ListarSeccion(this.itemModelSeccion.idTestModule)
+          this.ListarSeccion(this.itemModelSeccion.idTestModule);
         } else {
           this.$swal(
             "¡Error!",
@@ -645,7 +693,7 @@ export default {
             "error"
           );
         }
-        this.e1 = 2
+        this.e1 = 2;
       } catch (error) {
         console.log(error);
       } finally {
@@ -677,12 +725,16 @@ export default {
         this.hideLoading();
       }
     },
-    editarPregunta() {
+    editarPregunta(item) {
       this.editPregunta = true;
       if (this.editPregunta) {
-        this.itemModelModulo.id = item.id;
-        this.itemModelModulo.name = item.name;
-        this.itemModelModulo.active = item.active;
+        this.itemModelPregunta.id = item.id
+        this.itemModelPregunta.text = item.text
+        this.itemModelPregunta.type = item.type
+        this.itemModelPregunta.image = item.image
+        this.itemModelPregunta.score = item.score
+        this.itemModelPregunta.timeLimit = item.timeLimit
+        this.listaDeRespuestas = Object.assign([], item.answers)
         this.dialogPregunta = true;
       }
     },
@@ -707,7 +759,7 @@ export default {
             "La pregunta ha sido eliminado con éxito",
             "success"
           );
-          this.ListarPreguntas(this.itemModelSeccion.idTestPart)
+          this.ListarPreguntas(this.itemModelSeccion.idTestPart);
         } else {
           this.$swal(
             "¡Error!",
@@ -715,7 +767,7 @@ export default {
             "error"
           );
         }
-        this.e1 = 3
+        this.e1 = 3;
       } catch (error) {
         console.log(error);
       } finally {
@@ -826,10 +878,10 @@ export default {
     },
     async GuardarPregunta() {
       var response = "";
-      this.itemModelPregunta.answers = this.listaDeRespuestas
-      this.itemModelPregunta.type = this.itemModelPregunta.type.description
+      this.itemModelPregunta.answers = this.listaDeRespuestas;
+      this.itemModelPregunta.type = this.itemModelPregunta.type.description;
       this.listaDeRespuestas.forEach(element => {
-          element.isCorrect = element.isCorrect == "1" ? true : false
+        element.isCorrect = element.isCorrect == "1" ? true : false;
       });
       this.showLoading({
         title: "Accediendo a la información",
@@ -865,7 +917,7 @@ export default {
             "La pregunta ha sido guardada con éxito",
             "success"
           );
-          this.ListarPregunta(this.itemModelSeccion.idTestPart);
+          this.ListarPregunta(this.itemModelPregunta.idTestPart);
           this.CerrarPregunta();
         } else {
           this.$swal(
@@ -898,41 +950,36 @@ export default {
       this.dialogPregunta = false;
       this.editPregunta = false;
     },
-    AgregarLineaVacia(){
+    AgregarLineaVacia() {
       this.listaDeRespuestas.push({
-        text : "",
-        imagen : "",
-        isCorrect : ""
-      })
+        text: "",
+        imagen: "",
+        isCorrect: ""
+      });
     },
-      save (value,index) {
-        
-      },
-      cancel () {
-      },
-      open () {
-      },
-      close () {
-      },
-      closeIsCorrect(value,index){
-        for (let ind = 0; ind < this.listaDeRespuestas.length; ind++) {
-            if (this.listaDeRespuestas[ind].isCorrect == 1) {
-                this.existeCorrecta = true;
-                break;
-            }else {
-              this.existeCorrecta = false
-            }
+    save() {},
+    cancel() {},
+    open() {},
+    close() {},
+    closeIsCorrect(value, index) {
+      for (let ind = 0; ind < this.listaDeRespuestas.length; ind++) {
+        if (this.listaDeRespuestas[ind].isCorrect == 1) {
+          this.existeCorrecta = true;
+          break;
+        } else {
+          this.existeCorrecta = false;
         }
-        // console.log(this.existeCorrecta)
-        // if(value > 1 || this.existeCorrecta){
-        //   this.listaDeRespuestas[index].isCorrect = 0
-        // } else{
-        //   this.listaDeRespuestas[index].isCorrect = 1
-        // }
-      },
-      eliminarRespuesta(index){
-       this.listaDeRespuestas.splice(index, 1);
       }
+      // console.log(this.existeCorrecta)
+      // if(value > 1 || this.existeCorrecta){
+      //   this.listaDeRespuestas[index].isCorrect = 0
+      // } else{
+      //   this.listaDeRespuestas[index].isCorrect = 1
+      // }
+    },
+    eliminarRespuesta(index) {
+      this.listaDeRespuestas.splice(index, 1);
+    }
   }
 };
 </script>
