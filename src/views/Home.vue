@@ -340,7 +340,7 @@
                   <v-edit-dialog
                     large
                     persistent
-                    cancel-text= "Cancelar"
+                    cancel-text="Cancelar"
                     save-text="Guardar"
                     :return-value.sync="props.item.image"
                     @save="save"
@@ -765,16 +765,16 @@ export default {
         this.itemModelPregunta.text = item.text;
         this.itemModelPregunta.type = item.type;
         this.itemModelPregunta.image = null;
-        this.itemModelPregunta.url = `${this.$urlImage}${item.image}`
+        this.itemModelPregunta.url = `${this.$urlImage}${item.image}`;
         this.itemModelPregunta.score = item.score;
         this.itemModelPregunta.timeLimit = item.timeLimit;
-        item.answers.forEach(element => {
+        item.answers.forEach((element) => {
           this.listaDeRespuestas.push({
-            text : element.text,
-            url : `${this.$urlImage}${element.image}`,
-            image : null,
-            isCorrect : element.isCorrect            
-          })
+            text: element.text,
+            url: `${this.$urlImage}${element.image}`,
+            image: null,
+            isCorrect: element.isCorrect,
+          });
         });
         this.dialogPregunta = true;
       }
@@ -925,16 +925,14 @@ export default {
         element.isCorrect = element.isCorrect == "1" ? true : false;
       });
       const fd = new FormData();
-      this.itemModelPregunta.image != '' ? 
-      fd.append(
-        "image",
-        this.itemModelPregunta.image,
-        this.itemModelPregunta.image.name
-      ) : 
-      fd.append(
-        "image",
-        "",
-      )
+      this.itemModelPregunta.image != null
+        ? fd.append(
+            "image",
+            this.itemModelPregunta.image,
+            this.itemModelPregunta.image.name
+          )
+        : fd.append("image", "");
+      fd.append("id", this.itemModelPregunta.id);
       fd.append("idTestPart", this.itemModelPregunta.idTestPart);
       fd.append("type", this.itemModelPregunta.type);
       fd.append("text", this.itemModelPregunta.text);
@@ -946,31 +944,24 @@ export default {
           "answers[" + i + "].isCorrect",
           this.listaDeRespuestas[i].isCorrect
         );
-        this.listaDeRespuestas[i].image != '' ? 
-        fd.append("answers[" + i + "].image", this.listaDeRespuestas[i].image) 
-        :
-         fd.append("answers[" + i + "].image", "")
-        
+        this.listaDeRespuestas[i].image != null
+          ? fd.append(
+              "answers[" + i + "].image",
+              this.listaDeRespuestas[i].image
+            )
+          : fd.append("answers[" + i + "].image", "");
       }
       this.showLoading({
         title: "Accediendo a la información",
-        color: "secondary"
+        color: "secondary",
       });
       try {
-        if (this.editPregunta) {
-          response = await axios.post(`${this.$urlApi}Question`, fd, {
-            headers: {
-              Authorization: "Bearer " + sessionStorage.getItem("jwt"),
-            },
-          });
-        } else {
-          response = await axios.post(`${this.$urlApi}Question`, fd, {
-            headers: {
-              "Content-Type": "multipart/form-data",
-              Authorization: "Bearer " + sessionStorage.getItem("jwt"),
-            },
-          });
-        }
+        response = await axios.post(`${this.$urlApi}Question`, fd, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: "Bearer " + sessionStorage.getItem("jwt"),
+          },
+        });
         if (response.data > 0) {
           this.$swal(
             "Guardado!",
@@ -1009,22 +1000,21 @@ export default {
     CerrarPregunta() {
       this.dialogPregunta = false;
       this.editPregunta = false;
-      this.itemModelPregunta.type = ""
-      this.itemModelPregunta.text = ""
-      this.itemModelPregunta.image = null
-      this.itemModelPregunta.score = ""
-      this.itemModelPregunta.timeLimit = ""
-      this.itemModelPregunta.url = ""
-      this.itemModelPregunta.answers = []
-      this.listaDeRespuestas = []
-
+      this.itemModelPregunta.type = "";
+      this.itemModelPregunta.text = "";
+      this.itemModelPregunta.image = null;
+      this.itemModelPregunta.score = "";
+      this.itemModelPregunta.timeLimit = "";
+      this.itemModelPregunta.url = "";
+      this.itemModelPregunta.answers = [];
+      this.listaDeRespuestas = [];
     },
     AgregarLineaVacia() {
       this.listaDeRespuestas.push({
         text: "",
         image: null,
         isCorrect: "",
-        url : ""
+        url: "",
       });
     },
     save() {},
@@ -1040,8 +1030,8 @@ export default {
           this.existeCorrecta = false;
         }
       }
-      if(value > 1){
-        this.listaDeRespuestas[index].isCorrect = 0
+      if (value > 1) {
+        this.listaDeRespuestas[index].isCorrect = 0;
       }
     },
     eliminarRespuesta(index) {
@@ -1053,10 +1043,10 @@ export default {
       );
     },
     previewImageRespuesta(index) {
-        this.listaDeRespuestas[index].url = URL.createObjectURL(
+      this.listaDeRespuestas[index].url = URL.createObjectURL(
         this.listaDeRespuestas[index].image
       );
-    }
+    },
   },
 };
 </script>
