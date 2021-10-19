@@ -338,24 +338,29 @@
                 </template>
                 <template v-slot:item.image="props">
                   <v-edit-dialog
+                    large
+                    persistent
+                    cancel-text= "Cancelar"
+                    save-text="Guardar"
                     :return-value.sync="props.item.image"
                     @save="save"
                     @cancel="cancel"
                     @open="open"
                     @close="close"
                   >
-                    {{ props.item.image }}
+                    <v-img
+                      class="align-self-center"
+                      max-height="90"
+                      max-width="90"
+                      :src="props.item.url"
+                    >
+                    </v-img>
                     <template v-slot:input>
-                      <!-- <v-text-field
-                            v-model="props.item.image"
-                            type="file"
-                            label="Nombre Imagen"
-                            single-line
-                          ></v-text-field> -->
                       <v-file-input
                         v-model="props.item.image"
                         accept="image/*"
                         label="Imagen"
+                        @change="previewImageRespuesta(props.index)"
                       ></v-file-input>
                     </template>
                   </v-edit-dialog>
@@ -757,7 +762,7 @@ export default {
         this.itemModelPregunta.id = item.id;
         this.itemModelPregunta.text = item.text;
         this.itemModelPregunta.type = item.type;
-        this.itemModelPregunta.image = item.image;
+        // this.itemModelPregunta.image = item.image;
         this.itemModelPregunta.score = item.score;
         this.itemModelPregunta.timeLimit = item.timeLimit;
         this.listaDeRespuestas = Object.assign([], item.answers);
@@ -920,7 +925,6 @@ export default {
       fd.append("text", this.itemModelPregunta.text);
       fd.append("score", this.itemModelPregunta.score);
       fd.append("timeLimit", this.itemModelPregunta.timeLimit);
-      //fd.append("answers", this.listaDeRespuestasImagenes);
       for (var i = 0; i < this.listaDeRespuestas.length; i++) {
         fd.append("answers[" + i + "].text", this.listaDeRespuestas[i].text);
         fd.append(
@@ -929,16 +933,9 @@ export default {
         );
         fd.append("answers[" + i + "].image", this.listaDeRespuestas[i].image);
       }
-      // this.listaDeRespuestas.forEach((element) => {
-      //   var imgFd = new FormData();
-      //   imgFd.append("text", element.text);
-      //   imgFd.append("isCorrect", element.isCorrect);
-      //   imgFd.append("image", element.image, element.image.name);
-      //   this.listaDeRespuestasImagenes.push(imgFd);
-      // });
       this.showLoading({
         title: "Accediendo a la información",
-        color: "secondary",
+        color: "secondary"
       });
       try {
         if (this.editPregunta) {
@@ -998,8 +995,9 @@ export default {
     AgregarLineaVacia() {
       this.listaDeRespuestas.push({
         text: "",
-        imagen: "",
+        image: "",
         isCorrect: "",
+        url : ""
       });
     },
     save() {},
@@ -1024,6 +1022,11 @@ export default {
         this.itemModelPregunta.image
       );
     },
+    previewImageRespuesta(index) {
+        this.listaDeRespuestas[index].url = URL.createObjectURL(
+        this.listaDeRespuestas[index].image
+      );
+    }
   },
 };
 </script>
