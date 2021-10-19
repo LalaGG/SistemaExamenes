@@ -11,13 +11,17 @@
 
             <v-divider></v-divider>
 
-            <v-stepper-step @click="AsignarModulo({id : 0})" editable step="2">
+            <v-stepper-step @click="AsignarModulo({ id: 0 })" editable step="2">
               Secciones por Módulo
             </v-stepper-step>
 
             <v-divider></v-divider>
 
-            <v-stepper-step @click="AsignarSeccion({id : 0})" editable step="3">
+            <v-stepper-step
+              @click="AsignarSeccion({ id: 0 })"
+              editable
+              step="3"
+            >
               Preguntas y Respuestas
             </v-stepper-step>
           </v-stepper-header>
@@ -75,7 +79,11 @@
                     hide-details
                   ></v-text-field>
                   <v-spacer></v-spacer>
-                  <v-btn dark color="primary" @click="abrirDialogSeccion" v-show="itemModelSeccion.idTestModule > 0"
+                  <v-btn
+                    dark
+                    color="primary"
+                    @click="abrirDialogSeccion"
+                    v-show="itemModelSeccion.idTestModule > 0"
                     >Nueva Sección</v-btn
                   >
                 </v-toolbar>
@@ -86,8 +94,8 @@
                   class="elevation-1"
                   @click:row="AsignarSeccion"
                 >
-                <template  v-slot:items="props">
-                  <tr>
+                  <template v-slot:items="props">
+                    <tr>
                       <td>{{ props.item.idTestModule }}</td>
                       <td>{{ props.item.name }}</td>
                     </tr>
@@ -126,8 +134,8 @@
                   :search="search"
                   class="elevation-1"
                 >
-                  <template  v-slot:items="props">
-                  <tr>
+                  <template v-slot:items="props">
+                    <tr>
                       <td>{{ props.item.type }}</td>
                       <td>{{ props.item.text }}</td>
                       <td>{{ props.item.image }}</td>
@@ -146,7 +154,6 @@
                 </v-data-table>
               </v-card>
             </v-stepper-content>
-
           </v-stepper-items>
         </v-stepper>
       </v-col>
@@ -212,7 +219,7 @@
               >
               </v-switch>
             </v-col>
-          </v-row>  
+          </v-row>
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
@@ -227,154 +234,161 @@
         <v-toolbar>
           <v-toolbar-title>Mantenimiento de Preguntas</v-toolbar-title>
         </v-toolbar>
-        <v-card-text class="pt-5"> 
-        <v-row>
-          <v-col sm="12">
-            <v-text-field
-              v-model="itemModelPregunta.text"
-              label="Texto Pregunta"
-              filled
-              outlined
-              placeholder="Ej: ¿Que simbolo patrio observas en la imagen?"
-              hide-details
-          ></v-text-field>
-          </v-col>
-          <v-col sm="6">
-            <v-row>
-              <v-col sm="6">
-                <v-combobox
-                  v-model="itemModelPregunta.type"
-                  :items="listaDeTiposPregunta"
-                  label="Tipo de Pregunta"
-                  hint="Eliga el tipo de pregunta que desea crear"
-                  item-value = "id"
-                  item-text = "description"
-                  clearable
-                  filled
-                  hide-selected
-                  outlined
-                  persistent-hint
-                  hide-details
-                ></v-combobox>
-              </v-col>
-              <v-col sm="6">
-                <v-file-input
-                  v-model="itemModelPregunta.image"
-                  accept="image/*"
-                  label="Imagen"
-                  outlined
-                  @change="previewImage"
-                ></v-file-input>
-              </v-col>
-              <v-col sm="6">
-                <v-text-field
-                  v-model="itemModelPregunta.score"
-                  type="number"
-                  label="Puntaje"
-                  filled
-                  outlined
-                  hide-details
+        <v-card-text class="pt-5">
+          <v-row>
+            <v-col sm="12">
+              <v-text-field
+                v-model="itemModelPregunta.text"
+                label="Texto Pregunta"
+                filled
+                outlined
+                placeholder="Ej: ¿Que simbolo patrio observas en la imagen?"
+                hide-details
               ></v-text-field>
-              </v-col>
-              <v-col sm="6">
-                <v-text-field
-                  v-model="itemModelPregunta.timeLimit"
-                  type="number"
-                  label="Tiempo Límite"
-                  filled
-                  outlined
-                  hint="El tiempo está en minutos"
-                  persistent-hint
-                  hide-details
-              ></v-text-field>
-              </v-col>
-            </v-row>
-          </v-col>
-          <v-col class="justify-center" sm="6">
-            <v-img class="align-self-center" max-height="200" max-width="300" :src="itemModelPregunta.url"></v-img>
-          </v-col>
-          <v-col sm="12">
-            <v-toolbar flat color="white">
-                  <v-toolbar-title>Lista de Preguntas</v-toolbar-title>
-                  <v-spacer></v-spacer>
-                  <v-icon large color="blue" @click="AgregarLineaVacia">add</v-icon>
-                </v-toolbar>
-                <v-data-table
-                  :headers="headersRespuestas"
-                  :items="listaDeRespuestas"
-                  class="elevation-1"
+            </v-col>
+            <v-col sm="6">
+              <v-row>
+                <v-col sm="6">
+                  <v-combobox
+                    v-model="itemModelPregunta.type"
+                    :items="listaDeTiposPregunta"
+                    label="Tipo de Pregunta"
+                    hint="Eliga el tipo de pregunta que desea crear"
+                    item-value="id"
+                    item-text="description"
+                    clearable
+                    filled
+                    hide-selected
+                    outlined
+                    persistent-hint
+                    hide-details
+                  ></v-combobox>
+                </v-col>
+                <v-col sm="6">
+                  <v-file-input
+                    v-model="itemModelPregunta.image"
+                    accept="image/*"
+                    label="Imagen"
+                    outlined
+                    @change="previewImage"
+                  ></v-file-input>
+                </v-col>
+                <v-col sm="6">
+                  <v-text-field
+                    v-model="itemModelPregunta.score"
+                    type="number"
+                    label="Puntaje"
+                    filled
+                    outlined
+                    hide-details
+                  ></v-text-field>
+                </v-col>
+                <v-col sm="6">
+                  <v-text-field
+                    v-model="itemModelPregunta.timeLimit"
+                    type="number"
+                    label="Tiempo Límite"
+                    filled
+                    outlined
+                    hint="El tiempo está en minutos"
+                    persistent-hint
+                    hide-details
+                  ></v-text-field>
+                </v-col>
+              </v-row>
+            </v-col>
+            <v-col class="justify-center" sm="6">
+              <v-img
+                class="align-self-center"
+                max-height="200"
+                max-width="300"
+                :src="itemModelPregunta.url"
+              ></v-img>
+            </v-col>
+            <v-col sm="12">
+              <v-toolbar flat color="white">
+                <v-toolbar-title>Lista de Preguntas</v-toolbar-title>
+                <v-spacer></v-spacer>
+                <v-icon large color="blue" @click="AgregarLineaVacia"
+                  >add</v-icon
                 >
-                    <template v-slot:item.text="props">
-                      <v-edit-dialog
-                        :return-value.sync="props.item.text"
-                        @save="save"
-                        @cancel="cancel"
-                        @open="open"
-                        @close="close"
-                      >
-                        {{ props.item.text }}
-                        <template v-slot:input>
-                          <v-text-field
-                            v-model="props.item.text"
-                            label="Texto de Respuesta"
-                            single-line
-                          ></v-text-field>
-                        </template>
-                      </v-edit-dialog>
+              </v-toolbar>
+              <v-data-table
+                :headers="headersRespuestas"
+                :items="listaDeRespuestas"
+                class="elevation-1"
+              >
+                <template v-slot:item.text="props">
+                  <v-edit-dialog
+                    :return-value.sync="props.item.text"
+                    @save="save"
+                    @cancel="cancel"
+                    @open="open"
+                    @close="close"
+                  >
+                    {{ props.item.text }}
+                    <template v-slot:input>
+                      <v-text-field
+                        v-model="props.item.text"
+                        label="Texto de Respuesta"
+                        single-line
+                      ></v-text-field>
                     </template>
-                    <template v-slot:item.image="props">
-                      <v-edit-dialog
-                        :return-value.sync="props.item.image"
-                        @save="save"
-                        @cancel="cancel"
-                        @open="open"
-                        @close="close"
-                      >
-                        {{ props.item.image }}
-                        <template v-slot:input>
-                          <!-- <v-text-field
+                  </v-edit-dialog>
+                </template>
+                <template v-slot:item.image="props">
+                  <v-edit-dialog
+                    :return-value.sync="props.item.image"
+                    @save="save"
+                    @cancel="cancel"
+                    @open="open"
+                    @close="close"
+                  >
+                    {{ props.item.image }}
+                    <template v-slot:input>
+                      <!-- <v-text-field
                             v-model="props.item.image"
                             type="file"
                             label="Nombre Imagen"
                             single-line
                           ></v-text-field> -->
-                           <v-file-input
-                            v-model="props.item.image"
-                            accept="image/*"
-                            label="Imagen"
-                          ></v-file-input>
-                        </template>
-                      </v-edit-dialog>
+                      <v-file-input
+                        v-model="props.item.image"
+                        accept="image/*"
+                        label="Imagen"
+                      ></v-file-input>
                     </template>
-                    <template v-slot:item.isCorrect="props">
-                      <v-edit-dialog
-                        :return-value.sync="props.item.isCorrect"
-                        @save="save(props.item.isCorrect, props.index)"
-                        @cancel="cancel"
-                        @open="open"
-                        @close="closeIsCorrect(props.item.isCorrect, props.index)"
-                      >
-                        {{ props.item.isCorrect }}
-                        <template v-slot:input>
-                          <v-text-field
-                            v-model="props.item.isCorrect"
-                            label="¿Es la respuesta correcta?"
-                            single-line
-                            :rules="[rules.trueOrFalse]"
-                            hint="1: correcta , 0: incorrecta"
-                            persistent-hint
-                          ></v-text-field>
-                        </template>
-                      </v-edit-dialog>
+                  </v-edit-dialog>
+                </template>
+                <template v-slot:item.isCorrect="props">
+                  <v-edit-dialog
+                    :return-value.sync="props.item.isCorrect"
+                    @save="save(props.item.isCorrect, props.index)"
+                    @cancel="cancel"
+                    @open="open"
+                    @close="closeIsCorrect(props.item.isCorrect, props.index)"
+                  >
+                    {{ props.item.isCorrect }}
+                    <template v-slot:input>
+                      <v-text-field
+                        v-model="props.item.isCorrect"
+                        label="¿Es la respuesta correcta?"
+                        single-line
+                        :rules="[rules.trueOrFalse]"
+                        hint="1: correcta , 0: incorrecta"
+                        persistent-hint
+                      ></v-text-field>
                     </template>
-                  <template v-slot:item.opciones="{ item, index }">
-                    <v-icon medium @click="eliminarRespuesta(index)">
-                      mdi-delete
-                    </v-icon>
-                  </template>
-                </v-data-table>
-          </v-col>
-        </v-row>
+                  </v-edit-dialog>
+                </template>
+                <template v-slot:item.opciones="{ item, index }">
+                  <v-icon medium @click="eliminarRespuesta(index)">
+                    mdi-delete
+                  </v-icon>
+                </template>
+              </v-data-table>
+            </v-col>
+          </v-row>
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
@@ -409,78 +423,78 @@ export default {
         text: "Nombre",
         align: "left",
         sortable: false,
-        value: "name"
+        value: "name",
       },
-      { text: "Opciones", align: "right", sortable: false, value: "opciones" }
+      { text: "Opciones", align: "right", sortable: false, value: "opciones" },
     ],
     headersSeccion: [
       {
         text: "id Módulo",
         align: "left",
         sortable: false,
-        value: "idTestModule"
+        value: "idTestModule",
       },
       {
         text: "Nombre",
         align: "left",
         sortable: false,
-        value: "name"
+        value: "name",
       },
-      { text: "Opciones", align: "right", sortable: false, value: "opciones" }
+      { text: "Opciones", align: "right", sortable: false, value: "opciones" },
     ],
     headersPreguntas: [
       {
         text: "Tipo Pregunta",
         align: "left",
         sortable: false,
-        value: "type"
+        value: "type",
       },
       {
         text: "Texto Pregunta",
         align: "left",
         sortable: false,
-        value: "text"
+        value: "text",
       },
       {
         text: "Imagen",
         align: "left",
         sortable: false,
-        value: "image"
+        value: "image",
       },
       {
         text: "Puntaje",
         align: "left",
         sortable: false,
-        value: "score"
+        value: "score",
       },
       {
         text: "Tiempo Límite",
         align: "left",
         sortable: false,
-        value: "timeLimit"
+        value: "timeLimit",
       },
-      { text: "Opciones", align: "right", sortable: false, value: "opciones" }
+      { text: "Opciones", align: "right", sortable: false, value: "opciones" },
     ],
     headersRespuestas: [
       {
         text: "Texto",
         align: "left",
         sortable: false,
-        value: "text"
+        value: "text",
       },
       {
         text: "Imagen",
         align: "left",
         sortable: false,
-        value: "image"
+        value: "image",
       },
       {
         text: "Es Correcta",
         align: "left",
         sortable: false,
-        value: "isCorrect"
+        value: "isCorrect",
       },
-      { text: "Opciones", align: "right", sortable: false, value: "opciones" }
+      { text: "Opciones", align: "right", sortable: false, value: "opciones" },
     ],
     listaDeModulos: [],
     listaDeSecciones: [],
@@ -489,14 +503,14 @@ export default {
     itemModelModulo: {
       id: "",
       name: "",
-      active: true
+      active: true,
     },
     editModulo: false,
     itemModelSeccion: {
       idTestModule: "",
       id: "",
       name: "",
-      active: true
+      active: true,
     },
     editSeccion: false,
     itemModelPregunta: {
@@ -507,44 +521,44 @@ export default {
       score: "",
       timeLimit: "",
       url: "",
-      answers: []
+      answers: [],
     },
     editPregunta: false,
     listaDeTiposPregunta: [
       {
         id: 1,
-        description: "Tipo: 1"
+        description: "Tipo: 1",
       },
       {
         id: 2,
-        description: "Tipo: 2"
+        description: "Tipo: 2",
       },
       {
         id: 3,
-        description: "Tipo: 3"
+        description: "Tipo: 3",
       },
       {
         id: 4,
-        description: "Tipo: 4"
+        description: "Tipo: 4",
       },
       {
         id: 5,
-        description: "Tipo: 5"
+        description: "Tipo: 5",
       },
       {
         id: 6,
-        description: "Tipo: 6"
-      }
+        description: "Tipo: 6",
+      },
     ],
     rules: {
-      trueOrFalse: value =>
-        value == 1 || value == 0 || "solo puede poner valor 0 y 1"
+      trueOrFalse: (value) =>
+        value == 1 || value == 0 || "solo puede poner valor 0 y 1",
     },
     existeCorrecta: false,
-    listaDeRespuestasImagenes: []
+    listaDeRespuestasImagenes: [],
   }),
   components: {
-    BarraNavegacion
+    BarraNavegacion,
   },
   created() {
     if (this.$session.exists()) {
@@ -552,7 +566,7 @@ export default {
       this.showNotification({
         message: this.usuario.message,
         color: "success",
-        icon: "check-circle"
+        icon: "check-circle",
       });
     } else {
       this.dialog = false;
@@ -576,14 +590,14 @@ export default {
     async ListarModulo() {
       this.showLoading({
         title: "Accediendo a la información",
-        color: "secondary"
+        color: "secondary",
       });
       try {
         let response = await axios.get(`${this.$urlApi}TestModule`, {
           headers: {
             "Content-Type": "application/json",
-            Authorization: "Bearer " + sessionStorage.getItem("jwt")
-          }
+            Authorization: "Bearer " + sessionStorage.getItem("jwt"),
+          },
         });
         this.listaDeModulos = response.data;
       } catch (error) {
@@ -604,7 +618,7 @@ export default {
     async eliminarModulo(item) {
       this.showLoading({
         title: "Accediendo a la información",
-        color: "secondary"
+        color: "secondary",
       });
       try {
         let response = await axios.delete(
@@ -612,8 +626,8 @@ export default {
           {
             headers: {
               "Content-Type": "application/json",
-              Authorization: "Bearer " + sessionStorage.getItem("jwt")
-            }
+              Authorization: "Bearer " + sessionStorage.getItem("jwt"),
+            },
           }
         );
         if (response.data > 0) {
@@ -648,7 +662,7 @@ export default {
     async ListarSeccion(idTestModule) {
       this.showLoading({
         title: "Accediendo a la información",
-        color: "secondary"
+        color: "secondary",
       });
       try {
         let response = await axios.get(
@@ -656,8 +670,8 @@ export default {
           {
             headers: {
               "Content-Type": "application/json",
-              Authorization: "Bearer " + sessionStorage.getItem("jwt")
-            }
+              Authorization: "Bearer " + sessionStorage.getItem("jwt"),
+            },
           }
         );
         this.listaDeSecciones = response.data;
@@ -679,7 +693,7 @@ export default {
     async eliminarSeccion(item) {
       this.showLoading({
         title: "Accediendo a la información",
-        color: "secondary"
+        color: "secondary",
       });
       try {
         let response = await axios.delete(
@@ -687,8 +701,8 @@ export default {
           {
             headers: {
               "Content-Type": "application/json",
-              Authorization: "Bearer " + sessionStorage.getItem("jwt")
-            }
+              Authorization: "Bearer " + sessionStorage.getItem("jwt"),
+            },
           }
         );
         if (response.data > 0) {
@@ -718,7 +732,7 @@ export default {
     async ListarPregunta(idTestPart) {
       this.showLoading({
         title: "Accediendo a la información",
-        color: "secondary"
+        color: "secondary",
       });
       try {
         let response = await axios.get(
@@ -726,8 +740,8 @@ export default {
           {
             headers: {
               "Content-Type": "application/json",
-              Authorization: "Bearer " + sessionStorage.getItem("jwt")
-            }
+              Authorization: "Bearer " + sessionStorage.getItem("jwt"),
+            },
           }
         );
         this.listaDePreguntas = response.data;
@@ -740,20 +754,20 @@ export default {
     editarPregunta(item) {
       this.editPregunta = true;
       if (this.editPregunta) {
-        this.itemModelPregunta.id = item.id
-        this.itemModelPregunta.text = item.text
-        this.itemModelPregunta.type = item.type
-        this.itemModelPregunta.image = item.image
-        this.itemModelPregunta.score = item.score
-        this.itemModelPregunta.timeLimit = item.timeLimit
-        this.listaDeRespuestas = Object.assign([], item.answers)
+        this.itemModelPregunta.id = item.id;
+        this.itemModelPregunta.text = item.text;
+        this.itemModelPregunta.type = item.type;
+        this.itemModelPregunta.image = item.image;
+        this.itemModelPregunta.score = item.score;
+        this.itemModelPregunta.timeLimit = item.timeLimit;
+        this.listaDeRespuestas = Object.assign([], item.answers);
         this.dialogPregunta = true;
       }
     },
     async eliminarPregunta(item) {
       this.showLoading({
         title: "Accediendo a la información",
-        color: "secondary"
+        color: "secondary",
       });
       try {
         let response = await axios.delete(
@@ -761,8 +775,8 @@ export default {
           {
             headers: {
               "Content-Type": "application/json",
-              Authorization: "Bearer " + sessionStorage.getItem("jwt")
-            }
+              Authorization: "Bearer " + sessionStorage.getItem("jwt"),
+            },
           }
         );
         if (response.data > 0) {
@@ -790,7 +804,7 @@ export default {
       var response = "";
       this.showLoading({
         title: "Accediendo a la información",
-        color: "secondary"
+        color: "secondary",
       });
       try {
         if (this.editModulo) {
@@ -800,8 +814,8 @@ export default {
             {
               headers: {
                 "Content-Type": "application/json",
-                Authorization: "Bearer " + sessionStorage.getItem("jwt")
-              }
+                Authorization: "Bearer " + sessionStorage.getItem("jwt"),
+              },
             }
           );
         } else {
@@ -811,8 +825,8 @@ export default {
             {
               headers: {
                 "Content-Type": "application/json",
-                Authorization: "Bearer " + sessionStorage.getItem("jwt")
-              }
+                Authorization: "Bearer " + sessionStorage.getItem("jwt"),
+              },
             }
           );
         }
@@ -841,7 +855,7 @@ export default {
       var response = "";
       this.showLoading({
         title: "Accediendo a la información",
-        color: "secondary"
+        color: "secondary",
       });
       try {
         if (this.editSeccion) {
@@ -851,8 +865,8 @@ export default {
             {
               headers: {
                 "Content-Type": "application/json",
-                Authorization: "Bearer " + sessionStorage.getItem("jwt")
-              }
+                Authorization: "Bearer " + sessionStorage.getItem("jwt"),
+              },
             }
           );
         } else {
@@ -862,8 +876,8 @@ export default {
             {
               headers: {
                 "Content-Type": "application/json",
-                Authorization: "Bearer " + sessionStorage.getItem("jwt")
-              }
+                Authorization: "Bearer " + sessionStorage.getItem("jwt"),
+              },
             }
           );
         }
@@ -889,55 +903,58 @@ export default {
       }
     },
     async GuardarPregunta() {
-      var response = ""
+      var response = "";
       this.itemModelPregunta.answers = this.listaDeRespuestas;
       this.itemModelPregunta.type = this.itemModelPregunta.type.description;
-      this.listaDeRespuestas.forEach(element => {
+      this.listaDeRespuestas.forEach((element) => {
         element.isCorrect = element.isCorrect == "1" ? true : false;
       });
-        this.listaDeRespuestas.forEach((element) => {
-            var imgFd = new FormData();
-            imgFd.append('text', element.text)
-            imgFd.append('isCorrect', element.isCorrect)
-            imgFd.append('image', element.image, element.image.name)
-            this.listaDeRespuestasImagenes.push(imgFd)
-        });
       const fd = new FormData();
-      fd.append('image', this.itemModelPregunta.image, this.itemModelPregunta.image.name)
-      fd.append('idTestPart', this.itemModelPregunta.idTestPart)
-      fd.append('type', this.itemModelPregunta.type)
-      fd.append('text', this.itemModelPregunta.text)
-      fd.append('score', this.itemModelPregunta.score)
-      fd.append('timeLimit', this.itemModelPregunta.timeLimit)
-      fd.append('answer', this.listaDeRespuestasImagenes)
-
+      fd.append(
+        "image",
+        this.itemModelPregunta.image,
+        this.itemModelPregunta.image.name
+      );
+      fd.append("idTestPart", this.itemModelPregunta.idTestPart);
+      fd.append("type", this.itemModelPregunta.type);
+      fd.append("text", this.itemModelPregunta.text);
+      fd.append("score", this.itemModelPregunta.score);
+      fd.append("timeLimit", this.itemModelPregunta.timeLimit);
+      //fd.append("answers", this.listaDeRespuestasImagenes);
+      for (var i = 0; i < this.listaDeRespuestas.length; i++) {
+        fd.append("answers[" + i + "].text", this.listaDeRespuestas[i].text);
+        fd.append(
+          "answers[" + i + "].isCorrect",
+          this.listaDeRespuestas[i].isCorrect
+        );
+        fd.append("answers[" + i + "].image", this.listaDeRespuestas[i].image);
+      }
+      // this.listaDeRespuestas.forEach((element) => {
+      //   var imgFd = new FormData();
+      //   imgFd.append("text", element.text);
+      //   imgFd.append("isCorrect", element.isCorrect);
+      //   imgFd.append("image", element.image, element.image.name);
+      //   this.listaDeRespuestasImagenes.push(imgFd);
+      // });
       this.showLoading({
         title: "Accediendo a la información",
-        color: "secondary"
+        color: "secondary",
       });
       try {
         if (this.editPregunta) {
-          response = await axios.put(
-            `${this.$urlApi}Question`,
-            fd,
-            {
-              headers: {
-                "Content-Type": 'multipart/form-data',
-                Authorization: "Bearer " + sessionStorage.getItem("jwt")
-              }
-            }
-          );
+          response = await axios.put(`${this.$urlApi}Question`, fd, {
+            headers: {
+              "Content-Type": "multipart/form-data",
+              Authorization: "Bearer " + sessionStorage.getItem("jwt"),
+            },
+          });
         } else {
-          response = await axios.post(
-            `${this.$urlApi}Question`,
-            fd,
-            {
-              headers: {
-                "Content-Type": 'multipart/form-data',
-                Authorization: "Bearer " + sessionStorage.getItem("jwt")
-              }
-            }
-          );
+          response = await axios.post(`${this.$urlApi}Question`, fd, {
+            headers: {
+              "Content-Type": "multipart/form-data",
+              Authorization: "Bearer " + sessionStorage.getItem("jwt"),
+            },
+          });
         }
         if (response.data > 0) {
           this.$swal(
@@ -982,7 +999,7 @@ export default {
       this.listaDeRespuestas.push({
         text: "",
         imagen: "",
-        isCorrect: ""
+        isCorrect: "",
       });
     },
     save() {},
@@ -1003,9 +1020,11 @@ export default {
       this.listaDeRespuestas.splice(index, 1);
     },
     previewImage() {
-      this.itemModelPregunta.url= URL.createObjectURL(this.itemModelPregunta.image)
-    }
-  }
+      this.itemModelPregunta.url = URL.createObjectURL(
+        this.itemModelPregunta.image
+      );
+    },
+  },
 };
 </script>
 
