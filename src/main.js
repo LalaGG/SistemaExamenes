@@ -27,6 +27,7 @@ Vue.use(vuetify, {
 
 Vue.config.productionTip = false
 Vue.prototype.$urlApi = settings.urlApi
+Vue.prototype.$urlImage = settings.urlImage
 
 new Vue({
   router,

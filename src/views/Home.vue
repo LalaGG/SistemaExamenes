@@ -307,7 +307,7 @@
             </v-col>
             <v-col sm="12">
               <v-toolbar flat color="white">
-                <v-toolbar-title>Lista de Preguntas</v-toolbar-title>
+                <v-toolbar-title>Lista de Respuestas</v-toolbar-title>
                 <v-spacer></v-spacer>
                 <v-icon large color="blue" @click="AgregarLineaVacia"
                   >add</v-icon
@@ -377,10 +377,12 @@
                     <template v-slot:input>
                       <v-text-field
                         v-model="props.item.isCorrect"
+                        type="number"
+                        :min="0"
+                        :max="1"
                         label="¿Es la respuesta correcta?"
-                        single-line
+                        hint="0: incorrecta, 1: correcta"
                         :rules="[rules.trueOrFalse]"
-                        hint="1: correcta , 0: incorrecta"
                         persistent-hint
                       ></v-text-field>
                     </template>
@@ -522,7 +524,7 @@ export default {
       idTestPart: "",
       type: "",
       text: "",
-      image: "",
+      image: null,
       score: "",
       timeLimit: "",
       url: "",
@@ -762,10 +764,18 @@ export default {
         this.itemModelPregunta.id = item.id;
         this.itemModelPregunta.text = item.text;
         this.itemModelPregunta.type = item.type;
-        // this.itemModelPregunta.image = item.image;
+        this.itemModelPregunta.image = null;
+        this.itemModelPregunta.url = `${this.$urlImage}${item.image}`
         this.itemModelPregunta.score = item.score;
         this.itemModelPregunta.timeLimit = item.timeLimit;
-        this.listaDeRespuestas = Object.assign([], item.answers);
+        item.answers.forEach(element => {
+          this.listaDeRespuestas.push({
+            text : element.text,
+            url : `${this.$urlImage}${element.image}`,
+            image : null,
+            isCorrect : element.isCorrect            
+          })
+        });
         this.dialogPregunta = true;
       }
     },
@@ -790,7 +800,7 @@ export default {
             "La pregunta ha sido eliminado con éxito",
             "success"
           );
-          this.ListarPreguntas(this.itemModelSeccion.idTestPart);
+          this.ListarPregunta(this.itemModelPregunta.idTestPart);
         } else {
           this.$swal(
             "¡Error!",
@@ -915,11 +925,16 @@ export default {
         element.isCorrect = element.isCorrect == "1" ? true : false;
       });
       const fd = new FormData();
+      this.itemModelPregunta.image != '' ? 
       fd.append(
         "image",
         this.itemModelPregunta.image,
         this.itemModelPregunta.image.name
-      );
+      ) : 
+      fd.append(
+        "image",
+        "",
+      )
       fd.append("idTestPart", this.itemModelPregunta.idTestPart);
       fd.append("type", this.itemModelPregunta.type);
       fd.append("text", this.itemModelPregunta.text);
@@ -931,7 +946,11 @@ export default {
           "answers[" + i + "].isCorrect",
           this.listaDeRespuestas[i].isCorrect
         );
-        fd.append("answers[" + i + "].image", this.listaDeRespuestas[i].image);
+        this.listaDeRespuestas[i].image != '' ? 
+        fd.append("answers[" + i + "].image", this.listaDeRespuestas[i].image) 
+        :
+         fd.append("answers[" + i + "].image", "")
+        
       }
       this.showLoading({
         title: "Accediendo a la información",
@@ -939,9 +958,8 @@ export default {
       });
       try {
         if (this.editPregunta) {
-          response = await axios.put(`${this.$urlApi}Question`, fd, {
+          response = await axios.post(`${this.$urlApi}Question`, fd, {
             headers: {
-              "Content-Type": "multipart/form-data",
               Authorization: "Bearer " + sessionStorage.getItem("jwt"),
             },
           });
@@ -991,11 +1009,20 @@ export default {
     CerrarPregunta() {
       this.dialogPregunta = false;
       this.editPregunta = false;
+      this.itemModelPregunta.type = ""
+      this.itemModelPregunta.text = ""
+      this.itemModelPregunta.image = null
+      this.itemModelPregunta.score = ""
+      this.itemModelPregunta.timeLimit = ""
+      this.itemModelPregunta.url = ""
+      this.itemModelPregunta.answers = []
+      this.listaDeRespuestas = []
+
     },
     AgregarLineaVacia() {
       this.listaDeRespuestas.push({
         text: "",
-        image: "",
+        image: null,
         isCorrect: "",
         url : ""
       });
@@ -1012,6 +1039,9 @@ export default {
         } else {
           this.existeCorrecta = false;
         }
+      }
+      if(value > 1){
+        this.listaDeRespuestas[index].isCorrect = 0
       }
     },
     eliminarRespuesta(index) {

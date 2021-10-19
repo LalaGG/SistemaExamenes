@@ -44,7 +44,7 @@
                         style="border: 2px solid black; padding: 15px; justify-content: center; display: flex;"
                       >
                         <v-img
-                          :src="require('@/assets/png/' + `${item.imagen}`)"
+                          :src="`${this.$urlImage}${item.imagen}`"
                           width="50%"
                           aspect-ratio="1"
                         ></v-img>
