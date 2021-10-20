@@ -207,8 +207,9 @@ export default {
     async startTimer() {
       this.cronometroInicio = false
       try {
+          var token = sessionStorage.getItem("jwt")
           let response = await axios.post(
-            `${this.$urlApi}Test/submit`, {},
+            `${this.$urlApi}Test/submit`, {token},
             {
               headers: {
                 "Content-Type": "application/json",
@@ -228,9 +229,13 @@ export default {
         color: "secondary",
       });
       try {
+          var listaToken = {
+            token: sessionStorage.getItem("jwt"),
+            lista : this.listaDePreguntas
+          }
           let response = await axios.post(
             `${this.$urlApi}Test/finish`,
-            this.listaDePreguntas,
+            listaToken,
             {
               headers: {
                 "Content-Type": "application/json",
