@@ -1,5 +1,54 @@
 <template>
-  <v-container fluid class="container-personalizado" v-if="true">
+
+  <v-container class="container-personalizado"  v-if="this.$session.get('user').userType != 'adm'">   
+    <BarraNavegacion />
+    <v-row class="justify-center pt-5">
+      <v-card class="pa-5">
+        <p class="text-h2">BIENVENIDO A L SISTEMA DE EXÁMENES DEL INSTITUTO NACIONAL DE OFTALMOLOGÍA</p>
+          <p class="text-h4">Pasos para rendir el exámen</p>
+          <v-divider></v-divider>
+          <ol class="pt-5">
+            <li class="text-h5"> 
+              Dar click en el botón "Comenzar Exámen".
+            </li>
+            <li class="text-h5"> 
+              En la siguiente pantalla, seleccionar el nombre del exámen que va a rendir. El tiempo empezara a correr desde ese momento.
+            </li>
+            <li class="text-h5"> 
+              Lea con detenimiento las preguntas y seleccione solo una de las respuestas.
+            </li>
+            <li class="text-h5"> 
+              Al finalizar de responder las preguntas de click en el boton que se encuentra en la parte inferior con nombre "Finalizar Exámen"
+            </li>
+            <li class="text-h5"> 
+              Espere un momento para obtener su nota. De tener una nota aprobatoria se hara envío del certificado al correo con el que se registro.
+            </li>
+          </ol>
+          <p class="text-h4"></p>
+          <v-divider class="pb-2"></v-divider>
+          <p class="text-h4">Observaciones</p>
+          <v-divider></v-divider>
+          <ul class="pb-5">
+            <li class="text-h5"> 
+              Si presiona mas de 1 vez el nombre del exámen el tiempo ira mas rápido por favor tener presente y solo dar un click
+            </li>
+            <li class="text-h5"> 
+              Si el cronómetro a comenzado a descender cualquier acción que realice para salir de la página del exámen contará como exámen terminado asi no haya marcado nada.
+            </li>
+          </ul>
+          <v-btn 
+            @click="IngresarAlExamen" 
+            block
+            color="primary"
+            elevation="15"
+            x-large>
+            Comenzar Exámen
+          </v-btn>
+      </v-card>
+    </v-row>
+  </v-container>
+
+  <v-container fluid class="container-personalizado" v-else>
     <BarraNavegacion />
     <v-row>
       <v-col sm12>
@@ -287,11 +336,9 @@
                   <v-text-field
                     v-model="itemModelPregunta.timeLimit"
                     type="number"
-                    label="Tiempo Límite"
+                    label="Tiempo Límite en minutos"
                     filled
                     outlined
-                    hint="El tiempo está en minutos"
-                    persistent-hint
                     hide-details
                   ></v-text-field>
                 </v-col>
@@ -405,8 +452,7 @@
       </v-card>
     </v-dialog>
   </v-container>
-
-  <v-container v-else> </v-container>
+  
 </template>
 
 <script>
@@ -522,6 +568,7 @@ export default {
     editSeccion: false,
     itemModelPregunta: {
       idTestPart: "",
+      id: 0,
       type: "",
       text: "",
       image: null,
@@ -582,6 +629,9 @@ export default {
   },
   methods: {
     ...mapMutations(["showLoading", "hideLoading", "showNotification"]),
+    IngresarAlExamen(){
+      this.$router.push("/Examen/Principal");
+    },
     LimpiarIds() {
       this.itemModelSeccion.idTestModule = 0;
       this.itemModelPregunta.idTestPart = 0;
@@ -772,7 +822,7 @@ export default {
           this.listaDeRespuestas.push({
             text: element.text,
             url: `${this.$urlImage}${element.image}`,
-            image: null,
+            image: "",
             isCorrect: element.isCorrect,
           });
         });
@@ -1000,6 +1050,7 @@ export default {
     CerrarPregunta() {
       this.dialogPregunta = false;
       this.editPregunta = false;
+      this.itemModelPregunta.id = 0;
       this.itemModelPregunta.type = "";
       this.itemModelPregunta.text = "";
       this.itemModelPregunta.image = null;
