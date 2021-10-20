@@ -1,46 +1,72 @@
 <template>
   <v-container fluid>
     <v-row no-gutters class="d-flex align-content-center flex-wrap">
-              <div class="base-timer">
-                <svg class="base-timer__svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                  <g class="base-timer__circle">
-                    <circle class="base-timer__path-elapsed" cx="50" cy="50" r="45"></circle>
-                    <path
-                      :stroke-dasharray="circleDasharray"
-                      class="base-timer__path-remaining"
-                      :class="remainingPathColor"
-                      d="
+      <div class="base-timer">
+        <svg
+          class="base-timer__svg"
+          viewBox="0 0 100 100"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <g class="base-timer__circle">
+            <circle
+              class="base-timer__path-elapsed"
+              cx="50"
+              cy="50"
+              r="45"
+            ></circle>
+            <path
+              :stroke-dasharray="circleDasharray"
+              class="base-timer__path-remaining"
+              :class="remainingPathColor"
+              d="
                         M 50, 50
                         m -45, 0
                         a 45,45 0 1,0 90,0
                         a 45,45 0 1,0 -90,0
                       "
-                    ></path>
-                  </g>
-                </svg>
-                <span class="base-timer__label">{{ formattedTimeLeft }}</span>
-              </div>
+            ></path>
+          </g>
+        </svg>
+        <span class="base-timer__label">{{ formattedTimeLeft }}</span>
+      </div>
       <v-col sm="10">
         <v-stepper v-model="e1">
           <v-stepper-header>
-            <template v-for="(modulo, index) in listaDePreguntas.testModules"> 
-              <v-stepper-step @click="startTimer()" :key="modulo.id" :editable="cronometroInicio" :step="index+1">
+            <template v-for="(modulo, index) in listaDePreguntas.testModules">
+              <v-stepper-step
+                @click="startTimer()"
+                :key="modulo.id"
+                :editable="cronometroInicio"
+                :step="index + 1"
+              >
                 {{ modulo.name }}
               </v-stepper-step>
               <v-divider :key="index"></v-divider>
             </template>
-            
           </v-stepper-header>
 
           <v-stepper-items>
-            <v-stepper-content v-for="(modulo, index) in listaDePreguntas.testModules"  :key="modulo.id" :step="index+1">
-              <v-card class="mb-12" v-for="(secciones, index) in modulo.testParts" :key="index+1">
+            <v-stepper-content
+              v-for="(modulo, index) in listaDePreguntas.testModules"
+              :key="modulo.id"
+              :step="index + 1"
+            >
+              <v-card
+                class="mb-12"
+                v-for="(secciones, index) in modulo.testParts"
+                :key="index + 1"
+              >
                 <h1>{{ secciones.name }}</h1>
                 <h3>{{ secciones.description }}</h3>
                 <v-row>
-                  <v-col sm="3" v-for="(preguntas, index) in secciones.questions" :key="index+1">
+                  <v-col
+                    sm="3"
+                    v-for="(preguntas, index) in secciones.questions"
+                    :key="index + 1"
+                  >
                     <v-card-text>
-                      <div v-if="preguntas.text != ''"
+                      <div
+                        v-if="preguntas.text != ''"
                         style="border: 2px solid black; padding: 15px; text-align: center;"
                       >
                         <h1>{{ preguntas.text }}</h1>
@@ -48,7 +74,7 @@
 
                       <v-radio-group v-model="preguntas.idSelectedAnswer">
                         <v-radio
-                          v-for="(n) in preguntas.answers"
+                          v-for="n in preguntas.answers"
                           :key="n.id"
                           :label="n.text"
                           :value="n.id"
@@ -68,7 +94,7 @@
       </v-col>
     </v-row>
 
-    <v-dialog v-model="resultadoDialog" persistent max-width="800" >
+    <v-dialog v-model="resultadoDialog" persistent max-width="800">
       <v-toolbar color="primary" dark>
         <v-toolbar-title>
           Resultado
@@ -77,27 +103,26 @@
       <v-card class="py-5">
         <v-card-text>
           <v-row class="justify-center">
-            <p class="text-h2">{{itemModelNota.approved ? 'Aprobado' : 'Desaprobado'}}</p>
+            <p class="text-h2">
+              {{ itemModelNota.approved ? "Aprobado" : "Desaprobado" }}
+            </p>
           </v-row>
           <v-row class="justify-center">
-            <p style="font-weight: 800;" class="text-h3">Nota: {{itemModelNota.totalScore}}</p>
+            <p style="font-weight: 800;" class="text-h3">
+              Nota: {{ itemModelNota.totalScore }}
+            </p>
           </v-row>
           <v-row class="justify-center">
-            <v-btn
-            class="ma-3"
-            @click="EnviarCorreo"
-            color="primary"
-          >Enviar Certificado</v-btn>
-          <v-btn
-            class="ma-3"
-            @click="SalirDelSistema"
-            color="error"
-          >Salir del Sistema</v-btn>
+            <v-btn class="ma-3" @click="EnviarCorreo" color="primary"
+              >Enviar Certificado</v-btn
+            >
+            <v-btn class="ma-3" @click="SalirDelSistema" color="error"
+              >Salir del Sistema</v-btn
+            >
           </v-row>
         </v-card-text>
       </v-card>
     </v-dialog>
-
   </v-container>
 </template>
 
@@ -111,24 +136,23 @@ const ALERT_THRESHOLD = 5;
 
 const COLOR_CODES = {
   info: {
-    color: "green"
+    color: "green",
   },
   warning: {
     color: "orange",
-    threshold: WARNING_THRESHOLD
+    threshold: WARNING_THRESHOLD,
   },
   alert: {
     color: "red",
-    threshold: ALERT_THRESHOLD
-  }
+    threshold: ALERT_THRESHOLD,
+  },
 };
-
 
 export default {
   data() {
     return {
       itemModelNota: {
-        approved : true,
+        approved: true,
         totalScore: 14,
       },
       e1: 0,
@@ -138,7 +162,7 @@ export default {
       timePassed: 0,
       timerInterval: null,
       cronometroInicio: true,
-      resultadoDialog : false
+      resultadoDialog: false,
     };
   },
   created() {
@@ -182,41 +206,40 @@ export default {
       } else {
         return info.color;
       }
-    } 
+    },
   },
   watch: {
     timeLeft(newValue) {
       if (newValue === 0) {
         this.onTimesUp();
       }
-    }
+    },
   },
   methods: {
     ...mapMutations(["showLoading", "hideLoading", "showNotification"]),
-    EnviarCorreo(){
-
-    },
-    SalirDelSistema(){
-      sessionStorage.clear()
-      this.$session.destroy()
-      this.$router.push('/Login')
+    EnviarCorreo() {},
+    SalirDelSistema() {
+      sessionStorage.clear();
+      this.$session.destroy();
+      this.$router.push("/Login");
     },
     onTimesUp() {
       clearInterval(this.timerInterval);
     },
     async startTimer() {
-      this.cronometroInicio = false
+      this.cronometroInicio = false;
       try {
-          var token = sessionStorage.getItem("jwt")
-          let response = await axios.post(
-            `${this.$urlApi}Test/submit`, {token},
-            {
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: "Bearer " + sessionStorage.getItem("jwt"),
-              },
-            }
-          );
+        var token = sessionStorage.getItem("jwt");
+        let response = await axios.post(
+          `${this.$urlApi}Test/submit`,
+          { token },
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + sessionStorage.getItem("jwt"),
+            },
+          }
+        );
       } catch (error) {
         console.log(error);
       }
@@ -229,24 +252,24 @@ export default {
         color: "secondary",
       });
       try {
-          var listaToken = {
-            token: sessionStorage.getItem("jwt"),
-            lista : this.listaDePreguntas
+        var listaToken = {
+          token: sessionStorage.getItem("jwt"),
+          testModules: this.listaDePreguntas.testModules,
+        };
+        let response = await axios.post(
+          `${this.$urlApi}Test/finish`,
+          listaToken,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + sessionStorage.getItem("jwt"),
+            },
           }
-          let response = await axios.post(
-            `${this.$urlApi}Test/finish`,
-            listaToken,
-            {
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: "Bearer " + sessionStorage.getItem("jwt"),
-              },
-            }
-          );
+        );
         if (response.data > 0) {
-          this.itemModelNota. approved = response.data.approved
-          this.itemModelNota.totalScore = response.data.totalScore
-          this.resultadoDialog = true
+          this.itemModelNota.approved = response.data.approved;
+          this.itemModelNota.totalScore = response.data.totalScore;
+          this.resultadoDialog = true;
         } else {
           this.$swal(
             "¡Error!",
@@ -263,31 +286,31 @@ export default {
     async ListarExamen() {
       this.showLoading({
         title: "Accediendo a la información",
-        color: "secondary"
+        color: "secondary",
       });
       try {
         let response = await axios.get(`${this.$urlApi}Test`, {
           headers: {
             "Content-Type": "application/json",
-            Authorization: "Bearer " + sessionStorage.getItem("jwt")
-          }
+            Authorization: "Bearer " + sessionStorage.getItem("jwt"),
+          },
         });
         this.listaDePreguntas = response.data;
-        this.listaDePreguntas.testModules.forEach(m => {
-          m.testParts.forEach( s =>{
-            s.questions.forEach( p => {
-                this.sumaMinutos = Number(this.sumaMinutos) + Number(p.timeLimit)
+        this.listaDePreguntas.testModules.forEach((m) => {
+          m.testParts.forEach((s) => {
+            s.questions.forEach((p) => {
+              this.sumaMinutos = Number(this.sumaMinutos) + Number(p.timeLimit);
             });
           });
         });
-        this.sumaMinutos = this.sumaMinutos * 60
+        this.sumaMinutos = this.sumaMinutos * 60;
       } catch (error) {
         console.log(error);
       } finally {
         this.hideLoading();
       }
-    }
-  }
+    },
+  },
 };
 </script>
 
