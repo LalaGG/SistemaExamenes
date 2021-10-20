@@ -266,7 +266,7 @@ export default {
             },
           }
         );
-        if (response.data > 0) {
+        if (response.data) {
           this.itemModelNota.approved = response.data.approved;
           this.itemModelNota.totalScore = response.data.totalScore;
           this.resultadoDialog = true;
