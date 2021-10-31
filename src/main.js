@@ -10,6 +10,10 @@ import {settings} from './config.js'
 import 'sweetalert2/dist/sweetalert2.min.css'
 import 'material-design-icons-iconfont/dist/material-design-icons.css'
 import IdleVue from 'idle-vue'
+import Vuex from 'vuex'
+import { TiptapVuetifyPlugin } from 'tiptap-vuetify'
+import 'tiptap-vuetify/dist/main.css'
+import 'vuetify/dist/vuetify.min.css'
 
 const eventsHub = new Vue()
 Vue.use(IdleVue, {
@@ -20,13 +24,20 @@ Vue.use(IdleVue, {
 Vue.use(VueSweetalert2)
 Vue.use(axios)
 Vue.use(VueSession)
+Vue.use(Vuex);
 
 Vue.use(vuetify, {
   iconfont: 'md'
 })
 
+Vue.use(TiptapVuetifyPlugin, {
+  vuetify, // same as "vuetify: vuetify"
+  iconsGroup: 'md'
+})
+
 Vue.config.productionTip = false
 Vue.prototype.$urlApi = settings.urlApi
+Vue.prototype.$urlApiInvision = settings.urlApiInvision
 Vue.prototype.$urlImage = settings.urlImage
 
 new Vue({

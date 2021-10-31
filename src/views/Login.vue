@@ -1,9 +1,11 @@
 <template>
-  <v-container fluid fill-height class="container-personalizado">
+
+  <v-container fluid :style="{'height' : '100vh','background-image': `url(${require('@/assets/png/fondo_exam.jpg')})`, 'background-size': 'cover'}">
     <v-layout align-center justify-center>
       <v-flex xs12 sm6 md3>
         <v-card class="elevation-20 login-box">
-          <!-- <img src="@/assets/png/logo-grade.png" class="avatar" /> -->
+          <img src="../assets/png/logo_invision.png" class="avatar" />
+          <v-toolbar-title class="pl-10 display-1"><b>Evaluaciones</b></v-toolbar-title>
           <v-card-text>
             <v-form v-model="valid" ref="form" lazy-validation>
               <v-text-field
@@ -97,33 +99,25 @@ export default {
 </script>
 
 <style scoped>
-.login-box {
-  background: rgba(204, 205, 0, 0.5);
-  color: #031781;
-  top: 50%;
-  left: 50%;
-  position: absolute;
-  transform: translate(-50%, -50%);
-  box-sizing: border-box;
-  padding: 40px 30px;
+.login-box{
+    width: 330px;
+    height: 350px;
+    background: rgba(110, 201, 211, 0.5);
+    color: #031781;
+    top: 50%;
+    left: 50%;
+    position: absolute;
+    transform: translate(-50%,-50%);
+    box-sizing: border-box;
+    padding: 70px 30px;
 }
-.avatar {
-  width: 544px;
-  height: 215px;
-  position: absolute;
-  top: -130px;
-  left: -110px;
-  -webkit-transform: scale(0.5);
-  transform: scale(0.5);
-}
-.container-personalizado {
-  background: white;
-  /* background: linear-gradient(
-    0deg,
-    rgba(204, 205, 0, 1) 0%,
-    rgba(10, 74, 0, 1) 100%
-  ); */
-  background-size: 100%;
-  background-size: cover;
+.avatar{
+    width: 544px;
+    height: 215px;
+    position: absolute;
+    top: -100px;
+    left: -110px;
+    -webkit-transform: scale(0.5);
+    transform: scale(0.5);
 }
 </style>

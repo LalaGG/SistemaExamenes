@@ -29,7 +29,7 @@
         </svg>
         <span class="base-timer__label">{{ formattedTimeLeft }}</span>
       </div>
-      <v-col sm="10">
+      <v-col sm="12" md="10">
         <v-stepper v-model="e1">
           <v-stepper-header>
             <template v-for="(modulo, index) in listaDePreguntas.testModules">
@@ -85,7 +85,7 @@
                 </v-row>
               </v-card>
 
-              <v-btn color="primary" @click="terminarPrueba">
+              <v-btn :disabled="bloquearGuardar" color="primary" @click="terminarPrueba">
                 Finalizar el Exámen
               </v-btn>
             </v-stepper-content>
@@ -113,7 +113,7 @@
             </p>
           </v-row>
           <v-row class="justify-center">
-            <v-btn class="ma-3" @click="EnviarCorreo" color="primary"
+            <v-btn class="ma-3" @click="EnviarCorreo" color="primary" v-show="itemModelNota.approved" 
               >Enviar Certificado</v-btn
             >
             <v-btn class="ma-3" @click="SalirDelSistema" color="error"
@@ -163,6 +163,7 @@ export default {
       timerInterval: null,
       cronometroInicio: true,
       resultadoDialog: false,
+      bloquearGuardar :  false,
     };
   },
   created() {
@@ -217,7 +218,38 @@ export default {
   },
   methods: {
     ...mapMutations(["showLoading", "hideLoading", "showNotification"]),
-    EnviarCorreo() {},
+    async EnviarCorreo() {
+      try {
+        let itemCertificado = {
+          idUser : this.$session.get('user').idUser
+        }
+        let response = await axios.post(
+          `${this.$urlApiInvision}Evaluacion/EnviarCertificadoEvaluacionEscrita`,
+          itemCertificado,
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        this.respuestaBD = response.data
+        if(this.respuestaBD.id > 0){
+          this.$swal(
+                  '¡Enviado!',
+                  this.respuestaBD.mensaje,
+                  'success')
+                 this.SalirDelSistema() 
+        } else {
+          this.$swal(
+                '¡Error!',
+                this.respuestaBD.mensaje,
+                'warning')
+        }
+      } catch (error) {
+        console.log(error);
+      }
+      this.timerInterval = setInterval(() => (this.timePassed += 1), 1000);
+    },
     SalirDelSistema() {
       sessionStorage.clear();
       this.$session.destroy();
@@ -243,9 +275,7 @@ export default {
         if (response.data > 0) {
           console.log('Exámen iniciando de manera correcta')
         } else {
-          this.$swal(
             console.log('ha habido un error al iniciar el exámen')
-          );
         }
       } catch (error) {
         console.log(error);
@@ -253,6 +283,7 @@ export default {
       this.timerInterval = setInterval(() => (this.timePassed += 1), 1000);
     },
     async terminarPrueba() {
+      this.bloquearGuardar = true
       clearInterval(this.timerInterval);
       this.showLoading({
         title: "Accediendo a la información",
@@ -276,7 +307,7 @@ export default {
         if (response.data) {
           this.itemModelNota.approved = response.data.approved;
           this.itemModelNota.totalScore = response.data.totalScore;
-          this.resultadoDialog = true;
+          this.resultadoDialog = true ;
         } else {
           this.$swal(
             "¡Error!",
@@ -328,6 +359,7 @@ export default {
   right: 1em;
   width: 200px;
   height: 200px;
+  
 
   &__svg {
     transform: scaleX(-1);
@@ -374,6 +406,25 @@ export default {
     align-items: center;
     justify-content: center;
     font-size: 48px;
+  }
+}
+
+@media (max-width: 768px) {
+  /* For mobile phones: */
+  .base-timer {
+    position: absolute;
+    right: 5%;
+    top: 6%;
+    width: 90px;
+    height: 90px;
+    z-index: 100;
+
+    &__label {
+      position: absolute;
+      width: 90px;
+      height: 90px;
+      font-size: 25px;
+    }
   }
 }
 </style>

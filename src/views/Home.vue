@@ -4,48 +4,82 @@
     <BarraNavegacion />
     <v-row class="justify-center pt-5">
       <v-card class="pa-5">
-        <p class="text-h2">BIENVENIDO A L SISTEMA DE EXÁMENES DEL INSTITUTO NACIONAL DE OFTALMOLOGÍA</p>
-          <p class="text-h4">Pasos para rendir el exámen</p>
+        <p class="text-h4">BIENVENIDO AL SISTEMA DE EXÁMENES DEL INSTITUTO NACIONAL DE OFTALMOLOGÍA</p>
+          <p class="text-h5">Pasos para rendir el examen</p>
           <v-divider></v-divider>
           <ol class="pt-5">
-            <li class="text-h5"> 
-              Dar click en el botón "Comenzar Exámen".
+            <li class="text-h6"> 
+              Al iniciar el examen lea con detenimiento las preguntas y seleccione solo una de las respuestas.
             </li>
-            <li class="text-h5"> 
-              En la siguiente pantalla, seleccionar el nombre del exámen que va a rendir. El tiempo empezara a correr desde ese momento.
+            <li class="text-h6"> 
+              Al finalizar haga click en el boton "Finalizar Exámen"
             </li>
-            <li class="text-h5"> 
-              Lea con detenimiento las preguntas y seleccione solo una de las respuestas.
-            </li>
-            <li class="text-h5"> 
-              Al finalizar de responder las preguntas de click en el boton que se encuentra en la parte inferior con nombre "Finalizar Exámen"
-            </li>
-            <li class="text-h5"> 
-              Espere un momento para obtener su nota. De tener una nota aprobatoria se hara envío del certificado al correo con el que se registro.
+            <li class="text-h6"> 
+              Espere un momento para obtener su nota. De tener una nota aprobatoria se le enviará el certificado al correo con el que se registró.
             </li>
           </ol>
-          <p class="text-h4"></p>
           <v-divider class="pb-2"></v-divider>
-          <p class="text-h4">Observaciones</p>
+          <p class="text-h5">Observaciones</p>
           <v-divider></v-divider>
-          <ul class="pb-5">
-            <li class="text-h5"> 
-              Si presiona mas de 1 vez el nombre del exámen el tiempo ira mas rápido por favor tener presente y solo dar un click
-            </li>
-            <li class="text-h5"> 
-              Si el cronómetro a comenzado a descender cualquier acción que realice para salir de la página del exámen contará como exámen terminado asi no haya marcado nada.
-            </li>
-          </ul>
-          <v-btn 
-            @click="IngresarAlExamen" 
-            block
-            color="primary"
-            elevation="15"
-            x-large>
-            Comenzar Exámen
-          </v-btn>
+          <v-row>
+            <v-col sm="12">
+               <ul class="pb-5">
+                <li class="text-h6"> 
+                  Si presiona más de 1 vez el nombre del examen el tiempo irá más rápido por favor tener presente y solo dar un click
+                </li>
+                <li class="text-h6" style="color:red;font-weight:800"> 
+                  Si el cronómetro ha comenzado a descender cualquier acción que realice para salir de la página del exámen, el sistema validará como exámen terminado, así no haya marcado nada.
+                </li>
+              </ul>
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col sm="4"></v-col>
+            <v-col sm="4">
+              <v-btn 
+                @click="IngresarAlExamen" 
+                block
+                color="primary"
+                elevation="15"
+                x-large
+                style="font-size: xx-large;">
+               Iniciar Exámen
+              </v-btn>
+            </v-col>
+            <v-col sm="4"></v-col>
+          </v-row>
       </v-card>
     </v-row>
+
+    <v-dialog v-model="resultadoDialog" persistent max-width="800">
+      <v-toolbar color="primary" dark>
+        <v-toolbar-title>
+          Resultado
+        </v-toolbar-title>
+      </v-toolbar>
+      <v-card class="py-5">
+        <v-card-text>
+          <v-row class="justify-center">
+            <p class="text-h2">
+              {{ Number(itemModelNota.totalScore) >= 14 ? "Aprobado" : "Desaprobado" }}
+            </p>
+          </v-row>
+          <v-row class="justify-center">
+            <p style="font-weight: 800;" class="text-h3">
+              Nota: {{ itemModelNota.totalScore }}
+            </p>
+          </v-row>
+          <v-row class="justify-center">
+            <v-btn class="ma-3" @click="EnviarCorreo" color="primary" v-show=" Number(itemModelNota.totalScore) >= 14" 
+              >Enviar Certificado</v-btn
+            >
+            <v-btn class="ma-3" @click="SalirDelSistema" color="error"
+              >Salir del Sistema</v-btn
+            >
+          </v-row>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
   </v-container>
 
   <v-container fluid class="container-personalizado" v-else>
@@ -145,8 +179,9 @@
                 >
                   <template v-slot:items="props">
                     <tr>
-                      <td>{{ props.item.idTestModule }}</td>
+                      <td>{{ props.item.testModuleName }}</td>
                       <td>{{ props.item.name }}</td>
+                      <td>{{ props.item.Instructions }}</td>
                     </tr>
                   </template>
                   <template v-slot:item.opciones="{ item }">
@@ -174,6 +209,7 @@
                   ></v-text-field>
                   <v-spacer></v-spacer>
                   <v-btn dark color="primary" @click="abrirDialogPregunta"
+                  v-show="itemModelPregunta.idTestPart > 0"
                     >Nueva Pregunta</v-btn
                   >
                 </v-toolbar>
@@ -185,8 +221,9 @@
                 >
                   <template v-slot:items="props">
                     <tr>
+                      <td>{{ props.item.testPartName }}</td>
                       <td>{{ props.item.type }}</td>
-                      <td>{{ props.item.text }}</td>
+                      <td>{{ props.item.value }}</td>
                       <td>{{ props.item.image }}</td>
                       <td>{{ props.item.score }}</td>
                       <td>{{ props.item.timeLimit }}</td>
@@ -258,6 +295,15 @@
               >
               </v-text-field>
             </v-col>
+            <v-col sm="6"></v-col>
+            <v-col class="pt-5" sm="12">
+              <v-textarea
+                v-model="itemModelSeccion.instructions"
+                type="text"
+                label="Instrucciones de la Sección"
+              >
+              </v-textarea>
+            </v-col>
           </v-row>
           <v-row>
             <v-col sm="12">
@@ -286,9 +332,27 @@
         <v-card-text class="pt-5">
           <v-row>
             <v-col sm="12">
-              <v-text-field
+              <v-textarea
+                v-model="itemModelPregunta.indications"
+                label="Indicaciones de la Pregunta"
+                filled
+                outlined
+                auto-grow
+                rows="4"
+                row-height="15"
+                hide-details
+              ></v-textarea>
+            </v-col>
+            <v-col sm="12">
+              <tiptap-vuetify
                 v-model="itemModelPregunta.text"
-                label="Texto Pregunta"
+                :extensions="extensions"
+              />
+            </v-col>
+            <v-col sm="12">
+              <v-text-field
+                v-model="itemModelPregunta.value"
+                label="Pregunta"
                 filled
                 outlined
                 placeholder="Ej: ¿Que simbolo patrio observas en la imagen?"
@@ -413,27 +477,10 @@
                   </v-edit-dialog>
                 </template>
                 <template v-slot:item.isCorrect="props">
-                  <v-edit-dialog
-                    :return-value.sync="props.item.isCorrect"
-                    @save="save(props.item.isCorrect, props.index)"
-                    @cancel="cancel"
-                    @open="open"
-                    @close="closeIsCorrect(props.item.isCorrect, props.index)"
-                  >
-                    {{ props.item.isCorrect }}
-                    <template v-slot:input>
-                      <v-text-field
-                        v-model="props.item.isCorrect"
-                        type="number"
-                        :min="0"
-                        :max="1"
-                        label="¿Es la respuesta correcta?"
-                        hint="0: incorrecta, 1: correcta"
-                        :rules="[rules.trueOrFalse]"
-                        persistent-hint
-                      ></v-text-field>
-                    </template>
-                  </v-edit-dialog>
+                  <v-simple-checkbox
+                    v-model="props.item.isCorrect"
+                    :ripple="false"
+                  ></v-simple-checkbox>
                 </template>
                 <template v-slot:item.opciones="{ item, index }">
                   <v-icon medium @click="eliminarRespuesta(index)">
@@ -451,6 +498,7 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+
   </v-container>
   
 </template>
@@ -459,6 +507,24 @@
 import axios from "axios";
 import { mapMutations } from "vuex";
 import BarraNavegacion from "../components/NavBar";
+import {
+  TiptapVuetify,
+  Heading,
+  Bold,
+  Italic,
+  Strike,
+  Underline,
+  Code,
+  Paragraph,
+  BulletList,
+  OrderedList,
+  ListItem,
+  Link,
+  Blockquote,
+  HardBreak,
+  HorizontalRule,
+  History
+} from "tiptap-vuetify";
 
 export default {
   name: "Home",
@@ -468,6 +534,7 @@ export default {
     dialogModulo: false,
     dialogSeccion: false,
     dialogPregunta: false,
+    resultadoDialog: false,
     search: "",
     search1: "",
     search2: "",
@@ -476,78 +543,90 @@ export default {
         text: "Nombre",
         align: "left",
         sortable: false,
-        value: "name",
+        value: "name"
       },
-      { text: "Opciones", align: "right", sortable: false, value: "opciones" },
+      { text: "Opciones", align: "right", sortable: false, value: "opciones" }
     ],
     headersSeccion: [
       {
-        text: "id Módulo",
+        text: "Módulo",
         align: "left",
         sortable: false,
-        value: "idTestModule",
+        value: "testModuleName"
       },
       {
         text: "Nombre",
         align: "left",
         sortable: false,
-        value: "name",
+        value: "name"
       },
-      { text: "Opciones", align: "right", sortable: false, value: "opciones" },
+      {
+        text: "Intrucciones",
+        align: "left",
+        sortable: false,
+        value: "instructions"
+      },
+      { text: "Opciones", align: "right", sortable: false, value: "opciones" }
     ],
     headersPreguntas: [
+      {
+        text: "Sección",
+        align: "left",
+        sortable: false,
+        value: "testPartName"
+      },
       {
         text: "Tipo Pregunta",
         align: "left",
         sortable: false,
-        value: "type",
+        value: "type"
       },
       {
         text: "Texto Pregunta",
         align: "left",
         sortable: false,
-        value: "text",
+        value: "value"
       },
       {
         text: "Imagen",
         align: "left",
         sortable: false,
-        value: "image",
+        value: "image"
       },
       {
         text: "Puntaje",
         align: "left",
         sortable: false,
-        value: "score",
+        value: "score"
       },
       {
         text: "Tiempo Límite",
         align: "left",
         sortable: false,
-        value: "timeLimit",
+        value: "timeLimit"
       },
-      { text: "Opciones", align: "right", sortable: false, value: "opciones" },
+      { text: "Opciones", align: "right", sortable: false, value: "opciones" }
     ],
     headersRespuestas: [
       {
         text: "Texto",
         align: "left",
         sortable: false,
-        value: "text",
+        value: "text"
       },
       {
         text: "Imagen",
         align: "left",
         sortable: false,
-        value: "image",
+        value: "image"
       },
       {
         text: "Es Correcta",
         align: "left",
         sortable: false,
-        value: "isCorrect",
+        value: "isCorrect"
       },
-      { text: "Opciones", align: "right", sortable: false, value: "opciones" },
+      { text: "Opciones", align: "right", sortable: false, value: "opciones" }
     ],
     listaDeModulos: [],
     listaDeSecciones: [],
@@ -556,7 +635,7 @@ export default {
     itemModelModulo: {
       id: "",
       name: "",
-      active: true,
+      active: true
     },
     editModulo: false,
     itemModelSeccion: {
@@ -564,6 +643,7 @@ export default {
       id: "",
       name: "",
       active: true,
+      instructions: ""
     },
     editSeccion: false,
     itemModelPregunta: {
@@ -571,48 +651,78 @@ export default {
       id: 0,
       type: "",
       text: "",
+      value: "",
       image: null,
       score: "",
       timeLimit: "",
       url: "",
-      answers: [],
+      indications: "",
+      answers: []
     },
     editPregunta: false,
     listaDeTiposPregunta: [
       {
         id: 1,
-        description: "Tipo: 1",
+        description: "Tipo: 1"
       },
       {
         id: 2,
-        description: "Tipo: 2",
+        description: "Tipo: 2"
       },
       {
         id: 3,
-        description: "Tipo: 3",
+        description: "Tipo: 3"
       },
       {
         id: 4,
-        description: "Tipo: 4",
+        description: "Tipo: 4"
       },
       {
         id: 5,
-        description: "Tipo: 5",
+        description: "Tipo: 5"
       },
       {
         id: 6,
-        description: "Tipo: 6",
-      },
+        description: "Tipo: 6"
+      }
     ],
     rules: {
-      trueOrFalse: (value) =>
-        value == 1 || value == 0 || "solo puede poner valor 0 y 1",
+      trueOrFalse: value =>
+        value == 1 || value == 0 || "solo puede poner valor 0 y 1"
     },
     existeCorrecta: false,
     listaDeRespuestasImagenes: [],
+    itemModelNota: {
+      totalScore: 0
+    },
+    extensions: [
+      History,
+      Blockquote,
+      Link,
+      Underline,
+      Strike,
+      Italic,
+      ListItem,
+      BulletList,
+      OrderedList,
+      [
+        Heading,
+        {
+          options: {
+            levels: [1, 2, 3]
+          }
+        }
+      ],
+      Bold,
+      Code,
+      HorizontalRule,
+      Paragraph,
+      HardBreak
+    ]
   }),
   components: {
     BarraNavegacion,
+    TiptapVuetify
   },
   created() {
     if (this.$session.exists()) {
@@ -620,8 +730,12 @@ export default {
       this.showNotification({
         message: this.usuario.message,
         color: "success",
-        icon: "check-circle",
+        icon: "check-circle"
       });
+      this.itemModelNota.totalScore = this.$session.get("user").totalScore;
+      if (this.$session.get("user").testFinish) {
+        this.resultadoDialog = true;
+      }
     } else {
       this.dialog = false;
     }
@@ -629,7 +743,43 @@ export default {
   },
   methods: {
     ...mapMutations(["showLoading", "hideLoading", "showNotification"]),
-    IngresarAlExamen(){
+    onUpdate(text) {
+      this.itemModelPregunta.text = text;
+    },
+    async EnviarCorreo() {
+      try {
+        let itemCertificado = {
+          idUser: this.$session.get("user").idUser
+        };
+        let response = await axios.post(
+          `${
+            this.$urlApiInvision
+          }Evaluacion/EnviarCertificadoEvaluacionEscrita`,
+          itemCertificado,
+          {
+            headers: {
+              "Content-Type": "application/json"
+            }
+          }
+        );
+        this.respuestaBD = response.data;
+        if (this.respuestaBD.id > 0) {
+          this.$swal("¡Enviado!", this.respuestaBD.mensaje, "success");
+          this.SalirDelSistema();
+        } else {
+          this.$swal("¡Error!", this.respuestaBD.mensaje, "warning");
+        }
+      } catch (error) {
+        console.log(error);
+      }
+      this.timerInterval = setInterval(() => (this.timePassed += 1), 1000);
+    },
+    SalirDelSistema() {
+      sessionStorage.clear();
+      this.$session.destroy();
+      this.$router.push("/Login");
+    },
+    IngresarAlExamen() {
       this.$router.push("/Examen/Principal");
     },
     LimpiarIds() {
@@ -647,14 +797,14 @@ export default {
     async ListarModulo() {
       this.showLoading({
         title: "Accediendo a la información",
-        color: "secondary",
+        color: "secondary"
       });
       try {
         let response = await axios.get(`${this.$urlApi}TestModule`, {
           headers: {
             "Content-Type": "application/json",
-            Authorization: "Bearer " + sessionStorage.getItem("jwt"),
-          },
+            Authorization: "Bearer " + sessionStorage.getItem("jwt")
+          }
         });
         this.listaDeModulos = response.data;
       } catch (error) {
@@ -673,39 +823,50 @@ export default {
       }
     },
     async eliminarModulo(item) {
-      this.showLoading({
-        title: "Accediendo a la información",
-        color: "secondary",
+      let alerta = await this.$swal({
+        title: `Está por eliminar las secciones y preguntas afiliadas al módulo. ¿Desea continuar?`,
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Sí, eliminar",
+        cancelButtonText: "Cancelar"
       });
-      try {
-        let response = await axios.delete(
-          `${this.$urlApi}TestModule/${item.id}`,
-          {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: "Bearer " + sessionStorage.getItem("jwt"),
-            },
+      if (alerta.value) {
+        this.showLoading({
+          title: "Accediendo a la información",
+          color: "secondary"
+        });
+        try {
+          let response = await axios.delete(
+            `${this.$urlApi}TestModule/${item.id}`,
+            {
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: "Bearer " + sessionStorage.getItem("jwt")
+              }
+            }
+          );
+          if (response.data > 0) {
+            this.$swal(
+              "Eliminado!",
+              "El módulo ha sido eliminado con éxito",
+              "success"
+            );
+            this.ListarModulo();
+          } else {
+            this.$swal(
+              "¡Error!",
+              "El módulo no ha sido eliminado correctamente, comuniquese con soporte",
+              "error"
+            );
           }
-        );
-        if (response.data > 0) {
-          this.$swal(
-            "Eliminado!",
-            "El módulo ha sido eliminado con éxito",
-            "success"
-          );
-          this.ListarModulo();
-        } else {
-          this.$swal(
-            "¡Error!",
-            "El módulo no ha sido eliminado correctamente, comuniquese con soporte",
-            "error"
-          );
+          this.e1 = 1;
+        } catch (error) {
+          console.log(error);
+        } finally {
+          this.hideLoading();
         }
-        this.e1 = 1;
-      } catch (error) {
-        console.log(error);
-      } finally {
-        this.hideLoading();
       }
     },
     AsignarSeccion(item) {
@@ -719,7 +880,7 @@ export default {
     async ListarSeccion(idTestModule) {
       this.showLoading({
         title: "Accediendo a la información",
-        color: "secondary",
+        color: "secondary"
       });
       try {
         let response = await axios.get(
@@ -727,8 +888,8 @@ export default {
           {
             headers: {
               "Content-Type": "application/json",
-              Authorization: "Bearer " + sessionStorage.getItem("jwt"),
-            },
+              Authorization: "Bearer " + sessionStorage.getItem("jwt")
+            }
           }
         );
         this.listaDeSecciones = response.data;
@@ -744,43 +905,55 @@ export default {
         this.itemModelSeccion.id = item.id;
         this.itemModelSeccion.name = item.name;
         this.itemModelSeccion.active = item.active;
+        this.itemModelSeccion.instructions = item.instructions;
         this.dialogSeccion = true;
       }
     },
     async eliminarSeccion(item) {
-      this.showLoading({
-        title: "Accediendo a la información",
-        color: "secondary",
+      let alerta = await this.$swal({
+        title: `Está por eliminar las preguntas afiliadas a la sección. ¿Desea continuar?`,
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Sí, eliminar",
+        cancelButtonText: "Cancelar"
       });
-      try {
-        let response = await axios.delete(
-          `${this.$urlApi}TestPart/${item.id}`,
-          {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: "Bearer " + sessionStorage.getItem("jwt"),
-            },
+      if (alerta.value) {
+        this.showLoading({
+          title: "Accediendo a la información",
+          color: "secondary"
+        });
+        try {
+          let response = await axios.delete(
+            `${this.$urlApi}TestPart/${item.id}`,
+            {
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: "Bearer " + sessionStorage.getItem("jwt")
+              }
+            }
+          );
+          if (response.data > 0) {
+            this.$swal(
+              "Eliminado!",
+              "La Sección ha sido eliminada con éxito",
+              "success"
+            );
+            this.ListarSeccion(this.itemModelSeccion.idTestModule);
+          } else {
+            this.$swal(
+              "¡Error!",
+              "La Sección no ha sido eliminada correctamente, comuniquese con soporte",
+              "error"
+            );
           }
-        );
-        if (response.data > 0) {
-          this.$swal(
-            "Eliminado!",
-            "La Sección ha sido eliminada con éxito",
-            "success"
-          );
-          this.ListarSeccion(this.itemModelSeccion.idTestModule);
-        } else {
-          this.$swal(
-            "¡Error!",
-            "La Sección no ha sido eliminada correctamente, comuniquese con soporte",
-            "error"
-          );
+          this.e1 = 2;
+        } catch (error) {
+          console.log(error);
+        } finally {
+          this.hideLoading();
         }
-        this.e1 = 2;
-      } catch (error) {
-        console.log(error);
-      } finally {
-        this.hideLoading();
       }
     },
     abrirDialogPregunta() {
@@ -789,7 +962,7 @@ export default {
     async ListarPregunta(idTestPart) {
       this.showLoading({
         title: "Accediendo a la información",
-        color: "secondary",
+        color: "secondary"
       });
       try {
         let response = await axios.get(
@@ -797,8 +970,8 @@ export default {
           {
             headers: {
               "Content-Type": "application/json",
-              Authorization: "Bearer " + sessionStorage.getItem("jwt"),
-            },
+              Authorization: "Bearer " + sessionStorage.getItem("jwt")
+            }
           }
         );
         this.listaDePreguntas = response.data;
@@ -818,12 +991,14 @@ export default {
         this.itemModelPregunta.url = `${this.$urlImage}${item.image}`;
         this.itemModelPregunta.score = item.score;
         this.itemModelPregunta.timeLimit = item.timeLimit;
-        item.answers.forEach((element) => {
+        this.itemModelPregunta.indications = item.indications;
+        this.itemModelPregunta.value = item.value;
+        item.answers.forEach(element => {
           this.listaDeRespuestas.push({
             text: element.text,
             url: `${this.$urlImage}${element.image}`,
             image: "",
-            isCorrect: element.isCorrect,
+            isCorrect: element.isCorrect
           });
         });
         this.dialogPregunta = true;
@@ -832,7 +1007,7 @@ export default {
     async eliminarPregunta(item) {
       this.showLoading({
         title: "Accediendo a la información",
-        color: "secondary",
+        color: "secondary"
       });
       try {
         let response = await axios.delete(
@@ -840,8 +1015,8 @@ export default {
           {
             headers: {
               "Content-Type": "application/json",
-              Authorization: "Bearer " + sessionStorage.getItem("jwt"),
-            },
+              Authorization: "Bearer " + sessionStorage.getItem("jwt")
+            }
           }
         );
         if (response.data > 0) {
@@ -869,7 +1044,7 @@ export default {
       var response = "";
       this.showLoading({
         title: "Accediendo a la información",
-        color: "secondary",
+        color: "secondary"
       });
       try {
         if (this.editModulo) {
@@ -879,8 +1054,8 @@ export default {
             {
               headers: {
                 "Content-Type": "application/json",
-                Authorization: "Bearer " + sessionStorage.getItem("jwt"),
-              },
+                Authorization: "Bearer " + sessionStorage.getItem("jwt")
+              }
             }
           );
         } else {
@@ -890,8 +1065,8 @@ export default {
             {
               headers: {
                 "Content-Type": "application/json",
-                Authorization: "Bearer " + sessionStorage.getItem("jwt"),
-              },
+                Authorization: "Bearer " + sessionStorage.getItem("jwt")
+              }
             }
           );
         }
@@ -920,7 +1095,7 @@ export default {
       var response = "";
       this.showLoading({
         title: "Accediendo a la información",
-        color: "secondary",
+        color: "secondary"
       });
       try {
         if (this.editSeccion) {
@@ -930,8 +1105,8 @@ export default {
             {
               headers: {
                 "Content-Type": "application/json",
-                Authorization: "Bearer " + sessionStorage.getItem("jwt"),
-              },
+                Authorization: "Bearer " + sessionStorage.getItem("jwt")
+              }
             }
           );
         } else {
@@ -941,8 +1116,8 @@ export default {
             {
               headers: {
                 "Content-Type": "application/json",
-                Authorization: "Bearer " + sessionStorage.getItem("jwt"),
-              },
+                Authorization: "Bearer " + sessionStorage.getItem("jwt")
+              }
             }
           );
         }
@@ -988,6 +1163,8 @@ export default {
       fd.append("text", this.itemModelPregunta.text);
       fd.append("score", this.itemModelPregunta.score);
       fd.append("timeLimit", this.itemModelPregunta.timeLimit);
+      fd.append("indications", this.itemModelPregunta.indications);
+      fd.append("value", this.itemModelPregunta.value);
       for (var i = 0; i < this.listaDeRespuestas.length; i++) {
         fd.append("answers[" + i + "].text", this.listaDeRespuestas[i].text);
         fd.append(
@@ -1058,14 +1235,16 @@ export default {
       this.itemModelPregunta.timeLimit = "";
       this.itemModelPregunta.url = "";
       this.itemModelPregunta.answers = [];
+      this.itemModelPregunta.indications = "";
+      this.itemModelPregunta.value = "";
       this.listaDeRespuestas = [];
     },
     AgregarLineaVacia() {
       this.listaDeRespuestas.push({
         text: "",
         image: null,
-        isCorrect: "",
-        url: "",
+        isCorrect: false,
+        url: ""
       });
     },
     save() {},
@@ -1097,8 +1276,8 @@ export default {
       this.listaDeRespuestas[index].url = URL.createObjectURL(
         this.listaDeRespuestas[index].image
       );
-    },
-  },
+    }
+  }
 };
 </script>
 
