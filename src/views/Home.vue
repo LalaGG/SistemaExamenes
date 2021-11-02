@@ -1,53 +1,65 @@
 <template>
-
-  <v-container class="container-personalizado"  v-if="this.$session.get('user').userType != 'adm'">   
+  <v-container
+    class="container-personalizado"
+    v-if="this.$session.get('user').userType != 'adm'"
+  >
     <BarraNavegacion />
     <v-row class="justify-center pt-5">
       <v-card class="pa-5">
-        <p class="text-h4">BIENVENIDO AL SISTEMA DE EXÁMENES DEL INSTITUTO NACIONAL DE OFTALMOLOGÍA</p>
-          <p class="text-h5">Pasos para rendir el examen</p>
-          <v-divider></v-divider>
-          <ol class="pt-5">
-            <li class="text-h6"> 
-              Al iniciar el examen lea con detenimiento las preguntas y seleccione solo una de las respuestas.
-            </li>
-            <li class="text-h6"> 
-              Al finalizar haga click en el boton "Finalizar Exámen"
-            </li>
-            <li class="text-h6"> 
-              Espere un momento para obtener su nota. De tener una nota aprobatoria se le enviará el certificado al correo con el que se registró.
-            </li>
-          </ol>
-          <v-divider class="pb-2"></v-divider>
-          <p class="text-h5">Observaciones</p>
-          <v-divider></v-divider>
-          <v-row>
-            <v-col sm="12">
-               <ul class="pb-5">
-                <li class="text-h6"> 
-                  Si presiona más de 1 vez el nombre del examen el tiempo irá más rápido por favor tener presente y solo dar un click
-                </li>
-                <li class="text-h6" style="color:red;font-weight:800"> 
-                  Si el cronómetro ha comenzado a descender cualquier acción que realice para salir de la página del exámen, el sistema validará como exámen terminado, así no haya marcado nada.
-                </li>
-              </ul>
-            </v-col>
-          </v-row>
-          <v-row>
-            <v-col sm="4"></v-col>
-            <v-col sm="4">
-              <v-btn 
-                @click="IngresarAlExamen" 
-                block
-                color="primary"
-                elevation="15"
-                x-large
-                style="font-size: xx-large;">
-               Iniciar Exámen
-              </v-btn>
-            </v-col>
-            <v-col sm="4"></v-col>
-          </v-row>
+        <p class="text-h4">
+          BIENVENIDO AL SISTEMA DE EXÁMENES DEL INSTITUTO NACIONAL DE
+          OFTALMOLOGÍA
+        </p>
+        <p class="text-h5">Pasos para rendir el examen</p>
+        <v-divider></v-divider>
+        <ol class="pt-5">
+          <li class="text-h6">
+            Al iniciar el examen lea con detenimiento las preguntas y seleccione
+            solo una de las respuestas.
+          </li>
+          <li class="text-h6">
+            Al finalizar haga click en el boton "Finalizar Exámen"
+          </li>
+          <li class="text-h6">
+            Espere un momento para obtener su nota. De tener una nota
+            aprobatoria se le enviará el certificado al correo con el que se
+            registró.
+          </li>
+        </ol>
+        <v-divider class="pb-2"></v-divider>
+        <p class="text-h5">Observaciones</p>
+        <v-divider></v-divider>
+        <v-row>
+          <v-col sm="12">
+            <ul class="pb-5">
+              <li class="text-h6">
+                Si presiona más de 1 vez el nombre del examen el tiempo irá más
+                rápido por favor tener presente y solo dar un click
+              </li>
+              <li class="text-h6" style="color:red;font-weight:800">
+                Si el cronómetro ha comenzado a descender cualquier acción que
+                realice para salir de la página del exámen, el sistema validará
+                como exámen terminado, así no haya marcado nada.
+              </li>
+            </ul>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col sm="4"></v-col>
+          <v-col sm="4">
+            <v-btn
+              @click="IngresarAlExamen"
+              block
+              color="primary"
+              elevation="15"
+              x-large
+              style="font-size: xx-large;"
+            >
+              Iniciar Exámen
+            </v-btn>
+          </v-col>
+          <v-col sm="4"></v-col>
+        </v-row>
       </v-card>
     </v-row>
 
@@ -61,7 +73,11 @@
         <v-card-text>
           <v-row class="justify-center">
             <p class="text-h2">
-              {{ Number(itemModelNota.totalScore) >= 14 ? "Aprobado" : "Desaprobado" }}
+              {{
+                Number(itemModelNota.totalScore) >= 14
+                  ? "Aprobado"
+                  : "Desaprobado"
+              }}
             </p>
           </v-row>
           <v-row class="justify-center">
@@ -70,7 +86,11 @@
             </p>
           </v-row>
           <v-row class="justify-center">
-            <v-btn class="ma-3" @click="EnviarCorreo" color="primary" v-show=" Number(itemModelNota.totalScore) >= 14" 
+            <v-btn
+              class="ma-3"
+              @click="EnviarCorreo"
+              color="primary"
+              v-show="Number(itemModelNota.totalScore) >= 14"
               >Enviar Certificado</v-btn
             >
             <v-btn class="ma-3" @click="SalirDelSistema" color="error"
@@ -208,8 +228,11 @@
                     hide-details
                   ></v-text-field>
                   <v-spacer></v-spacer>
-                  <v-btn dark color="primary" @click="abrirDialogPregunta"
-                  v-show="itemModelPregunta.idTestPart > 0"
+                  <v-btn
+                    dark
+                    color="primary"
+                    @click="abrirDialogPregunta"
+                    v-show="itemModelPregunta.idTestPart > 0"
                     >Nueva Pregunta</v-btn
                   >
                 </v-toolbar>
@@ -498,9 +521,7 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-
   </v-container>
-  
 </template>
 
 <script>
@@ -523,7 +544,7 @@ import {
   Blockquote,
   HardBreak,
   HorizontalRule,
-  History
+  History,
 } from "tiptap-vuetify";
 
 export default {
@@ -543,90 +564,90 @@ export default {
         text: "Nombre",
         align: "left",
         sortable: false,
-        value: "name"
+        value: "name",
       },
-      { text: "Opciones", align: "right", sortable: false, value: "opciones" }
+      { text: "Opciones", align: "right", sortable: false, value: "opciones" },
     ],
     headersSeccion: [
       {
         text: "Módulo",
         align: "left",
         sortable: false,
-        value: "testModuleName"
+        value: "testModuleName",
       },
       {
         text: "Nombre",
         align: "left",
         sortable: false,
-        value: "name"
+        value: "name",
       },
       {
         text: "Intrucciones",
         align: "left",
         sortable: false,
-        value: "instructions"
+        value: "instructions",
       },
-      { text: "Opciones", align: "right", sortable: false, value: "opciones" }
+      { text: "Opciones", align: "right", sortable: false, value: "opciones" },
     ],
     headersPreguntas: [
       {
         text: "Sección",
         align: "left",
         sortable: false,
-        value: "testPartName"
+        value: "testPartName",
       },
       {
         text: "Tipo Pregunta",
         align: "left",
         sortable: false,
-        value: "type"
+        value: "type",
       },
       {
         text: "Texto Pregunta",
         align: "left",
         sortable: false,
-        value: "value"
+        value: "value",
       },
       {
         text: "Imagen",
         align: "left",
         sortable: false,
-        value: "image"
+        value: "image",
       },
       {
         text: "Puntaje",
         align: "left",
         sortable: false,
-        value: "score"
+        value: "score",
       },
       {
         text: "Tiempo Límite",
         align: "left",
         sortable: false,
-        value: "timeLimit"
+        value: "timeLimit",
       },
-      { text: "Opciones", align: "right", sortable: false, value: "opciones" }
+      { text: "Opciones", align: "right", sortable: false, value: "opciones" },
     ],
     headersRespuestas: [
       {
         text: "Texto",
         align: "left",
         sortable: false,
-        value: "text"
+        value: "text",
       },
       {
         text: "Imagen",
         align: "left",
         sortable: false,
-        value: "image"
+        value: "image",
       },
       {
         text: "Es Correcta",
         align: "left",
         sortable: false,
-        value: "isCorrect"
+        value: "isCorrect",
       },
-      { text: "Opciones", align: "right", sortable: false, value: "opciones" }
+      { text: "Opciones", align: "right", sortable: false, value: "opciones" },
     ],
     listaDeModulos: [],
     listaDeSecciones: [],
@@ -635,7 +656,7 @@ export default {
     itemModelModulo: {
       id: "",
       name: "",
-      active: true
+      active: true,
     },
     editModulo: false,
     itemModelSeccion: {
@@ -643,7 +664,7 @@ export default {
       id: "",
       name: "",
       active: true,
-      instructions: ""
+      instructions: "",
     },
     editSeccion: false,
     itemModelPregunta: {
@@ -657,43 +678,43 @@ export default {
       timeLimit: "",
       url: "",
       indications: "",
-      answers: []
+      answers: [],
     },
     editPregunta: false,
     listaDeTiposPregunta: [
       {
         id: 1,
-        description: "Tipo: 1"
+        description: "Tipo: 1",
       },
       {
         id: 2,
-        description: "Tipo: 2"
+        description: "Tipo: 2",
       },
       {
         id: 3,
-        description: "Tipo: 3"
+        description: "Tipo: 3",
       },
       {
         id: 4,
-        description: "Tipo: 4"
+        description: "Tipo: 4",
       },
       {
         id: 5,
-        description: "Tipo: 5"
+        description: "Tipo: 5",
       },
       {
         id: 6,
-        description: "Tipo: 6"
-      }
+        description: "Tipo: 6",
+      },
     ],
     rules: {
-      trueOrFalse: value =>
-        value == 1 || value == 0 || "solo puede poner valor 0 y 1"
+      trueOrFalse: (value) =>
+        value == 1 || value == 0 || "solo puede poner valor 0 y 1",
     },
     existeCorrecta: false,
     listaDeRespuestasImagenes: [],
     itemModelNota: {
-      totalScore: 0
+      totalScore: 0,
     },
     extensions: [
       History,
@@ -709,20 +730,20 @@ export default {
         Heading,
         {
           options: {
-            levels: [1, 2, 3]
-          }
-        }
+            levels: [1, 2, 3],
+          },
+        },
       ],
       Bold,
       Code,
       HorizontalRule,
       Paragraph,
-      HardBreak
-    ]
+      HardBreak,
+    ],
   }),
   components: {
     BarraNavegacion,
-    TiptapVuetify
+    TiptapVuetify,
   },
   created() {
     if (this.$session.exists()) {
@@ -730,7 +751,7 @@ export default {
       this.showNotification({
         message: this.usuario.message,
         color: "success",
-        icon: "check-circle"
+        icon: "check-circle",
       });
       this.itemModelNota.totalScore = this.$session.get("user").totalScore;
       if (this.$session.get("user").testFinish) {
@@ -749,17 +770,15 @@ export default {
     async EnviarCorreo() {
       try {
         let itemCertificado = {
-          idUser: this.$session.get("user").idUser
+          idUser: this.$session.get("user").idUser,
         };
         let response = await axios.post(
-          `${
-            this.$urlApiInvision
-          }Evaluacion/EnviarCertificadoEvaluacionEscrita`,
+          `${this.$urlApiInvision}Evaluacion/EnviarCertificadoEvaluacionEscrita`,
           itemCertificado,
           {
             headers: {
-              "Content-Type": "application/json"
-            }
+              "Content-Type": "application/json",
+            },
           }
         );
         this.respuestaBD = response.data;
@@ -797,14 +816,14 @@ export default {
     async ListarModulo() {
       this.showLoading({
         title: "Accediendo a la información",
-        color: "secondary"
+        color: "secondary",
       });
       try {
         let response = await axios.get(`${this.$urlApi}TestModule`, {
           headers: {
             "Content-Type": "application/json",
-            Authorization: "Bearer " + sessionStorage.getItem("jwt")
-          }
+            Authorization: "Bearer " + sessionStorage.getItem("jwt"),
+          },
         });
         this.listaDeModulos = response.data;
       } catch (error) {
@@ -824,18 +843,18 @@ export default {
     },
     async eliminarModulo(item) {
       let alerta = await this.$swal({
-        title: `Está por eliminar las secciones y preguntas afiliadas al módulo. ¿Desea continuar?`,
+        title: `Esta operación eliminará las secciones y preguntas afiliadas al módulo. ¿Desea continuar?`,
         type: "warning",
         showCancelButton: true,
         confirmButtonColor: "#3085d6",
         cancelButtonColor: "#d33",
         confirmButtonText: "Sí, eliminar",
-        cancelButtonText: "Cancelar"
+        cancelButtonText: "Cancelar",
       });
       if (alerta.value) {
         this.showLoading({
           title: "Accediendo a la información",
-          color: "secondary"
+          color: "secondary",
         });
         try {
           let response = await axios.delete(
@@ -843,8 +862,8 @@ export default {
             {
               headers: {
                 "Content-Type": "application/json",
-                Authorization: "Bearer " + sessionStorage.getItem("jwt")
-              }
+                Authorization: "Bearer " + sessionStorage.getItem("jwt"),
+              },
             }
           );
           if (response.data > 0) {
@@ -880,7 +899,7 @@ export default {
     async ListarSeccion(idTestModule) {
       this.showLoading({
         title: "Accediendo a la información",
-        color: "secondary"
+        color: "secondary",
       });
       try {
         let response = await axios.get(
@@ -888,8 +907,8 @@ export default {
           {
             headers: {
               "Content-Type": "application/json",
-              Authorization: "Bearer " + sessionStorage.getItem("jwt")
-            }
+              Authorization: "Bearer " + sessionStorage.getItem("jwt"),
+            },
           }
         );
         this.listaDeSecciones = response.data;
@@ -911,18 +930,18 @@ export default {
     },
     async eliminarSeccion(item) {
       let alerta = await this.$swal({
-        title: `Está por eliminar las preguntas afiliadas a la sección. ¿Desea continuar?`,
+        title: `Esta operation eliminará las preguntas afiliadas a la sección. ¿Desea continuar?`,
         type: "warning",
         showCancelButton: true,
         confirmButtonColor: "#3085d6",
         cancelButtonColor: "#d33",
         confirmButtonText: "Sí, eliminar",
-        cancelButtonText: "Cancelar"
+        cancelButtonText: "Cancelar",
       });
       if (alerta.value) {
         this.showLoading({
           title: "Accediendo a la información",
-          color: "secondary"
+          color: "secondary",
         });
         try {
           let response = await axios.delete(
@@ -930,8 +949,8 @@ export default {
             {
               headers: {
                 "Content-Type": "application/json",
-                Authorization: "Bearer " + sessionStorage.getItem("jwt")
-              }
+                Authorization: "Bearer " + sessionStorage.getItem("jwt"),
+              },
             }
           );
           if (response.data > 0) {
@@ -962,7 +981,7 @@ export default {
     async ListarPregunta(idTestPart) {
       this.showLoading({
         title: "Accediendo a la información",
-        color: "secondary"
+        color: "secondary",
       });
       try {
         let response = await axios.get(
@@ -970,8 +989,8 @@ export default {
           {
             headers: {
               "Content-Type": "application/json",
-              Authorization: "Bearer " + sessionStorage.getItem("jwt")
-            }
+              Authorization: "Bearer " + sessionStorage.getItem("jwt"),
+            },
           }
         );
         this.listaDePreguntas = response.data;
@@ -993,12 +1012,12 @@ export default {
         this.itemModelPregunta.timeLimit = item.timeLimit;
         this.itemModelPregunta.indications = item.indications;
         this.itemModelPregunta.value = item.value;
-        item.answers.forEach(element => {
+        item.answers.forEach((element) => {
           this.listaDeRespuestas.push({
             text: element.text,
             url: `${this.$urlImage}${element.image}`,
             image: "",
-            isCorrect: element.isCorrect
+            isCorrect: element.isCorrect,
           });
         });
         this.dialogPregunta = true;
@@ -1007,7 +1026,7 @@ export default {
     async eliminarPregunta(item) {
       this.showLoading({
         title: "Accediendo a la información",
-        color: "secondary"
+        color: "secondary",
       });
       try {
         let response = await axios.delete(
@@ -1015,8 +1034,8 @@ export default {
           {
             headers: {
               "Content-Type": "application/json",
-              Authorization: "Bearer " + sessionStorage.getItem("jwt")
-            }
+              Authorization: "Bearer " + sessionStorage.getItem("jwt"),
+            },
           }
         );
         if (response.data > 0) {
@@ -1044,7 +1063,7 @@ export default {
       var response = "";
       this.showLoading({
         title: "Accediendo a la información",
-        color: "secondary"
+        color: "secondary",
       });
       try {
         if (this.editModulo) {
@@ -1054,8 +1073,8 @@ export default {
             {
               headers: {
                 "Content-Type": "application/json",
-                Authorization: "Bearer " + sessionStorage.getItem("jwt")
-              }
+                Authorization: "Bearer " + sessionStorage.getItem("jwt"),
+              },
             }
           );
         } else {
@@ -1065,8 +1084,8 @@ export default {
             {
               headers: {
                 "Content-Type": "application/json",
-                Authorization: "Bearer " + sessionStorage.getItem("jwt")
-              }
+                Authorization: "Bearer " + sessionStorage.getItem("jwt"),
+              },
             }
           );
         }
@@ -1095,7 +1114,7 @@ export default {
       var response = "";
       this.showLoading({
         title: "Accediendo a la información",
-        color: "secondary"
+        color: "secondary",
       });
       try {
         if (this.editSeccion) {
@@ -1105,8 +1124,8 @@ export default {
             {
               headers: {
                 "Content-Type": "application/json",
-                Authorization: "Bearer " + sessionStorage.getItem("jwt")
-              }
+                Authorization: "Bearer " + sessionStorage.getItem("jwt"),
+              },
             }
           );
         } else {
@@ -1116,8 +1135,8 @@ export default {
             {
               headers: {
                 "Content-Type": "application/json",
-                Authorization: "Bearer " + sessionStorage.getItem("jwt")
-              }
+                Authorization: "Bearer " + sessionStorage.getItem("jwt"),
+              },
             }
           );
         }
@@ -1244,7 +1263,7 @@ export default {
         text: "",
         image: null,
         isCorrect: false,
-        url: ""
+        url: "",
       });
     },
     save() {},
@@ -1276,8 +1295,8 @@ export default {
       this.listaDeRespuestas[index].url = URL.createObjectURL(
         this.listaDeRespuestas[index].image
       );
-    }
-  }
+    },
+  },
 };
 </script>
 
