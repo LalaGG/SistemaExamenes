@@ -78,7 +78,8 @@ export default {
             sessionStorage.setItem("jwt", response.data.token);
 
             this.$session.set("user", response.data);
-            this.$router.push("/");
+            if(this.$session.get('user').userType != 'adm') this.$router.push("/Examen/Principal");
+            if(this.$session.get('user').userType == 'adm') this.$router.push("/");
           } else {
             this.showNotification({
               message: response.data.message,

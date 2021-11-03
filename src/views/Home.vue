@@ -318,7 +318,22 @@
               >
               </v-text-field>
             </v-col>
-            <v-col sm="6"></v-col>
+            <v-col sm="6">
+                  <v-combobox
+                    v-model="itemModelSeccion.type"
+                    :items="listaDeTiposPregunta"
+                    label="Tipo de Pregunta"
+                    hint="Eliga el tipo de pregunta que desea crear"
+                    item-value="id"
+                    item-text="description"
+                    clearable
+                    filled
+                    hide-selected
+                    outlined
+                    persistent-hint
+                    hide-details
+                  ></v-combobox>
+            </v-col>
             <v-col class="pt-5" sm="12">
               <v-textarea
                 v-model="itemModelSeccion.instructions"
@@ -384,22 +399,7 @@
             </v-col>
             <v-col sm="6">
               <v-row>
-                <v-col sm="6">
-                  <v-combobox
-                    v-model="itemModelPregunta.type"
-                    :items="listaDeTiposPregunta"
-                    label="Tipo de Pregunta"
-                    hint="Eliga el tipo de pregunta que desea crear"
-                    item-value="id"
-                    item-text="description"
-                    clearable
-                    filled
-                    hide-selected
-                    outlined
-                    persistent-hint
-                    hide-details
-                  ></v-combobox>
-                </v-col>
+                
                 <v-col sm="6">
                   <v-file-input
                     v-model="itemModelPregunta.image"
@@ -587,6 +587,12 @@ export default {
         sortable: false,
         value: "instructions",
       },
+      {
+        text: "Tipo Pregunta",
+        align: "left",
+        sortable: false,
+        value: "type",
+      },
       { text: "Opciones", align: "right", sortable: false, value: "opciones" },
     ],
     headersPreguntas: [
@@ -595,12 +601,6 @@ export default {
         align: "left",
         sortable: false,
         value: "testPartName",
-      },
-      {
-        text: "Tipo Pregunta",
-        align: "left",
-        sortable: false,
-        value: "type",
       },
       {
         text: "Texto Pregunta",
@@ -663,6 +663,7 @@ export default {
       idTestModule: "",
       id: "",
       name: "",
+      type: "",
       active: true,
       instructions: "",
     },
@@ -670,7 +671,6 @@ export default {
     itemModelPregunta: {
       idTestPart: "",
       id: 0,
-      type: "",
       text: "",
       value: "",
       image: null,
@@ -681,37 +681,7 @@ export default {
       answers: [],
     },
     editPregunta: false,
-    listaDeTiposPregunta: [
-      {
-        id: 1,
-        description: "Tipo: 1",
-      },
-      {
-        id: 2,
-        description: "Tipo: 2",
-      },
-      {
-        id: 3,
-        description: "Tipo: 3",
-      },
-      {
-        id: 4,
-        description: "Tipo: 4",
-      },
-      {
-        id: 5,
-        description: "Tipo: 5",
-      },
-      {
-        id: 6,
-        description: "Tipo: 6",
-      },
-    ],
-    rules: {
-      trueOrFalse: (value) =>
-        value == 1 || value == 0 || "solo puede poner valor 0 y 1",
-    },
-    existeCorrecta: false,
+    listaDeTiposPregunta: [],
     listaDeRespuestasImagenes: [],
     itemModelNota: {
       totalScore: 0,
@@ -764,8 +734,24 @@ export default {
   },
   methods: {
     ...mapMutations(["showLoading", "hideLoading", "showNotification"]),
-    onUpdate(text) {
-      this.itemModelPregunta.text = text;
+    async ListarTipoPregunta(idTestModule){
+      this.showLoading({
+        title: "Accediendo a la información",
+        color: "secondary",
+      });
+      try {
+        let response = await axios.get(`${this.$urlApi}Question/GetQuestionTypes/${idTestModule}`, {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + sessionStorage.getItem("jwt"),
+          },
+        });
+        this.listaDeTiposPregunta = response.data;
+      } catch (error) {
+        console.log(error);
+      } finally {
+        this.hideLoading();
+      }
     },
     async EnviarCorreo() {
       try {
@@ -809,6 +795,7 @@ export default {
       this.itemModelSeccion.idTestModule = item.id;
       this.editModulo ? (this.e1 = 1) : (this.e1 = 2);
       this.ListarSeccion(this.itemModelSeccion.idTestModule);
+      this.ListarTipoPregunta(this.itemModelSeccion.idTestModule);
     },
     abrirDialogModulo() {
       this.dialogModulo = true;
@@ -1270,19 +1257,6 @@ export default {
     cancel() {},
     open() {},
     close() {},
-    closeIsCorrect(value, index) {
-      for (let ind = 0; ind < this.listaDeRespuestas.length; ind++) {
-        if (this.listaDeRespuestas[ind].isCorrect == 1) {
-          this.existeCorrecta = true;
-          break;
-        } else {
-          this.existeCorrecta = false;
-        }
-      }
-      if (value > 1) {
-        this.listaDeRespuestas[index].isCorrect = 0;
-      }
-    },
     eliminarRespuesta(index) {
       this.listaDeRespuestas.splice(index, 1);
     },

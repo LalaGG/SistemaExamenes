@@ -4,19 +4,46 @@
 
 	<!--questionBox-->
 	<div class="questionBox" id="app">
-
 		<!-- transition -->
 		<transition :duration="{ enter: 500, leave: 300 }" enter-active-class="animated zoomIn" leave-active-class="animated zoomOut" mode="out-in">
 
 			<!--qusetionContainer-->
-			<div class="questionContainer" v-if="questionIndex<quiz.questions.length && (questionIndex == 0 || !changeModule)" v-bind:key="questionIndex">
+			<div class="questionContainer" v-if="questionIndex<quiz.questions.length && (questionIndex == 0 || !changeModule) && finishDemo" v-bind:key="questionIndex">
 
 				<header>
+					<div v-show="finishDemo" class="base-timer">
+						<svg
+						class="base-timer__svg"
+						viewBox="0 0 100 100"
+						xmlns="http://www.w3.org/2000/svg"
+						>
+						<g class="base-timer__circle">
+							<circle
+							class="base-timer__path-elapsed"
+							cx="50"
+							cy="50"
+							r="45"
+							></circle>
+							<path
+							:stroke-dasharray="circleDasharray"
+							class="base-timer__path-remaining"
+							:class="remainingPathColor"
+							d="
+										M 50, 50
+										m -45, 0
+										a 45,45 0 1,0 90,0
+										a 45,45 0 1,0 -90,0
+									"
+							></path>
+						</g>
+						</svg>
+						<span class="base-timer__label">{{ formattedTimeLeft }}</span>
+					</div>
 					<h1 class="title is-6">{{quiz.questions[questionIndex].testModuleName}} - {{quiz.questions[questionIndex].testPartName}}</h1>
 					<!--progress-->
 					<div class="progressContainer">
 						<progress class="progress is-info is-small" :value="(questionIndex/quiz.questions.length)*100" max="100">{{(questionIndex/quiz.questions.length)*100}}%</progress>
-						<p>{{(questionIndex/quiz.questions.length)*100}}% complete</p>
+						<p>{{Math.floor((questionIndex/quiz.questions.length)*100)}}% complete</p>
 					</div>
 					<!--/progress-->
 				</header>
@@ -90,6 +117,26 @@
 					<a class="button" @click="cerrarSesion()">Salir <i class="fa fa-refresh"></i></a>
 
 			</div>
+
+			<div v-if="questionIndex == 0 && !finishDemo" v-bind:key="questionIndex" class="quizCompleted has-text-centered">
+
+				<span class="icon">
+                <i class="fa" :class="1==1?'fa-check-circle-o is-active':'fa-times-circle'"></i>
+              </span>
+
+				<h2 class="title">
+					Empezaremos con una sección de práctica
+
+				</h2>
+				<p class="subtitle">
+					En caso tengas problemas con el internet, puedes volver a ingresar con el mismo enlace”
+					¡Muchos éxitos!
+				</p>
+					<br>
+					<a class="button" @click="IniciarPractica()">Iniciar Prueba<i class="fa fa-refresh"></i></a>
+
+			</div>
+			
 			<!--/quizCompetedResult-->
 
 		</transition>
@@ -105,6 +152,24 @@
 import axios from "axios";
 import { mapMutations } from "vuex";
 
+const FULL_DASH_ARRAY = 283;
+const WARNING_THRESHOLD = 60;
+const ALERT_THRESHOLD = 30;
+
+const COLOR_CODES = {
+  info: {
+    color: "green",
+  },
+  warning: {
+    color: "orange",
+    threshold: WARNING_THRESHOLD,
+  },
+  alert: {
+    color: "red",
+    threshold: ALERT_THRESHOLD,
+  },
+};
+
 export default {
   data: () => ({
     quiz: {},
@@ -113,150 +178,96 @@ export default {
 	isActive: false,
 	currentModule : "",
 	changeModule : false,
-	partName : ""
+	partName : "",
+	finishDemo :  "",
+	timePassed: 0,
+	timeQuestion : 0,
   }),
   filters: {
     charIndex: function(i) {
       return String.fromCharCode(97 + i);
     }
   },
+  computed: {
+    circleDasharray() {
+      return `${(this.timeFraction * FULL_DASH_ARRAY).toFixed(0)} 283`;
+    },
+    formattedTimeLeft() {
+      let timeLeft = this.timeLeft;
+      let minutes = Math.floor(timeLeft / 60);
+      let seconds = timeLeft % 60;
+
+      if (minutes < 10) {
+        minutes = `0${minutes}`;
+      }
+      if (seconds < 10) {
+        seconds = `0${seconds}`;
+      }
+
+      return `${minutes}:${seconds}`;
+    },
+
+    timeLeft() {
+      return this.timeQuestion - this.timePassed;
+    },
+
+    timeFraction() {
+      const rawTimeFraction = this.timeLeft / this.timeQuestion;
+      return rawTimeFraction - (1 / this.timeQuestion) * (1 - rawTimeFraction);
+    },
+
+    remainingPathColor() {
+      const { alert, warning, info } = COLOR_CODES;
+
+      if (this.timeLeft <= alert.threshold) {
+        return alert.color;
+      } else if (this.timeLeft <= warning.threshold) {
+        return warning.color;
+      } else {
+        return info.color;
+      }
+    },
+  },
+  watch: {
+    timeLeft(newValue) {
+      if (newValue === 0) {
+        this.onTimesUp();
+      }
+    },
+  },
   created() {
-	   this.ListarExamen()
-	   this.userResponseSkelaton()
+	  	this.finishDemo = this.$session.get('user').finishDemo
+	   	this.ListarExamen()
+		this.userResponseSkelaton()
   },
   methods: {
-    //    ...mapMutations(["showLoading", "hideLoading", "showNotification"]),
+	   ...mapMutations(["showLoading", "hideLoading", "showNotification"]),
+	   	onTimesUp() {
+			clearInterval(this.timerInterval);
+			this.next()
+		},
+		async startTimer() {
+			this.timerInterval = setInterval(() => (this.timePassed += 1), 1000);
+		},
        async ListarExamen() {
-		   this.quiz = {
-			   	modulos : [
-					   "Modulo 1",
-					   "Modulo 2"
-				   ],
-				questions: [
-					{
-						text: "What is the full form of HTTP?",
-						testModuleName: "Modulo 1",
-						testPartName: "Parte 1",
-						answers: [
-							{ text: "Hyper text transfer package" },
-							{ text: "Hyper text transfer protocol" },
-							{ text: "Hyphenation text test program" },
-							{ text: "None of the above" }
-						]
-					},
-					{
-						text: "HTML document start and end with which tag pairs?",
-						testModuleName: "Modulo 1",
-						testPartName: "Parte 1",
-						answers: [
-							{ text: "HTML", correct: true },
-							{ text: "WEB" },
-							{ text: "HEAD" },
-							{ text: "BODY" }
-						]
-					},
-					{
-						text: "Which tag is used to create body text in HTML?",
-						testModuleName: "Modulo 1",
-						testPartName: "Parte 2",
-						answers: [
-							{ text: "HEAD" },
-							{ text: "BODY", correct: true },
-							{ text: "TITLE" },
-							{ text: "TEXT" }
-						]
-					},
-					{
-						text: "Outlook Express is _________",
-						testModuleName: "Modulo 1",
-						testPartName: "Parte 2",
-						answers: [
-							{ text: "E-Mail Client", correct: true },
-							{ text: "Browser" },
-							{
-							text: "Search Engine"
-							},
-							{ text: "None of the above" }
-						]
-					},
-					{
-						text: "What is a search engine?",
-						testModuleName: "Modulo 1",
-						testPartName: "Parte 3",
-						answers: [
-							{ text: "A hardware component " },
-							{
-							text: "A machinery engine that search data"
-							},
-							{ text: "A web site that searches anything", correct: true },
-							{ text: "A program that searches engines" }
-						]
-					},
-					{
-						text: "What does the .com domain represents?",
-						testModuleName: "Modulo 1",
-						testPartName: "Parte 3",
-						answers: [
-							{ text: "Network" },
-							{ text: "Education" },
-							{ text: "Commercial", correct: true },
-							{ text: "None of the above" }
-						]
-					},
-					{
-						text: "In Satellite based communication, VSAT stands for? ",
-						testModuleName: "Modulo 2",
-						testPartName: "Parte 1",
-						answers: [
-							{ text: " Very Small Aperture Terminal", correct: true },
-							{ text: "Varying Size Aperture Terminal " },
-							{
-							text: "Very Small Analog Terminal"
-							},
-							{ text: "None of the above" }
-						]
-					},
-					{
-						text: "What is the full form of TCP/IP? ",
-						testModuleName: "Modulo 2",
-						testPartName: "Parte 1",
-						answers: [
-							{ text: "Telephone call protocol / international protocol" },
-							{
-							text: "Transmission control protocol / internet protocol",
-							correct: true
-							},
-							{ text: "Transport control protocol / internet protocol " },
-							{ text: "None of the above" }
-						]
-					},
-					{
-						text: "What is the full form of HTML?",
-						testModuleName: "Modulo 3",
-						testPartName: "Parte 1",
-						answers: [
-							{
-							text: "Hyper text marking language"
-							},
-							{ text: "Hyphenation text markup language " },
-							{ text: "Hyper text markup language", correct: true },
-							{ text: "Hyphenation test marking language" }
-						]
-					},
-					{
-						text: '"Yahoo", "Infoseek" and "Lycos" are _________?',
-						testModuleName: "Modulo 3",
-						testPartName: "Parte 1",
-						answers: [
-							{ text: "Browsers " },
-							{ text: "Search Engines", correct: true },
-							{ text: "News Group" },
-							{ text: "None of the above" }
-						]
-					}
-				]
-		   }
-		   this.currentModule = this.quiz.questions[this.questionIndex].testModuleName
+		   this.showLoading({
+				title: "Accediendo a la información",
+				color: "secondary",
+			});
+			try {
+				let response = await axios.get(`${this.$urlApi}Test`, {
+				headers: {
+					"Content-Type": "application/json",
+					Authorization: "Bearer " + sessionStorage.getItem("jwt"),
+				},
+				});
+				this.quiz = response.data;
+				this.currentModule = this.quiz.questions[this.questionIndex].testModuleName
+			} catch (error) {
+				console.log(error);
+			} finally {
+				this.hideLoading();
+			}
 		},
 		userResponseSkelaton (){
 			this.userResponses = Array(this.quiz.questions.length).fill(null)
@@ -272,6 +283,10 @@ export default {
 			if (this.questionIndex < this.quiz.questions.length){
 				this.questionIndex++
 				this.changeModule = false
+				clearInterval(this.timerInterval);
+				this.timeQuestion = this.quiz.questions[this.questionIndex].timeLimit * 60
+				this.timePassed = 0
+				this.startTimer()
 			}
 		},
 		hideQuestions(){
@@ -283,6 +298,11 @@ export default {
 			this.$session.destroy();
 			this.$router.push("/Login");
 		},
+		IniciarPractica(){
+			this.finishDemo = true
+			this.timeQuestion = this.quiz.questions[this.questionIndex].timeLimit * 60
+			this.startTimer()
+		}
 	}
 }
 </script>
@@ -490,7 +510,71 @@ body {
     }
   }
 }
+.base-timer {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  margin: 0 auto;
+  
 
+  &__svg {
+    transform: scaleX(-1);
+  }
+
+  &__circle {
+    fill: none;
+    stroke: none;
+  }
+
+  &__path-elapsed {
+    stroke-width: 7px;
+    stroke: grey;
+  }
+
+  &__path-remaining {
+    stroke-width: 7px;
+    stroke-linecap: round;
+    transform: rotate(90deg);
+    transform-origin: center;
+    transition: 1s linear all;
+    fill-rule: nonzero;
+    stroke: currentColor;
+
+    &.green {
+      color: rgb(65, 184, 131);
+    }
+
+    &.orange {
+      color: orange;
+    }
+
+    &.red {
+      color: red;
+    }
+  }
+
+  &__label {
+    position: absolute;
+    width: 120px;
+    height: 120px;
+    top: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 25px;
+  }
+}
+
+@media (max-width: 768px) {
+  /* For mobile phones: */
+  .base-timer {
+    z-index: 100;
+
+    &__label {
+      font-size: 25px;
+    }
+  }
+}
 @media screen and (min-width: 769px) {
   .questionBox {
     align-items: center;
