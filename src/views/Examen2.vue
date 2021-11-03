@@ -11,7 +11,7 @@
 			<div class="questionContainer" v-if="questionIndex<quiz.questions.length && (questionIndex == 0 || !changeModule) && finishDemo" v-bind:key="questionIndex">
 
 				<header>
-					<div v-show="finishDemo" class="base-timer">
+					<div v-show="finishDemo && currentModule != 'Módulo Prueba'" class="base-timer">
 						<svg
 						class="base-timer__svg"
 						viewBox="0 0 100 100"
@@ -53,7 +53,7 @@
 
 				<!-- quizOptions -->
 				<div class="optionContainer">
-					<div class="option" v-for="(response, index) in quiz.questions[questionIndex].answers" :class="{ 'is-selected': userResponses[questionIndex] == index}" @click="selectOption(index)"  :key="index">
+					<div class="option" v-for="(response, index) in quiz.questions[questionIndex].answers" :class="{ 'is-selected': userResponses[questionIndex] == null ? '' : userResponses[questionIndex].index == index}" @click="selectOption(quiz.questions[questionIndex],index)"  :key="index">
 						{{ index | charIndex }}. {{ response.text }}
 					</div>
 				</div>
@@ -174,7 +174,7 @@ export default {
   data: () => ({
     quiz: {},
 	questionIndex: 0,
-	userResponses: [],
+	userResponses: "",
 	isActive: false,
 	currentModule : "",
 	changeModule : false,
@@ -236,26 +236,25 @@ export default {
     },
   },
   created() {
-	  	this.finishDemo = this.$session.get('user').finishDemo
-	   	this.ListarExamen()
-		this.userResponseSkelaton()
+	  this.finishDemo = this.$session.get('user').finishDemo
+	  this.ListarExamen()
   },
   methods: {
 	   ...mapMutations(["showLoading", "hideLoading", "showNotification"]),
-	   	onTimesUp() {
+	  onTimesUp() {
 			clearInterval(this.timerInterval);
 			this.next()
 		},
 		async startTimer() {
 			this.timerInterval = setInterval(() => (this.timePassed += 1), 1000);
 		},
-       async ListarExamen() {
+    async ListarExamen() {
 		   this.showLoading({
 				title: "Accediendo a la información",
 				color: "secondary",
 			});
 			try {
-				let response = await axios.get(`${this.$urlApi}Test`, {
+				let response = await axios.get(`${this.$urlApi}Test/GetTestByUser/${this.$session.get("user").idUser}`, {
 				headers: {
 					"Content-Type": "application/json",
 					Authorization: "Bearer " + sessionStorage.getItem("jwt"),
@@ -263,21 +262,16 @@ export default {
 				});
 				this.quiz = response.data;
 				this.currentModule = this.quiz.questions[this.questionIndex].testModuleName
+        this.userResponses = Array(this.quiz.questions.length).fill(null)
 			} catch (error) {
 				console.log(error);
 			} finally {
 				this.hideLoading();
 			}
 		},
-		userResponseSkelaton (){
-			this.userResponses = Array(this.quiz.questions.length).fill(null)
-		},
-		restart() {
-		this.questionIndex = 0;
-		this.userResponses = Array(this.quiz.questions.length).fill(null);
-		},
-		selectOption(index) {
-		this.$set(this.userResponses, this.questionIndex, index);
+		selectOption(item,index) {
+      var selectedAnswer = {index : index, idQuestion : item.id, idAnswer : item.answers[index].id, idUser : this.$session.get("user").idUser } 
+		  this.$set(this.userResponses, this.questionIndex, selectedAnswer);
 		},
 		next() {
 			if (this.questionIndex < this.quiz.questions.length){
@@ -290,7 +284,8 @@ export default {
 			}
 		},
 		hideQuestions(){
-			this.currentModule =  this.quiz.questions[this.questionIndex+1].testModuleName
+      this.questionIndex++
+			this.currentModule =  this.quiz.questions[this.questionIndex].testModuleName
 			this.changeModule = true
 		},
 		cerrarSesion() {
@@ -299,9 +294,11 @@ export default {
 			this.$router.push("/Login");
 		},
 		IniciarPractica(){
-			this.finishDemo = true
-			this.timeQuestion = this.quiz.questions[this.questionIndex].timeLimit * 60
-			this.startTimer()
+      this.finishDemo = true
+			// this.timeQuestion = this.quiz.questions[this.questionIndex].timeLimit * 60
+      // if(this.currentModule != 'Módulo Prueba'){
+      //   this.startTimer()
+      // }
 		}
 	}
 }

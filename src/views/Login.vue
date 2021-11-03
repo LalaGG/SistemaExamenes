@@ -80,7 +80,7 @@ export default {
             this.$session.set("user", response.data);
             if(this.$session.get('user').userType != 'adm') this.$router.push("/Examen/Principal");
             if(this.$session.get('user').userType == 'adm') this.$router.push("/");
-          } else {
+            } else {
             this.showNotification({
               message: response.data.message,
               color: "error",
