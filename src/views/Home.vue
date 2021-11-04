@@ -274,12 +274,14 @@
           <v-toolbar-title>Mantenimiento de Módulos</v-toolbar-title>
         </v-toolbar>
         <v-card-text>
-          <v-row>
-            <v-col class="pt-5" sm="6">
+          <v-row class="pt-5" >
+            <v-col sm="6">
               <v-text-field
                 v-model="itemModelModulo.name"
                 type="text"
                 label="Nombre del Módulo"
+                outlined
+                filled
               >
               </v-text-field>
             </v-col>
@@ -309,12 +311,14 @@
           <v-toolbar-title>Mantenimiento de Secciones</v-toolbar-title>
         </v-toolbar>
         <v-card-text>
-          <v-row>
-            <v-col class="pt-5" sm="6">
+          <v-row class="pt-5">
+            <v-col  sm="6">
               <v-text-field
                 v-model="itemModelSeccion.name"
                 type="text"
                 label="Nombre de la Sección"
+                outlined
+                filled
               >
               </v-text-field>
             </v-col>
@@ -330,8 +334,6 @@
                     filled
                     hide-selected
                     outlined
-                    persistent-hint
-                    hide-details
                   ></v-combobox>
             </v-col>
             <v-col class="pt-5" sm="12">
@@ -339,6 +341,8 @@
                 v-model="itemModelSeccion.instructions"
                 type="text"
                 label="Instrucciones de la Sección"
+                outlined
+                filled
               >
               </v-textarea>
             </v-col>
@@ -387,7 +391,7 @@
                 :extensions="extensions"
               />
             </v-col>
-            <v-col sm="12">
+            <v-col class="mb-3" sm="12">
               <v-text-field
                 v-model="itemModelPregunta.value"
                 label="Pregunta"
@@ -397,16 +401,15 @@
                 hide-details
               ></v-text-field>
             </v-col>
-            <v-col sm="6">
               <v-row>
-                
-                <v-col sm="6">
+                <v-col sm="12">
                   <v-file-input
                     v-model="itemModelPregunta.image"
                     accept="image/*"
                     label="Imagen"
                     outlined
                     @change="previewImage"
+                    hide-details
                   ></v-file-input>
                 </v-col>
                 <v-col sm="6">
@@ -1226,6 +1229,8 @@ export default {
       this.editSeccion = false;
       this.itemModelSeccion.id = "";
       this.itemModelSeccion.name = "";
+      this.itemModelSeccion.instructions = "";
+      this.itemModelSeccion.type = "";
       this.itemModelSeccion.active = true;
     },
     CerrarPregunta() {

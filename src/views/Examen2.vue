@@ -21,7 +21,7 @@
           "
           v-bind:key="questionIndex"
         >
-          <header>
+          <header class="questionHeader">
             <div
               v-show="finishDemo && currentModule != 'Módulo Prueba'"
               class="base-timer"
@@ -57,6 +57,9 @@
               {{ quiz.questions[questionIndex].testModuleName }} -
               {{ quiz.questions[questionIndex].testPartName }}
             </h1>
+            <h1 class="title is-6">
+              {{ quiz.questions[questionIndex].testPartInstructions }}
+            </h1>
             <!--progress-->
             <div class="progressContainer">
               <progress
@@ -75,8 +78,20 @@
  
           <!-- questionTitle -->
           <h2 class="titleContainer title">
+            {{ quiz.questions[questionIndex].indications }}
+          </h2>
+          <h2 v-if="quiz.questions[questionIndex].text != ''" :class="quiz.questions[questionIndex].text.length > 200 ? 'titletext' : 'titletext1'">
             {{ quiz.questions[questionIndex].text }}
           </h2>
+          <v-img v-else
+            :src="require(`${this.$urlImage}${item.imagen}`)"
+            width="50%"
+            aspect-ratio="1"
+          ></v-img>
+          <h2 class="titlevalue">
+            {{ quiz.questions[questionIndex].value }}
+          </h2>
+
  
           <!-- quizOptions -->
           <div class="optionContainer">
@@ -306,7 +321,7 @@ export default {
     ...mapMutations(["showLoading", "hideLoading", "showNotification"]),
     onTimesUp() {
       clearInterval(this.timerInterval);
-      //this.next();
+      this.next();
     },
     async startTimer() {
       this.timerInterval = setInterval(() => (this.timePassed += 1), 1000);
@@ -394,9 +409,6 @@ export default {
       if (this.finishDemo && this.changeModule && !this.startNewModule) {
         this.startNewModule = true;
       }
-      // console.log(this.finishDemo);
-      // console.log(this.changeModule);
-      // console.log(this.startNewModule);
     },
     cerrarSesion() {
       sessionStorage.clear();
@@ -405,10 +417,6 @@ export default {
     },
     IniciarPractica() {
       this.finishDemo = true;
-      // this.timeQuestion = this.quiz.questions[this.questionIndex].timeLimit * 60
-      // if(this.currentModule != 'Módulo Prueba'){
-      //   this.startTimer()
-      // }
     },
   },
 };
@@ -459,9 +467,9 @@ body {
 }
  
 .questionBox {
-  max-width: 30rem;
-  width: 30rem;
-  min-height: 30rem;
+  max-width: 60rem;
+  width: 60rem;
+  min-height: 50rem;
  
   background: #fafafa;
   position: relative;
@@ -477,6 +485,7 @@ body {
     text-align: center;
     border-bottom: 1px solid rgba(0, 0, 0, 0.1);
     background-color: $primary-color;
+    height : 70%;
  
     h1 {
       font-weight: bold;
@@ -508,7 +517,34 @@ body {
   .titleContainer {
     text-align: center;
     margin: 0 auto;
+    padding: 0.5rem;
+    font-weight : bold;
+    font-style : italic;
+  }
+
+  .titletext {
+    text-align: center;
+    margin: 0 auto;
     padding: 1.5rem;
+    width : 100%;
+    height : 200px;
+    overflow-y: scroll;
+    font-size : 17px;
+    font-weight : normal;
+  }
+  .titletext1 {
+    text-align: center;
+    margin: 0 auto;
+    padding: 0.5rem;
+    font-size : 17px;
+    font-weight : normal;
+  }
+
+  .titlevalue {
+    text-align: center;
+    margin: 0 auto;
+    padding: 0.5rem;
+    font-weight : bold;
   }
  
   .quizForm {
@@ -554,13 +590,14 @@ body {
       .option {
         border-radius: 290486px;
         padding: 9px 18px;
-        margin: 0 18px;
+        margin: 0 auto;
         margin-bottom: 12px;
         transition: $trans_duration;
         cursor: pointer;
         background-color: rgba(0, 0, 0, 0.05);
         color: rgba(0, 0, 0, 0.85);
         border: transparent 1px solid;
+        width : 70%;
  
         &.is-selected {
           border-color: rgba(black, 0.25);

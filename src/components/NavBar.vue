@@ -14,7 +14,7 @@
       </v-btn>
     </v-toolbar>
   </nav>
-  <v-dialog v-model="opcionesDialog" persistent max-width="800">
+  <v-dialog v-model="opcionesDialog" max-width="800">
       <v-toolbar color="primary" dark>
         <v-toolbar-title>
           Opciones del Sistema
@@ -29,7 +29,7 @@
               </v-btn>
             </v-col>
             <v-col sm="6">
-              <v-btn color="success" @click="cerrarSesion">
+              <v-btn color="success" @click="limpiarBase">
                 <span>Limpiar Base de Datos</span>
               </v-btn>
             </v-col>
@@ -59,5 +59,39 @@ import { mapMutations } from 'vuex'
         this.opcionesDialog = true
       }
     },
+    async limpiarBase(){
+      this.showLoading({
+        title: "Accediendo a la información",
+        color: "secondary",
+      });
+      try {
+          let response = await axios.post(
+            `${this.$urlApi}Test/RestartDb`,
+            {
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: "Bearer " + sessionStorage.getItem("jwt"),
+              },
+            }
+          );
+        if (response.data > 0) {
+          this.$swal(
+            "Eliminado!",
+            "Base de datos Eliminada con éxito",
+            "success"
+          );
+        } else {
+          this.$swal(
+            "¡Error!",
+            "La base de datos no ha sido borrada correctamente, comuniquese con soporte",
+            "error"
+          );
+        }
+      } catch (error) {
+        console.log(error);
+      } finally {
+        this.hideLoading();
+      }
+    }
   }
 </script>
