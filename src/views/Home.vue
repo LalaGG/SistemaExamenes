@@ -1151,7 +1151,6 @@ export default {
     async GuardarPregunta() {
       var response = "";
       this.itemModelPregunta.answers = this.listaDeRespuestas;
-      this.itemModelPregunta.type = this.itemModelPregunta.type.description;
       this.listaDeRespuestas.forEach((element) => {
         element.isCorrect = element.isCorrect == "1" ? true : false;
       });
@@ -1165,7 +1164,6 @@ export default {
         : fd.append("image", "");
       fd.append("id", this.itemModelPregunta.id);
       fd.append("idTestPart", this.itemModelPregunta.idTestPart);
-      fd.append("type", this.itemModelPregunta.type);
       fd.append("text", this.itemModelPregunta.text);
       fd.append("score", this.itemModelPregunta.score);
       fd.append("timeLimit", this.itemModelPregunta.timeLimit);
