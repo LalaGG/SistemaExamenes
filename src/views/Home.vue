@@ -401,6 +401,7 @@
                 hide-details
               ></v-text-field>
             </v-col>
+            <v-col sm="6">
               <v-row>
                 <v-col sm="12">
                   <v-file-input
@@ -433,6 +434,7 @@
                   ></v-text-field>
                 </v-col>
               </v-row>
+            </v-col>
             <v-col class="justify-center" sm="6">
               <v-img
                 class="align-self-center"
