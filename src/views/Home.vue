@@ -433,7 +433,6 @@
                   ></v-text-field>
                 </v-col>
               </v-row>
-            </v-col>
             <v-col class="justify-center" sm="6">
               <v-img
                 class="align-self-center"

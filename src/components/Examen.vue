@@ -275,7 +275,7 @@ export default {
         if (response.data > 0) {
           console.log('Exámen iniciando de manera correcta')
         } else {
-            console.log('ha habido un error al iniciar el exámen')
+          console.log('ha habido un error al iniciar el exámen')
         }
       } catch (error) {
         console.log(error);

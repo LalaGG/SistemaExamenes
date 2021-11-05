@@ -15,7 +15,7 @@
           class="questionContainer"
           v-if="
             questionIndex < quiz.questions.length &&
-              finishDemo &&
+              startDemo &&
               !changeModule &&
               !startNewModule
           "
@@ -23,7 +23,7 @@
         >
           <header class="questionHeader">
             <div
-              v-show="finishDemo && currentModule != 'Módulo Prueba'"
+              v-show="startDemo && currentModule != 'Módulo Prueba'"
               class="base-timer"
             >
               <svg
@@ -83,8 +83,8 @@
           <h2 v-if="quiz.questions[questionIndex].text != ''" :class="quiz.questions[questionIndex].text.length > 200 ? 'titletext' : 'titletext1'">
             {{ quiz.questions[questionIndex].text }}
           </h2>
-          <v-img v-else
-            :src="require(`${this.$urlImage}${item.imagen}`)"
+          <v-img v-if="quiz.questions[questionIndex].image != null"
+            :src="require(`${this.$urlImage}${quiz.questions[questionIndex].image}`)"
             width="50%"
             aspect-ratio="1"
           ></v-img>
@@ -189,7 +189,7 @@
         </div>
  
         <div
-          v-if="questionIndex == 0 && !finishDemo"
+          v-if="questionIndex == 0 && !startDemo"
           v-bind:key="questionIndex"
           class="quizCompleted has-text-centered"
         >
@@ -255,6 +255,7 @@ export default {
     nextModule: "",
     changeModule: false,
     startNewModule: false,
+    startDemo  :false,
     endButton: false,
     partName: "",
     finishDemo: "",
@@ -363,11 +364,37 @@ export default {
       };
       this.$set(this.userResponses, this.questionIndex, selectedAnswer);
     },
-    next() {
+    async next() {
       if (this.questionIndex < this.quiz.questions.length) {
         //Logic for changeModule
         this.currentModule = this.quiz.questions[this.questionIndex].testModuleName;
         if (!this.startNewModule) {
+          if(this.finishDemo){
+            try {
+              var idUser = this.$session.get("user").idUser;
+              let response = await axios.post(
+                `${this.$urlApi}Test/SubmitAnswer`,
+                this.userResponses[this.questionIndex] ,
+                {
+                  headers: {
+                    "Content-Type": "application/json",
+                    Authorization: "Bearer " + sessionStorage.getItem("jwt"),
+                  },
+                }
+              );
+              if (response.data > 0) {
+                console.log('respuesta registrada satisfactoriamente')
+              } else {
+                this.$swal(
+                  "¡Error!",
+                  "Ha ocurrido un error al registrar su exámen, comuniquese con soporte",
+                  "error"
+                );
+              }
+            } catch (error) {
+              console.log(error);
+            }
+          }
           this.questionIndex++;
         } else {
           this.startNewModule = false;
@@ -397,13 +424,64 @@ export default {
         this.startTimer();
       }
     },
-    hideQuestions() {
+    async hideQuestions() {
       this.questionIndex++;
       if(this.questionIndex == this.quiz.questions.length){
+        try {
+          var token = sessionStorage.getItem("jwt");
+          let response = await axios.post(
+            `${this.$urlApi}Test/Finish`,
+            { token },
+            {
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: "Bearer " + sessionStorage.getItem("jwt"),
+              },
+            }
+          );
+          if (response.data > 0) {
+            console.log('examen terminado satisfactoriamente')
+            this.finishDemo = true;
+          } else {
+            this.$swal(
+              "¡Error!",
+              "Ha ocurrido un error al registrar su exámen, comuniquese con soporte",
+              "error"
+            );
+          }
+        } catch (error) {
+          console.log(error);
+        }
         return
       } 
       this.currentModule = this.quiz.questions[this.questionIndex].testModuleName;
-      if (!this.finishDemo) this.finishDemo = true;
+      if(!this.finishDemo){
+        try {
+          var idUser = this.$session.get("user").idUser;
+          let response = await axios.post(
+            `${this.$urlApi}Test/FinishDemo`,
+            { idUser },
+            {
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: "Bearer " + sessionStorage.getItem("jwt"),
+              },
+            }
+          );
+          if (response.data > 0) {
+            console.log('practica terminada satisfactoriamente')
+            this.finishDemo = true;
+          } else {
+            this.$swal(
+              "¡Error!",
+              "Ha ocurrido un error al registrar su exámen, comuniquese con soporte",
+              "error"
+            );
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      }
       this.changeModule = true;
       this.endButton = false;
       if (this.finishDemo && this.changeModule && !this.startNewModule) {
@@ -415,8 +493,30 @@ export default {
       this.$session.destroy();
       this.$router.push("/Login");
     },
-    IniciarPractica() {
-      this.finishDemo = true;
+    async IniciarPractica() {
+      try {
+        var token = sessionStorage.getItem("jwt");
+        let response = await axios.post(
+          `${this.$urlApi}Test/submit`,
+          { token },
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + sessionStorage.getItem("jwt"),
+            },
+          }
+        );
+        if (response.data > 0) {
+          console.log('Exámen iniciando de manera correcta')
+        } else if(response.data == -1) {
+          console.log('el exámen ya ha sido iniciado')
+        } else {
+          console.log('ha habido un error al iniciar el exámen')
+        }
+      } catch (error) {
+        console.log(error);
+      }
+      this.startDemo = true
     },
   },
 };
