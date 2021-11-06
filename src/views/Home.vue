@@ -864,6 +864,12 @@ export default {
               "success"
             );
             this.ListarModulo();
+          } else if(response.data == -1){
+              this.$swal(
+              "¡Error!",
+              "El módulo no puede ser eliminado porque contiene una o mas preguntas asociadas a los resultados de la evaluación.",
+              "success"
+            );
           } else {
             this.$swal(
               "¡Error!",
@@ -951,6 +957,12 @@ export default {
               "success"
             );
             this.ListarSeccion(this.itemModelSeccion.idTestModule);
+          } else if(response.data == -1){
+              this.$swal(
+              "¡Error!",
+              "La sección no puede ser eliminada porque contiene una o mas preguntas asociadas a los resultados de la evaluación.",
+              "success"
+            );
           } else {
             this.$swal(
               "¡Error!",
@@ -1036,6 +1048,12 @@ export default {
             "success"
           );
           this.ListarPregunta(this.itemModelPregunta.idTestPart);
+        } else if(response.data == -1){
+              this.$swal(
+              "¡Error!",
+              "La pregunta no puede ser eliminada porque esta asociada a resultados de la evaluación.",
+              "success"
+            );
         } else {
           this.$swal(
             "¡Error!",

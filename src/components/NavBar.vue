@@ -76,6 +76,7 @@ export default {
             "Base de datos Eliminada con éxito",
             "success"
           );
+          location.reload()
         } else {
           this.$swal(
             "¡Error!",
