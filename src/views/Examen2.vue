@@ -80,24 +80,27 @@
           <h2 class="titleContainer title">
             {{ quiz.questions[questionIndex].indications }}
           </h2>
-          <h2 v-if="quiz.questions[questionIndex].text != ''" :class="quiz.questions[questionIndex].text.length > 200 ? 'titletext' : 'titletext1'">
+          <h2 v-if="quiz.questions[questionIndex].text != null" :class="quiz.questions[questionIndex].text.length > 200 ? 'titletext' : 'titletext1'">
             {{ quiz.questions[questionIndex].text }}
           </h2>
-          <v-img v-if="quiz.questions[questionIndex].image != null"
-            :src="require(`${this.$urlImage}${quiz.questions[questionIndex].image}`)"
-            width="50%"
-            aspect-ratio="1"
-          ></v-img>
+          <div class="imageContainer" v-if="quiz.questions[questionIndex].image != null">
+            <v-img 
+              :src="`${urlImage}${quiz.questions[questionIndex].image}`"
+              width="50%"
+              aspect-ratio="1"
+              contain
+            ></v-img>
+          </div>
           <h2 class="titlevalue">
             {{ quiz.questions[questionIndex].value }}
           </h2>
 
  
           <!-- quizOptions -->
-          <div class="optionContainer">
+          <div v-bind:class="{ 'optionContainerImage': quiz.questions[questionIndex].answers[0].image != null , 'optionContainer' : quiz.questions[questionIndex].answers[0].image == null }">
             <div
-              class="option"
               v-for="(response, index) in quiz.questions[questionIndex].answers"
+              class="option"
               :class="{
                 'is-selected':
                   userResponses[questionIndex] == null
@@ -107,7 +110,17 @@
               @click="selectOption(quiz.questions[questionIndex], index)"
               :key="index"
             >
-              {{ index | charIndex }}. {{ response.text }}
+              <div v-if="response.text != null">
+                {{ index | charIndex }}. {{ response.text }}
+              </div>
+              <div v-if="response.image != null" class="imageAnswerContainer">
+                <v-img
+                  :src="`${urlImage}${response.image}`"
+                  width="30%"
+                  aspect-ratio="1"
+                  contain
+                ></v-img>
+              </div>
             </div>
           </div>
  
@@ -115,10 +128,6 @@
           <footer class="questionFooter">
             <!--pagination-->
             <nav class="pagination" role="navigation" aria-label="pagination">
-              <!-- back button -->
-              <!-- <a class="button" v-on:click="prev();" :disabled="questionIndex < 1">
-                    Back
-                  </a> -->
  
               <!-- next button -->
               <a
@@ -226,25 +235,25 @@
 <script>
 import axios from "axios";
 import { mapMutations } from "vuex";
- 
+
 const FULL_DASH_ARRAY = 283;
 const WARNING_THRESHOLD = 60;
 const ALERT_THRESHOLD = 30;
- 
+
 const COLOR_CODES = {
   info: {
-    color: "green",
+    color: "green"
   },
   warning: {
     color: "orange",
-    threshold: WARNING_THRESHOLD,
+    threshold: WARNING_THRESHOLD
   },
   alert: {
     color: "red",
-    threshold: ALERT_THRESHOLD,
-  },
+    threshold: ALERT_THRESHOLD
+  }
 };
- 
+
 export default {
   data: () => ({
     quiz: {},
@@ -255,17 +264,18 @@ export default {
     nextModule: "",
     changeModule: false,
     startNewModule: false,
-    startDemo  :false,
+    startDemo: false,
     endButton: false,
     partName: "",
     finishDemo: "",
     timePassed: 0,
     timeQuestion: 0,
+    urlImage: "http://evaluacionescrita.ino.gob.pe/img/"
   }),
   filters: {
     charIndex: function(i) {
       return String.fromCharCode(97 + i);
-    },
+    }
   },
   computed: {
     circleDasharray() {
@@ -275,29 +285,29 @@ export default {
       let timeLeft = this.timeLeft;
       let minutes = Math.floor(timeLeft / 60);
       let seconds = timeLeft % 60;
- 
+
       if (minutes < 10) {
         minutes = `0${minutes}`;
       }
       if (seconds < 10) {
         seconds = `0${seconds}`;
       }
- 
+
       return `${minutes}:${seconds}`;
     },
- 
+
     timeLeft() {
       return this.timeQuestion - this.timePassed;
     },
- 
+
     timeFraction() {
       const rawTimeFraction = this.timeLeft / this.timeQuestion;
-      return rawTimeFraction - (1 / this.timeQuestion) * (1 - rawTimeFraction);
+      return rawTimeFraction - 1 / this.timeQuestion * (1 - rawTimeFraction);
     },
- 
+
     remainingPathColor() {
       const { alert, warning, info } = COLOR_CODES;
- 
+
       if (this.timeLeft <= alert.threshold) {
         return alert.color;
       } else if (this.timeLeft <= warning.threshold) {
@@ -305,14 +315,14 @@ export default {
       } else {
         return info.color;
       }
-    },
+    }
   },
   watch: {
     timeLeft(newValue) {
       if (newValue === 0) {
         this.onTimesUp();
       }
-    },
+    }
   },
   created() {
     this.finishDemo = this.$session.get("user").finishDemo;
@@ -330,7 +340,7 @@ export default {
     async ListarExamen() {
       this.showLoading({
         title: "Accediendo a la información",
-        color: "secondary",
+        color: "secondary"
       });
       try {
         let response = await axios.get(
@@ -340,8 +350,8 @@ export default {
           {
             headers: {
               "Content-Type": "application/json",
-              Authorization: "Bearer " + sessionStorage.getItem("jwt"),
-            },
+              Authorization: "Bearer " + sessionStorage.getItem("jwt")
+            }
           }
         );
         this.quiz = response.data;
@@ -360,30 +370,32 @@ export default {
         index: index,
         idQuestion: item.id,
         idAnswer: item.answers[index].id,
-        idUser: this.$session.get("user").idUser,
+        idUser: this.$session.get("user").idUser
       };
       this.$set(this.userResponses, this.questionIndex, selectedAnswer);
     },
     async next() {
       if (this.questionIndex < this.quiz.questions.length) {
         //Logic for changeModule
-        this.currentModule = this.quiz.questions[this.questionIndex].testModuleName;
+        this.currentModule = this.quiz.questions[
+          this.questionIndex
+        ].testModuleName;
         if (!this.startNewModule) {
-          if(this.finishDemo){
+          if (this.finishDemo) {
             try {
               var idUser = this.$session.get("user").idUser;
               let response = await axios.post(
                 `${this.$urlApi}Test/SubmitAnswer`,
-                this.userResponses[this.questionIndex] ,
+                this.userResponses[this.questionIndex],
                 {
                   headers: {
                     "Content-Type": "application/json",
-                    Authorization: "Bearer " + sessionStorage.getItem("jwt"),
-                  },
+                    Authorization: "Bearer " + sessionStorage.getItem("jwt")
+                  }
                 }
               );
               if (response.data > 0) {
-                console.log('respuesta registrada satisfactoriamente')
+                console.log("respuesta registrada satisfactoriamente");
               } else {
                 this.$swal(
                   "¡Error!",
@@ -400,7 +412,9 @@ export default {
           this.startNewModule = false;
           this.changeModule = false;
         }
-        this.nextModule = this.quiz.questions[this.questionIndex].testModuleName;
+        this.nextModule = this.quiz.questions[
+          this.questionIndex
+        ].testModuleName;
         if (this.currentModule == this.nextModule) {
           this.changeModule = false;
         } else {
@@ -414,34 +428,32 @@ export default {
         ) {
           this.endButton = true;
         }
-        if(this.questionIndex == this.quiz.questions.length - 1){
+        if (this.questionIndex == this.quiz.questions.length - 1) {
           this.endButton = true;
         }
         clearInterval(this.timerInterval);
         this.timeQuestion =
-        this.quiz.questions[this.questionIndex].timeLimit * 60;
+          this.quiz.questions[this.questionIndex].timeLimit * 60;
         this.timePassed = 0;
         this.startTimer();
       }
     },
     async hideQuestions() {
-      this.questionIndex++;
-      if(this.questionIndex == this.quiz.questions.length){
+      if(this.finishDemo){
         try {
-          var token = sessionStorage.getItem("jwt");
+          var idUser = this.$session.get("user").idUser;
           let response = await axios.post(
-            `${this.$urlApi}Test/Finish`,
-            { token },
+            `${this.$urlApi}Test/SubmitAnswer`,
+            this.userResponses[this.questionIndex],
             {
               headers: {
                 "Content-Type": "application/json",
-                Authorization: "Bearer " + sessionStorage.getItem("jwt"),
-              },
+                Authorization: "Bearer " + sessionStorage.getItem("jwt")
+              }
             }
           );
           if (response.data > 0) {
-            console.log('examen terminado satisfactoriamente')
-            this.finishDemo = true;
+            console.log("respuesta registrada satisfactoriamente");
           } else {
             this.$swal(
               "¡Error!",
@@ -452,10 +464,39 @@ export default {
         } catch (error) {
           console.log(error);
         }
-        return
-      } 
-      this.currentModule = this.quiz.questions[this.questionIndex].testModuleName;
-      if(!this.finishDemo){
+      }
+      this.questionIndex++;
+      if (this.questionIndex == this.quiz.questions.length) {
+        try {
+          var token = sessionStorage.getItem("jwt");
+          let response = await axios.post(
+            `${this.$urlApi}Test/Finish`,
+            { token },
+            {
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: "Bearer " + sessionStorage.getItem("jwt")
+              }
+            }
+          );
+          if (response.data > 0) {
+            console.log("examen terminado satisfactoriamente");
+          } else {
+            this.$swal(
+              "¡Error!",
+              "Ha ocurrido un error al registrar su exámen, comuniquese con soporte",
+              "error"
+            );
+          }
+        } catch (error) {
+          console.log(error);
+        }
+        return;
+      }
+      this.currentModule = this.quiz.questions[
+        this.questionIndex
+      ].testModuleName;
+      if (!this.finishDemo) {
         try {
           var idUser = this.$session.get("user").idUser;
           let response = await axios.post(
@@ -464,12 +505,12 @@ export default {
             {
               headers: {
                 "Content-Type": "application/json",
-                Authorization: "Bearer " + sessionStorage.getItem("jwt"),
-              },
+                Authorization: "Bearer " + sessionStorage.getItem("jwt")
+              }
             }
           );
           if (response.data > 0) {
-            console.log('practica terminada satisfactoriamente')
+            console.log("practica terminada satisfactoriamente");
             this.finishDemo = true;
           } else {
             this.$swal(
@@ -502,51 +543,52 @@ export default {
           {
             headers: {
               "Content-Type": "application/json",
-              Authorization: "Bearer " + sessionStorage.getItem("jwt"),
-            },
+              Authorization: "Bearer " + sessionStorage.getItem("jwt")
+            }
           }
         );
         if (response.data > 0) {
-          console.log('Exámen iniciando de manera correcta')
-        } else if(response.data == -1) {
-          console.log('el exámen ya ha sido iniciado')
+          console.log("Exámen iniciando de manera correcta");
+        } else if (response.data == -1) {
+          console.log("el exámen ya ha sido iniciado");
         } else {
-          console.log('ha habido un error al iniciar el exámen')
+          console.log("ha habido un error al iniciar el exámen");
         }
       } catch (error) {
         console.log(error);
       }
-      this.startDemo = true
-    },
-  },
+      this.endButton = true;
+      this.startDemo = true;
+    }
+  }
 };
 </script>
  
 <style lang="scss" scoped>
 $trans_duration: 0.3s;
 $primary_color: #3d5afe;
- 
+
 @import url("https://fonts.googleapis.com/css?family=Montserrat:400,400i,700");
 @import url("https://fonts.googleapis.com/css?family=Open+Sans:400,400i,700");
- 
+
 body {
   font-family: "Open Sans", sans-serif;
   font-size: 14px;
- 
+
   height: 100vh;
- 
+
   background: #cfd8dc;
- 
+
   /* mocking native UI */
   cursor: default !important; /* remove text selection cursor */
   user-select: none; /* remove text selection */
   user-drag: none; /* disbale element dragging */
- 
+
   display: flex;
   align-items: center;
   justify-content: center;
 }
- 
+
 .button {
   transition: $trans_duration;
 }
@@ -558,35 +600,35 @@ body {
 .animated {
   transition-duration: $trans_duration/2;
 }
- 
+
 .container {
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100%;
 }
- 
+
 .questionBox {
   max-width: 60rem;
   width: 60rem;
   min-height: 50rem;
- 
+
   background: #fafafa;
   position: relative;
   display: flex;
- 
+
   border-radius: 0.5rem;
   overflow: hidden;
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
- 
+
   header {
     background: rgba(0, 0, 0, 0.025);
     padding: 1.5rem;
     text-align: center;
     border-bottom: 1px solid rgba(0, 0, 0, 0.1);
     background-color: $primary-color;
-    height : 70%;
- 
+    height: 70%;
+
     h1 {
       font-weight: bold;
       margin-bottom: 1rem !important;
@@ -599,7 +641,7 @@ body {
         border-radius: 5rem;
         overflow: hidden;
         border: none;
- 
+
         color: $primary_color;
         &::-moz-progress-bar {
           background: $primary_color;
@@ -618,46 +660,58 @@ body {
     text-align: center;
     margin: 0 auto;
     padding: 0.5rem;
-    font-weight : bold;
-    font-style : italic;
+    font-weight: bold;
+    font-style: italic;
   }
 
   .titletext {
     text-align: center;
     margin: 0 auto;
     padding: 1.5rem;
-    width : 100%;
-    height : 200px;
+    width: 100%;
+    height: 200px;
     overflow-y: scroll;
-    font-size : 17px;
-    font-weight : normal;
+    font-size: 17px;
+    font-weight: normal;
   }
   .titletext1 {
     text-align: center;
     margin: 0 auto;
     padding: 0.5rem;
-    font-size : 17px;
-    font-weight : normal;
+    font-size: 17px;
+    font-weight: normal;
+  }
+
+  .imageContainer {
+    display: flex;
+    justify-content: center;
+    height: 400px;
+  }
+
+  .imageAnswerContainer {
+    display: flex;
+    justify-content: center;
+    height: 150px;
   }
 
   .titlevalue {
     text-align: center;
     margin: 0 auto;
     padding: 0.5rem;
-    font-weight : bold;
+    font-weight: bold;
   }
- 
+
   .quizForm {
     display: block;
     white-space: normal;
- 
+
     height: 100%;
     width: 100%;
- 
+
     .quizFormContainer {
       height: 100%;
       margin: 15px 18px;
- 
+
       .field-label {
         text-align: left;
         margin-bottom: 0.5rem;
@@ -668,11 +722,11 @@ body {
     width: 100%;
     padding: 1rem;
     text-align: center;
- 
+
     > .icon {
       color: #ff5252;
       font-size: 5rem;
- 
+
       .is-active {
         color: #00e676;
       }
@@ -680,10 +734,10 @@ body {
   }
   .questionContainer {
     white-space: normal;
- 
+
     height: 100%;
     width: 100%;
- 
+
     .optionContainer {
       margin-top: 12px;
       flex-grow: 1;
@@ -697,8 +751,8 @@ body {
         background-color: rgba(0, 0, 0, 0.05);
         color: rgba(0, 0, 0, 0.85);
         border: transparent 1px solid;
-        width : 70%;
- 
+        width: 70%;
+
         &.is-selected {
           border-color: rgba(black, 0.25);
           background-color: $primary-color;
@@ -712,13 +766,30 @@ body {
         }
       }
     }
- 
+
+    .optionContainerImage {
+      margin-top: 12px;
+      flex-grow: 1;
+      .option {
+        margin: 0 auto;
+        margin-bottom: 12px;
+        transition: $trans_duration;
+        cursor: pointer;
+        border: black 2px solid;
+        width: 20%;
+
+        &.is-selected {
+          border: $primary-color 4px solid;
+        }
+      }
+    }
+
     .questionFooter {
       background: rgba(0, 0, 0, 0.025);
       border-top: 1px solid rgba(0, 0, 0, 0.1);
       width: 100%;
       align-self: flex-end;
- 
+
       .pagination {
         margin: 15px 25px;
         display: flex;
@@ -736,9 +807,9 @@ body {
   border: 1px solid rgba(0, 0, 0, 0.25);
   border-radius: 5rem;
   margin: 0 0.25rem;
- 
+
   transition: 0.3s;
- 
+
   &:hover {
     cursor: pointer;
     background: #eceff1;
@@ -748,7 +819,7 @@ body {
     background: $primary_color;
     color: white;
     border-color: transparent;
- 
+
     &:hover {
       background: darken($primary_color, 10%);
     }
@@ -759,21 +830,21 @@ body {
   width: 120px;
   height: 120px;
   margin: 0 auto;
- 
+
   &__svg {
     transform: scaleX(-1);
   }
- 
+
   &__circle {
     fill: none;
     stroke: none;
   }
- 
+
   &__path-elapsed {
     stroke-width: 7px;
     stroke: grey;
   }
- 
+
   &__path-remaining {
     stroke-width: 7px;
     stroke-linecap: round;
@@ -782,20 +853,20 @@ body {
     transition: 1s linear all;
     fill-rule: nonzero;
     stroke: currentColor;
- 
+
     &.green {
       color: rgb(65, 184, 131);
     }
- 
+
     &.orange {
       color: orange;
     }
- 
+
     &.red {
       color: red;
     }
   }
- 
+
   &__label {
     position: absolute;
     width: 120px;
@@ -807,29 +878,46 @@ body {
     font-size: 25px;
   }
 }
- 
+
 @media (max-width: 768px) {
   /* For mobile phones: */
   .base-timer {
     z-index: 100;
- 
+
     &__label {
       font-size: 25px;
     }
   }
+  .questionBox {
+    .questionContainer {
+      .optionContainerImage {
+        .option {
+          width: 70%;
+        }
+      }
+    }
+  }
+
+    .quizCompleted {
+      margin: 0;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      -ms-transform: translate(-50%, -50%);
+      transform: translate(-50%, -50%);
+    }
 }
 @media screen and (min-width: 769px) {
   .questionBox {
     align-items: center;
     justify-content: center;
- 
+
     .questionContainer {
       display: flex;
       flex-direction: column;
     }
   }
 }
- 
 @media screen and (max-width: 768px) {
   .sidebar {
     height: auto !important;

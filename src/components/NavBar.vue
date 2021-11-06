@@ -64,7 +64,7 @@ export default {
         color: "secondary"
       });
       try {
-        let response = await axios.post(`${this.$urlApi}Test/RestartDb`, {
+        let response = await axios.post(`${this.$urlApi}Test/RestartDb`, {}, {
           headers: {
             "Content-Type": "application/json",
             Authorization: "Bearer " + sessionStorage.getItem("jwt")
