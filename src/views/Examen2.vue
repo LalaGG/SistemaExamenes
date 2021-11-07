@@ -586,7 +586,7 @@ export default {
  
 <style lang="scss" scoped>
 $trans_duration: 0.3s;
-$primary_color: #3d5afe;
+$primary_color: #378bf8;
 
 @import url("https://fonts.googleapis.com/css?family=Montserrat:400,400i,700");
 @import url("https://fonts.googleapis.com/css?family=Open+Sans:400,400i,700");
@@ -660,14 +660,14 @@ body {
         margin: 0;
         border-radius: 5rem;
         overflow: hidden;
-        border: none;
+        border: solid 1px black;
 
-        color: $primary_color;
+        color: #03377a;
         &::-moz-progress-bar {
-          background: $primary_color;
+          background: #03377a;
         }
         &::-webkit-progress-value {
-          background: $primary_color;
+          background: #03377a;
         }
       }
       > p {
@@ -875,7 +875,7 @@ body {
     stroke: currentColor;
 
     &.green {
-      color: rgb(65, 184, 131);
+      color: rgb(29, 175, 53);
     }
 
     &.orange {
