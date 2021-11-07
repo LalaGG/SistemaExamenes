@@ -17,7 +17,8 @@
             questionIndex < quiz.questions.length &&
               startDemo &&
               !changeModule &&
-              !startNewModule
+              !startNewModule  && 
+              !finishTest
           "
           v-bind:key="questionIndex"
         >
@@ -146,7 +147,7 @@
  
         <!--quizCompletedResult-->
         <div
-          v-if="questionIndex >= 0 && changeModule && startNewModule"
+          v-if="questionIndex >= 0 && changeModule && startNewModule && !finishTest"
           v-bind:key="questionIndex"
           class="quizCompleted has-text-centered"
         >
@@ -172,7 +173,7 @@
         </div>
  
         <div
-          v-if="questionIndex > 0 && questionIndex == quiz.questions.length"
+          v-if="(questionIndex > 0 && questionIndex == quiz.questions.length) || finishTest"
           v-bind:key="questionIndex"
           class="quizCompleted has-text-centered"
         >
@@ -186,10 +187,10 @@
           </span>
  
           <h2 class="title">
-            Gracias por terminar la prueba
+             ¡FELICIDADES!
           </h2>
           <p class="subtitle">
-            AEA
+            FIN DE LA PRUEBA.
           </p>
           <br />
           <a class="button" @click="cerrarSesion()"
@@ -198,7 +199,7 @@
         </div>
  
         <div
-          v-if="questionIndex == 0 && !startDemo"
+          v-if="questionIndex == 0 && !startDemo && !finishTest"
           v-bind:key="questionIndex"
           class="quizCompleted has-text-centered"
         >
@@ -271,7 +272,8 @@ export default {
     timePassed: 0,
     timeQuestion: 0,
     urlImage: "http://evaluacionescrita.ino.gob.pe/img/",
-    totalQuestionDemo : 0
+    totalQuestionDemo : 0,
+    finishTest : "",
   }),
   filters: {
     charIndex: function(i) {
@@ -327,8 +329,9 @@ export default {
   },
   async created() {
     this.finishDemo = this.$session.get("user").finishDemo;
-    await this.ListarExamen();
-      if(this.finishDemo){
+    this.finishTest = this.$session.get("user").testFinish;
+      await this.ListarExamen();
+      if(this.finishDemo && !this.finishTest){
         this.startDemo = true
         this.timeQuestion = this.quiz.questions[this.questionIndex].timeLimit * 60;
         this.startTimer();
@@ -361,11 +364,9 @@ export default {
           }
         );
         this.quiz = response.data;
-        this.currentModule = this.quiz.questions[
-          this.questionIndex
-        ].testModuleName;
-        this.userResponses = Array(this.quiz.questions.length).fill(null);
-        var filteredQuiz = this.quiz.questions.filter(q => q.testModuleName == 'Módulo Prueba')
+        this.currentModule = this.quiz.questions.length > 0 ? this.quiz.questions[this.questionIndex].testModuleName : '';
+        this.userResponses = this.quiz.questions.length > 0 ? Array(this.quiz.questions.length).fill(null) : [];
+        var filteredQuiz = this.quiz.questions.length > 0 ? this.quiz.questions.filter(q => q.testModuleName == 'Módulo Prueba') : []
         this.totalQuestionDemo = filteredQuiz.length
       } catch (error) {
         console.log(error);
@@ -390,6 +391,14 @@ export default {
         ].testModuleName;
         if (!this.startNewModule) {
           if (this.finishDemo) {
+            if(this.userResponses[this.questionIndex] == null){
+              var selectedAnswer = {
+                idQuestion: this.quiz.questions[this.questionIndex].id,
+                idAnswer: 0,
+                idUser: this.$session.get("user").idUser
+              };
+              this.$set(this.userResponses, this.questionIndex, selectedAnswer);
+            }
             try {
               var idUser = this.$session.get("user").idUser;
               let response = await axios.post(

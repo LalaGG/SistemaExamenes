@@ -4,102 +4,7 @@
     v-if="this.$session.get('user').userType != 'adm'"
   >
     <BarraNavegacion />
-    <v-row class="justify-center pt-5">
-      <v-card class="pa-5">
-        <p class="text-h4">
-          BIENVENIDO AL SISTEMA DE EXÁMENES DEL INSTITUTO NACIONAL DE
-          OFTALMOLOGÍA
-        </p>
-        <p class="text-h5">Pasos para rendir el examen</p>
-        <v-divider></v-divider>
-        <ol class="pt-5">
-          <li class="text-h6">
-            Al iniciar el examen lea con detenimiento las preguntas y seleccione
-            solo una de las respuestas.
-          </li>
-          <li class="text-h6">
-            Al finalizar haga click en el boton "Finalizar Exámen"
-          </li>
-          <li class="text-h6">
-            Espere un momento para obtener su nota. De tener una nota
-            aprobatoria se le enviará el certificado al correo con el que se
-            registró.
-          </li>
-        </ol>
-        <v-divider class="pb-2"></v-divider>
-        <p class="text-h5">Observaciones</p>
-        <v-divider></v-divider>
-        <v-row>
-          <v-col sm="12">
-            <ul class="pb-5">
-              <li class="text-h6">
-                Si presiona más de 1 vez el nombre del examen el tiempo irá más
-                rápido por favor tener presente y solo dar un click
-              </li>
-              <li class="text-h6" style="color:red;font-weight:800">
-                Si el cronómetro ha comenzado a descender cualquier acción que
-                realice para salir de la página del exámen, el sistema validará
-                como exámen terminado, así no haya marcado nada.
-              </li>
-            </ul>
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col sm="4"></v-col>
-          <v-col sm="4">
-            <v-btn
-              @click="IngresarAlExamen"
-              block
-              color="primary"
-              elevation="15"
-              x-large
-              style="font-size: xx-large;"
-            >
-              Iniciar Exámen
-            </v-btn>
-          </v-col>
-          <v-col sm="4"></v-col>
-        </v-row>
-      </v-card>
-    </v-row>
-
-    <v-dialog v-model="resultadoDialog" persistent max-width="800">
-      <v-toolbar color="primary" dark>
-        <v-toolbar-title>
-          Resultado
-        </v-toolbar-title>
-      </v-toolbar>
-      <v-card class="py-5">
-        <v-card-text>
-          <v-row class="justify-center">
-            <p class="text-h2">
-              {{
-                Number(itemModelNota.totalScore) >= 14
-                  ? "Aprobado"
-                  : "Desaprobado"
-              }}
-            </p>
-          </v-row>
-          <v-row class="justify-center">
-            <p style="font-weight: 800;" class="text-h3">
-              Nota: {{ itemModelNota.totalScore }}
-            </p>
-          </v-row>
-          <v-row class="justify-center">
-            <v-btn
-              class="ma-3"
-              @click="EnviarCorreo"
-              color="primary"
-              v-show="Number(itemModelNota.totalScore) >= 14"
-              >Enviar Certificado</v-btn
-            >
-            <v-btn class="ma-3" @click="SalirDelSistema" color="error"
-              >Salir del Sistema</v-btn
-            >
-          </v-row>
-        </v-card-text>
-      </v-card>
-    </v-dialog>
+    
   </v-container>
 
   <v-container fluid class="container-personalizado" v-else>
@@ -301,8 +206,8 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn dark color="primary" @click="GuardarModulo">Guardar</v-btn>
             <v-btn dark color="primary" @click="CerrarModulo">Cancelar</v-btn>
+            <v-btn dark color="primary" @click="GuardarModulo">Guardar</v-btn>
           </v-card-actions>
         </v-card>
       </v-form>
@@ -368,8 +273,8 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn dark color="primary" @click="GuardarSeccion">Guardar</v-btn>
             <v-btn dark color="primary" @click="CerrarSeccion">Cancelar</v-btn>
+            <v-btn dark color="primary" @click="GuardarSeccion">Guardar</v-btn>
           </v-card-actions>
         </v-card>
       </v-form>
@@ -433,6 +338,7 @@
                       filled
                       outlined
                       hide-details
+                      :rules="ReglasGenerales"
                     ></v-text-field>
                   </v-col>
                   <v-col sm="6">
@@ -444,6 +350,7 @@
                       filled
                       outlined
                       hide-details
+                      :rules="ReglasGenerales"
                     ></v-text-field>
                   </v-col>
                 </v-row>
@@ -533,8 +440,8 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn dark color="primary" @click="GuardarPregunta">Guardar</v-btn>
             <v-btn dark color="primary" @click="CerrarPregunta">Cancelar</v-btn>
+            <v-btn dark color="primary" @click="GuardarPregunta">Guardar</v-btn>
           </v-card-actions>
         </v-card>
       </v-form>
@@ -714,6 +621,7 @@ export default {
     itemModelNota: {
       totalScore: 0
     },
+    urlImage: "http://evaluacionescrita.ino.gob.pe/img/",
     extensions: [
       History,
       Blockquote,
@@ -751,13 +659,7 @@ export default {
         color: "success",
         icon: "check-circle"
       });
-      this.itemModelNota.totalScore = this.$session.get("user").totalScore;
-      if (this.$session.get("user").testFinish) {
-        this.resultadoDialog = true;
-      }
-    } else {
-      this.dialog = false;
-    }
+    } 
     this.ListarModulo();
   },
   methods: {
@@ -1039,7 +941,7 @@ export default {
         this.itemModelPregunta.text = item.text;
         this.itemModelPregunta.type = item.type;
         this.itemModelPregunta.image = null;
-        this.itemModelPregunta.url = `${this.$urlImage}${item.image}`;
+        this.itemModelPregunta.url = this.urlImage+`${item.image}`;
         this.itemModelPregunta.score = item.score;
         this.itemModelPregunta.timeLimit = item.timeLimit;
         this.itemModelPregunta.indications = item.indications;
@@ -1047,7 +949,7 @@ export default {
         item.answers.forEach(element => {
           this.listaDeRespuestas.push({
             text: element.text,
-            url: `${this.$urlImage}${element.image}`,
+            url: this.urlImage+`${element.image}`,
             image: "",
             isCorrect: element.isCorrect
           });
@@ -1206,69 +1108,71 @@ export default {
       
     },
     async GuardarPregunta() {
-      var response = "";
-      this.itemModelPregunta.answers = this.listaDeRespuestas;
-      this.listaDeRespuestas.forEach(element => {
-        element.isCorrect = element.isCorrect == "1" ? true : false;
-      });
-      const fd = new FormData();
-      this.itemModelPregunta.image != null
-        ? fd.append(
-            "image",
-            this.itemModelPregunta.image,
-            this.itemModelPregunta.image.name
-          )
-        : fd.append("image", "");
-      fd.append("id", this.itemModelPregunta.id);
-      fd.append("idTestPart", this.itemModelPregunta.idTestPart);
-      fd.append("text", this.itemModelPregunta.text);
-      fd.append("score", this.itemModelPregunta.score);
-      fd.append("timeLimit", this.itemModelPregunta.timeLimit);
-      fd.append("indications", this.itemModelPregunta.indications);
-      fd.append("value", this.itemModelPregunta.value);
-      for (var i = 0; i < this.listaDeRespuestas.length; i++) {
-        fd.append("answers[" + i + "].text", this.listaDeRespuestas[i].text);
-        fd.append(
-          "answers[" + i + "].isCorrect",
-          this.listaDeRespuestas[i].isCorrect
-        );
-        this.listaDeRespuestas[i].image != null
-          ? fd.append(
-              "answers[" + i + "].image",
-              this.listaDeRespuestas[i].image
-            )
-          : fd.append("answers[" + i + "].image", "");
-      }
-      this.showLoading({
-        title: "Accediendo a la información",
-        color: "secondary"
-      });
-      try {
-        response = await axios.post(`${this.$urlApi}Question`, fd, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            Authorization: "Bearer " + sessionStorage.getItem("jwt")
-          }
+      if(this.$refs.form2.validate()){
+        var response = "";
+        this.itemModelPregunta.answers = this.listaDeRespuestas;
+        this.listaDeRespuestas.forEach(element => {
+          element.isCorrect = element.isCorrect == "1" ? true : false;
         });
-        if (response.data > 0) {
-          this.$swal(
-            "Guardado!",
-            "La pregunta ha sido guardada con éxito",
-            "success"
+        const fd = new FormData();
+        this.itemModelPregunta.image != null
+          ? fd.append(
+              "image",
+              this.itemModelPregunta.image,
+              this.itemModelPregunta.image.name
+            )
+          : fd.append("image", "");
+        fd.append("id", this.itemModelPregunta.id);
+        fd.append("idTestPart", this.itemModelPregunta.idTestPart);
+        fd.append("text", this.itemModelPregunta.text);
+        fd.append("score", this.itemModelPregunta.score);
+        fd.append("timeLimit", this.itemModelPregunta.timeLimit);
+        fd.append("indications", this.itemModelPregunta.indications);
+        fd.append("value", this.itemModelPregunta.value);
+        for (var i = 0; i < this.listaDeRespuestas.length; i++) {
+          fd.append("answers[" + i + "].text", this.listaDeRespuestas[i].text);
+          fd.append(
+            "answers[" + i + "].isCorrect",
+            this.listaDeRespuestas[i].isCorrect
           );
-          this.ListarPregunta(this.itemModelPregunta.idTestPart);
-          this.CerrarPregunta();
-        } else {
-          this.$swal(
-            "¡Error!",
-            "La pregunta no ha sido guardada correctamente, comuniquese con soporte",
-            "error"
-          );
+          this.listaDeRespuestas[i].image != null
+            ? fd.append(
+                "answers[" + i + "].image",
+                this.listaDeRespuestas[i].image
+              )
+            : fd.append("answers[" + i + "].image", "");
         }
-      } catch (error) {
-        console.log(error);
-      } finally {
-        this.hideLoading();
+        this.showLoading({
+          title: "Accediendo a la información",
+          color: "secondary"
+        });
+        try {
+          response = await axios.post(`${this.$urlApi}Question`, fd, {
+            headers: {
+              "Content-Type": "multipart/form-data",
+              Authorization: "Bearer " + sessionStorage.getItem("jwt")
+            }
+          });
+          if (response.data > 0) {
+            this.$swal(
+              "Guardado!",
+              "La pregunta ha sido guardada con éxito",
+              "success"
+            );
+            this.ListarPregunta(this.itemModelPregunta.idTestPart);
+            this.CerrarPregunta();
+          } else {
+            this.$swal(
+              "¡Error!",
+              "La pregunta no ha sido guardada correctamente, comuniquese con soporte",
+              "error"
+            );
+          }
+        } catch (error) {
+          console.log(error);
+        } finally {
+          this.hideLoading();
+        }
       }
     },
     CerrarModulo() {
