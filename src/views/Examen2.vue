@@ -57,32 +57,32 @@
               {{ quiz.questions[questionIndex].testModuleName }} -
               {{ quiz.questions[questionIndex].testPartName }}
             </h1>
-            <h1 class="title is-6">
+            <h1 v-if="quiz.questions[questionIndex].testPartInstructions != null && quiz.questions[questionIndex].testPartInstructions != ''" class="title is-6">
               {{ quiz.questions[questionIndex].testPartInstructions }}
             </h1>
             <!--progress-->
-            <div class="progressContainer">
+            <div class="progressContainer" v-if="finishDemo">
               <progress
                 class="progress is-info is-small"
-                :value="(questionIndex / quiz.questions.length) * 100"
+                :value="((questionIndex - totalQuestionDemo) / (quiz.questions.length - totalQuestionDemo)) * 100"
                 max="100"
-                >{{ (questionIndex / quiz.questions.length) * 100 }}%</progress
+                >{{ ((questionIndex - totalQuestionDemo) / (quiz.questions.length - totalQuestionDemo)) * 100 }}%</progress
               >
               <p>
-                {{ Math.floor((questionIndex / quiz.questions.length) * 100) }}%
-                complete
+                {{ Math.floor(((questionIndex - totalQuestionDemo) / (quiz.questions.length - totalQuestionDemo)) * 100) }}%
+                Completo
               </p>
             </div>
             <!--/progress-->
           </header>
  
           <!-- questionTitle -->
-          <h2 class="titleContainer title">
+          <h2 v-if="quiz.questions[questionIndex].indications != null && quiz.questions[questionIndex].indications != ''" class="titleContainer title">
             {{ quiz.questions[questionIndex].indications }}
           </h2>
-          <h2 v-if="quiz.questions[questionIndex].text != null" :class="quiz.questions[questionIndex].text.length > 200 ? 'titletext' : 'titletext1'">
-            {{ quiz.questions[questionIndex].text }}
-          </h2>
+          <div v-if="quiz.questions[questionIndex].text != null && quiz.questions[questionIndex].text != ''" :class="quiz.questions[questionIndex].text.length > 200 ? 'titletext' : 'titletext1'" v-html="quiz.questions[questionIndex].text">
+
+          </div>
           <div class="imageContainer" v-if="quiz.questions[questionIndex].image != null">
             <v-img 
               :src="`${urlImage}${quiz.questions[questionIndex].image}`"
@@ -91,7 +91,7 @@
               contain
             ></v-img>
           </div>
-          <h2 class="titlevalue">
+          <h2 v-if="quiz.questions[questionIndex].value != null && quiz.questions[questionIndex].value != ''" class="titlevalue">
             {{ quiz.questions[questionIndex].value }}
           </h2>
 
@@ -270,7 +270,8 @@ export default {
     finishDemo: "",
     timePassed: 0,
     timeQuestion: 0,
-    urlImage: "http://evaluacionescrita.ino.gob.pe/img/"
+    urlImage: "http://evaluacionescrita.ino.gob.pe/img/",
+    totalQuestionDemo : 0
   }),
   filters: {
     charIndex: function(i) {
@@ -324,9 +325,14 @@ export default {
       }
     }
   },
-  created() {
+  async created() {
     this.finishDemo = this.$session.get("user").finishDemo;
-    this.ListarExamen();
+    await this.ListarExamen();
+      if(this.finishDemo){
+        this.startDemo = true
+        this.timeQuestion = this.quiz.questions[this.questionIndex].timeLimit * 60;
+        this.startTimer();
+      }
   },
   methods: {
     ...mapMutations(["showLoading", "hideLoading", "showNotification"]),
@@ -359,6 +365,8 @@ export default {
           this.questionIndex
         ].testModuleName;
         this.userResponses = Array(this.quiz.questions.length).fill(null);
+        var filteredQuiz = this.quiz.questions.filter(q => q.testModuleName == 'Módulo Prueba')
+        this.totalQuestionDemo = filteredQuiz.length
       } catch (error) {
         console.log(error);
       } finally {
@@ -534,6 +542,7 @@ export default {
       this.$session.destroy();
       this.$router.push("/Login");
     },
+
     async IniciarPractica() {
       try {
         var token = sessionStorage.getItem("jwt");
@@ -557,8 +566,10 @@ export default {
       } catch (error) {
         console.log(error);
       }
-      this.endButton = true;
       this.startDemo = true;
+      if(this.totalQuestionDemo == 1){
+        this.endButton = true
+      }
     }
   }
 };

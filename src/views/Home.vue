@@ -269,261 +269,276 @@
     </v-row>
 
     <v-dialog v-model="dialogModulo" max-width="1200px">
-      <v-card>
-        <v-toolbar>
-          <v-toolbar-title>Mantenimiento de Módulos</v-toolbar-title>
-        </v-toolbar>
-        <v-card-text>
-          <v-row class="pt-5" >
-            <v-col sm="6">
-              <v-text-field
-                v-model="itemModelModulo.name"
-                type="text"
-                label="Nombre del Módulo"
-                outlined
-                filled
-              >
-              </v-text-field>
-            </v-col>
-          </v-row>
-          <v-row>
-            <v-col sm="12">
-              <v-switch
-                v-model="itemModelModulo.active"
-                label="Activo"
-                color="primary"
-              >
-              </v-switch>
-            </v-col>
-          </v-row>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn dark color="primary" @click="GuardarModulo">Guardar</v-btn>
-          <v-btn dark color="primary" @click="CerrarModulo">Cancelar</v-btn>
-        </v-card-actions>
-      </v-card>
+      <v-form v-model="valid" ref="form" lazy-validation>
+        <v-card>
+          <v-toolbar>
+            <v-toolbar-title>Mantenimiento de Módulos</v-toolbar-title>
+          </v-toolbar>
+          <v-card-text>
+            <v-row class="pt-5" >
+              <v-col sm="6">
+                <v-text-field
+                  v-model="itemModelModulo.name"
+                  type="text"
+                  label="Nombre del Módulo"
+                  outlined
+                  filled
+                  :rules="ReglasGenerales"
+                >
+                </v-text-field>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col sm="12">
+                <v-switch
+                  v-model="itemModelModulo.active"
+                  label="Activo"
+                  color="primary"
+                >
+                </v-switch>
+              </v-col>
+            </v-row>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn dark color="primary" @click="GuardarModulo">Guardar</v-btn>
+            <v-btn dark color="primary" @click="CerrarModulo">Cancelar</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-form>
+      
     </v-dialog>
 
     <v-dialog v-model="dialogSeccion" max-width="1200px">
-      <v-card>
-        <v-toolbar>
-          <v-toolbar-title>Mantenimiento de Secciones</v-toolbar-title>
-        </v-toolbar>
-        <v-card-text>
-          <v-row class="pt-5">
-            <v-col  sm="6">
-              <v-text-field
-                v-model="itemModelSeccion.name"
-                type="text"
-                label="Nombre de la Sección"
-                outlined
-                filled
-              >
-              </v-text-field>
-            </v-col>
-            <v-col sm="6">
-                  <v-combobox
-                    v-model="itemModelSeccion.type"
-                    :items="listaDeTiposPregunta"
-                    label="Tipo de Pregunta"
-                    hint="Eliga el tipo de pregunta que desea crear"
-                    item-value="id"
-                    item-text="description"
-                    clearable
-                    filled
-                    hide-selected
-                    outlined
-                  ></v-combobox>
-            </v-col>
-            <v-col class="pt-5" sm="12">
-              <v-textarea
-                v-model="itemModelSeccion.instructions"
-                type="text"
-                label="Instrucciones de la Sección"
-                outlined
-                filled
-              >
-              </v-textarea>
-            </v-col>
-          </v-row>
-          <v-row>
-            <v-col sm="12">
-              <v-switch
-                v-model="itemModelSeccion.active"
-                label="Activo"
-                color="primary"
-              >
-              </v-switch>
-            </v-col>
-          </v-row>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn dark color="primary" @click="GuardarSeccion">Guardar</v-btn>
-          <v-btn dark color="primary" @click="CerrarSeccion">Cancelar</v-btn>
-        </v-card-actions>
-      </v-card>
+      <v-form v-model="valid1" ref="form1" lazy-validation>
+        <v-card>
+          <v-toolbar>
+            <v-toolbar-title>Mantenimiento de Secciones</v-toolbar-title>
+          </v-toolbar>
+          <v-card-text>
+            <v-row class="pt-5">
+              <v-col  sm="6">
+                <v-text-field
+                  v-model="itemModelSeccion.name"
+                  type="text"
+                  label="Nombre de la Sección"
+                  outlined
+                  filled
+                  :rules="ReglasGenerales"
+                >
+                </v-text-field>
+              </v-col>
+              <v-col sm="6">
+                    <v-combobox
+                      v-model="itemModelSeccion.type"
+                      :items="listaDeTiposPregunta"
+                      label="Tipo de Pregunta"
+                      hint="Eliga el tipo de pregunta que desea crear"
+                      item-value="id"
+                      item-text="description"
+                      clearable
+                      filled
+                      hide-selected
+                      outlined
+                      :rules="ReglasCombo"
+                    ></v-combobox>
+              </v-col>
+              <v-col class="pt-5" sm="12">
+                <v-textarea
+                  v-model="itemModelSeccion.instructions"
+                  type="text"
+                  label="Instrucciones de la Sección"
+                  outlined
+                  filled
+                  :rules="ReglasGenerales"
+                >
+                </v-textarea>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col sm="12">
+                <v-switch
+                  v-model="itemModelSeccion.active"
+                  label="Activo"
+                  color="primary"
+                >
+                </v-switch>
+              </v-col>
+            </v-row>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn dark color="primary" @click="GuardarSeccion">Guardar</v-btn>
+            <v-btn dark color="primary" @click="CerrarSeccion">Cancelar</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-form>
+      
     </v-dialog>
 
     <v-dialog v-model="dialogPregunta" max-width="1200px">
-      <v-card>
-        <v-toolbar>
-          <v-toolbar-title>Mantenimiento de Preguntas</v-toolbar-title>
-        </v-toolbar>
-        <v-card-text class="pt-5">
-          <v-row>
-            <v-col sm="12">
-              <v-textarea
-                v-model="itemModelPregunta.indications"
-                label="Indicaciones de la Pregunta"
-                filled
-                outlined
-                auto-grow
-                rows="4"
-                row-height="15"
-                hide-details
-              ></v-textarea>
-            </v-col>
-            <v-col sm="12">
-              <tiptap-vuetify
-                v-model="itemModelPregunta.text"
-                :extensions="extensions"
-              />
-            </v-col>
-            <v-col class="mb-3" sm="12">
-              <v-text-field
-                v-model="itemModelPregunta.value"
-                label="Pregunta"
-                filled
-                outlined
-                placeholder="Ej: ¿Que simbolo patrio observas en la imagen?"
-                hide-details
-              ></v-text-field>
-            </v-col>
-            <v-col sm="6">
-              <v-row>
-                <v-col sm="12">
-                  <v-file-input
-                    v-model="itemModelPregunta.image"
-                    accept="image/*"
-                    label="Imagen"
-                    outlined
-                    @change="previewImage"
-                    hide-details
-                  ></v-file-input>
-                </v-col>
-                <v-col sm="6">
-                  <v-text-field
-                    v-model="itemModelPregunta.score"
-                    type="number"
-                    label="Puntaje"
-                    filled
-                    outlined
-                    hide-details
-                  ></v-text-field>
-                </v-col>
-                <v-col sm="6">
-                  <v-text-field
-                    v-model="itemModelPregunta.timeLimit"
-                    type="number"
-                    label="Tiempo Límite en minutos"
-                    filled
-                    outlined
-                    hide-details
-                  ></v-text-field>
-                </v-col>
-              </v-row>
-            </v-col>
-            <v-col class="justify-center" sm="6">
-              <v-img
-                class="align-self-center"
-                max-height="200"
-                max-width="300"
-                :src="itemModelPregunta.url"
-              ></v-img>
-            </v-col>
-            <v-col sm="12">
-              <v-toolbar flat color="white">
-                <v-toolbar-title>Lista de Respuestas</v-toolbar-title>
-                <v-spacer></v-spacer>
-                <v-icon large color="blue" @click="AgregarLineaVacia"
-                  >add</v-icon
+      <v-form v-model="valid2" ref="form2" lazy-validation>
+        <v-card>
+          <v-toolbar>
+            <v-toolbar-title>Mantenimiento de Preguntas</v-toolbar-title>
+          </v-toolbar>
+          <v-card-text class="pt-5">
+            <v-row>
+              <v-col sm="12">
+                <v-textarea
+                  v-model="itemModelPregunta.indications"
+                  label="Indicaciones de la Pregunta"
+                  filled
+                  outlined
+                  auto-grow
+                  rows="4"
+                  row-height="15"
+                  hide-details
+                ></v-textarea>
+              </v-col>
+              <v-col sm="12">
+                <tiptap-vuetify
+                  v-model="itemModelPregunta.text"
+                  :extensions="extensions"
+                />
+              </v-col>
+              <v-col class="mb-3" sm="12">
+                <v-text-field
+                  v-model="itemModelPregunta.value"
+                  label="Pregunta"
+                  filled
+                  outlined
+                  placeholder="Ej: ¿Que simbolo patrio observas en la imagen?"
+                  hide-details
+                ></v-text-field>
+              </v-col>
+              <v-col sm="6">
+                <v-row>
+                  <v-col sm="12">
+                    <v-file-input
+                      v-model="itemModelPregunta.image"
+                      accept="image/*"
+                      label="Imagen"
+                      outlined
+                      @change="previewImage"
+                      hide-details
+                    ></v-file-input>
+                  </v-col>
+                  <v-col sm="6">
+                    <v-text-field
+                      v-model="itemModelPregunta.score"
+                      type="number"
+                      :min="0"
+                      label="Puntaje"
+                      filled
+                      outlined
+                      hide-details
+                    ></v-text-field>
+                  </v-col>
+                  <v-col sm="6">
+                    <v-text-field
+                      v-model="itemModelPregunta.timeLimit"
+                      type="number"
+                      :min="0"
+                      label="Tiempo Límite en minutos"
+                      filled
+                      outlined
+                      hide-details
+                    ></v-text-field>
+                  </v-col>
+                </v-row>
+              </v-col>
+              <v-col class="justify-center" sm="6">
+                <v-img
+                  class="align-self-center"
+                  max-height="200"
+                  max-width="300"
+                  :src="itemModelPregunta.url"
+                ></v-img>
+              </v-col>
+              <v-col sm="12">
+                <v-toolbar flat color="white">
+                  <v-toolbar-title>Lista de Respuestas</v-toolbar-title>
+                  <v-spacer></v-spacer>
+                  <v-icon large color="blue" @click="AgregarLineaVacia"
+                    >add</v-icon
+                  >
+                </v-toolbar>
+                <v-data-table
+                  :headers="headersRespuestas"
+                  :items="listaDeRespuestas"
+                  class="elevation-1"
                 >
-              </v-toolbar>
-              <v-data-table
-                :headers="headersRespuestas"
-                :items="listaDeRespuestas"
-                class="elevation-1"
-              >
-                <template v-slot:item.text="props">
-                  <v-edit-dialog
-                    :return-value.sync="props.item.text"
-                    @save="save"
-                    @cancel="cancel"
-                    @open="open"
-                    @close="close"
-                  >
-                    {{ props.item.text }}
-                    <template v-slot:input>
-                      <v-text-field
-                        v-model="props.item.text"
-                        label="Texto de Respuesta"
-                        single-line
-                      ></v-text-field>
-                    </template>
-                  </v-edit-dialog>
-                </template>
-                <template v-slot:item.image="props">
-                  <v-edit-dialog
-                    large
-                    persistent
-                    cancel-text="Cancelar"
-                    save-text="Guardar"
-                    :return-value.sync="props.item.image"
-                    @save="save"
-                    @cancel="cancel"
-                    @open="open"
-                    @close="close"
-                  >
-                    <v-img
-                      class="align-self-center"
-                      max-height="90"
-                      max-width="90"
-                      :src="props.item.url"
+                  <template v-slot:item.text="props">
+                    <v-edit-dialog
+                      :return-value.sync="props.item.text"
+                      @save="save"
+                      @cancel="cancel"
+                      @open="open"
+                      @close="close"
                     >
-                    </v-img>
-                    <template v-slot:input>
-                      <v-file-input
-                        v-model="props.item.image"
-                        accept="image/*"
-                        label="Imagen"
-                        @change="previewImageRespuesta(props.index)"
-                      ></v-file-input>
-                    </template>
-                  </v-edit-dialog>
-                </template>
-                <template v-slot:item.isCorrect="props">
-                  <v-simple-checkbox
-                    v-model="props.item.isCorrect"
-                    :ripple="false"
-                  ></v-simple-checkbox>
-                </template>
-                <template v-slot:item.opciones="{ item, index }">
-                  <v-icon medium @click="eliminarRespuesta(index)">
-                    mdi-delete
-                  </v-icon>
-                </template>
-              </v-data-table>
-            </v-col>
-          </v-row>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn dark color="primary" @click="GuardarPregunta">Guardar</v-btn>
-          <v-btn dark color="primary" @click="CerrarPregunta">Cancelar</v-btn>
-        </v-card-actions>
-      </v-card>
+                      {{ props.item.text }}
+                      <template v-slot:input>
+                        <v-text-field
+                          v-model="props.item.text"
+                          label="Texto de Respuesta"
+                          single-line
+                        ></v-text-field>
+                      </template>
+                    </v-edit-dialog>
+                  </template>
+                  <template v-slot:item.image="props">
+                    <v-edit-dialog
+                      large
+                      persistent
+                      cancel-text="Cancelar"
+                      save-text="Guardar"
+                      :return-value.sync="props.item.image"
+                      @save="save"
+                      @cancel="cancel"
+                      @open="open"
+                      @close="close"
+                    >
+                      <v-img
+                        class="align-self-center"
+                        max-height="90"
+                        max-width="90"
+                        :src="props.item.url"
+                      >
+                      </v-img>
+                      <template v-slot:input>
+                        <v-file-input
+                          v-model="props.item.image"
+                          accept="image/*"
+                          label="Imagen"
+                          @change="previewImageRespuesta(props.index)"
+                        ></v-file-input>
+                      </template>
+                    </v-edit-dialog>
+                  </template>
+                  <template v-slot:item.isCorrect="props">
+                    <v-simple-checkbox
+                      v-model="props.item.isCorrect"
+                      :ripple="false"
+                    ></v-simple-checkbox>
+                  </template>
+                  <template v-slot:item.opciones="{ item, index }">
+                    <v-icon medium @click="eliminarRespuesta(index)">
+                      mdi-delete
+                    </v-icon>
+                  </template>
+                </v-data-table>
+              </v-col>
+            </v-row>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn dark color="primary" @click="GuardarPregunta">Guardar</v-btn>
+            <v-btn dark color="primary" @click="CerrarPregunta">Cancelar</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-form>
+      
     </v-dialog>
   </v-container>
 </template>
@@ -548,12 +563,15 @@ import {
   Blockquote,
   HardBreak,
   HorizontalRule,
-  History,
+  History
 } from "tiptap-vuetify";
 
 export default {
   name: "Home",
   data: () => ({
+    valid: true,
+    valid1 : true,
+    valid2: true,
     usuario: "",
     e1: 1,
     dialogModulo: false,
@@ -563,95 +581,101 @@ export default {
     search: "",
     search1: "",
     search2: "",
+    ReglasGenerales: [
+      v => !!v || 'Este campo es necesario',
+    ],
+    ReglasCombo: [
+      v => v.id > 0 || 'Este campo es necesario',
+    ],
     headersModulos: [
       {
         text: "Nombre",
         align: "left",
         sortable: false,
-        value: "name",
+        value: "name"
       },
-      { text: "Opciones", align: "right", sortable: false, value: "opciones" },
+      { text: "Opciones", align: "right", sortable: false, value: "opciones" }
     ],
     headersSeccion: [
       {
         text: "Módulo",
         align: "left",
         sortable: false,
-        value: "testModuleName",
+        value: "testModuleName"
       },
       {
         text: "Nombre",
         align: "left",
         sortable: false,
-        value: "name",
+        value: "name"
       },
       {
         text: "Intrucciones",
         align: "left",
         sortable: false,
-        value: "instructions",
+        value: "instructions"
       },
       {
         text: "Tipo Pregunta",
         align: "left",
         sortable: false,
-        value: "type",
+        value: "type"
       },
-      { text: "Opciones", align: "right", sortable: false, value: "opciones" },
+      { text: "Opciones", align: "right", sortable: false, value: "opciones" }
     ],
     headersPreguntas: [
       {
         text: "Sección",
         align: "left",
         sortable: false,
-        value: "testPartName",
+        value: "testPartName"
       },
       {
         text: "Texto Pregunta",
         align: "left",
         sortable: false,
-        value: "value",
+        value: "value"
       },
       {
         text: "Imagen",
         align: "left",
         sortable: false,
-        value: "image",
+        value: "image"
       },
       {
         text: "Puntaje",
         align: "left",
         sortable: false,
-        value: "score",
+        value: "score"
       },
       {
         text: "Tiempo Límite",
         align: "left",
         sortable: false,
-        value: "timeLimit",
+        value: "timeLimit"
       },
-      { text: "Opciones", align: "right", sortable: false, value: "opciones" },
+      { text: "Opciones", align: "right", sortable: false, value: "opciones" }
     ],
     headersRespuestas: [
       {
         text: "Texto",
         align: "left",
         sortable: false,
-        value: "text",
+        value: "text"
       },
       {
         text: "Imagen",
         align: "left",
         sortable: false,
-        value: "image",
+        value: "image"
       },
       {
         text: "Es Correcta",
         align: "left",
         sortable: false,
-        value: "isCorrect",
+        value: "isCorrect"
       },
-      { text: "Opciones", align: "right", sortable: false, value: "opciones" },
+      { text: "Opciones", align: "right", sortable: false, value: "opciones" }
     ],
     listaDeModulos: [],
     listaDeSecciones: [],
@@ -660,7 +684,7 @@ export default {
     itemModelModulo: {
       id: "",
       name: "",
-      active: true,
+      active: true
     },
     editModulo: false,
     itemModelSeccion: {
@@ -669,7 +693,7 @@ export default {
       name: "",
       type: "",
       active: true,
-      instructions: "",
+      instructions: ""
     },
     editSeccion: false,
     itemModelPregunta: {
@@ -682,13 +706,13 @@ export default {
       timeLimit: "",
       url: "",
       indications: "",
-      answers: [],
+      answers: []
     },
     editPregunta: false,
     listaDeTiposPregunta: [],
     listaDeRespuestasImagenes: [],
     itemModelNota: {
-      totalScore: 0,
+      totalScore: 0
     },
     extensions: [
       History,
@@ -704,20 +728,20 @@ export default {
         Heading,
         {
           options: {
-            levels: [1, 2, 3],
-          },
-        },
+            levels: [1, 2, 3]
+          }
+        }
       ],
       Bold,
       Code,
       HorizontalRule,
       Paragraph,
-      HardBreak,
-    ],
+      HardBreak
+    ]
   }),
   components: {
     BarraNavegacion,
-    TiptapVuetify,
+    TiptapVuetify
   },
   created() {
     if (this.$session.exists()) {
@@ -725,7 +749,7 @@ export default {
       this.showNotification({
         message: this.usuario.message,
         color: "success",
-        icon: "check-circle",
+        icon: "check-circle"
       });
       this.itemModelNota.totalScore = this.$session.get("user").totalScore;
       if (this.$session.get("user").testFinish) {
@@ -738,18 +762,21 @@ export default {
   },
   methods: {
     ...mapMutations(["showLoading", "hideLoading", "showNotification"]),
-    async ListarTipoPregunta(idTestModule){
+    async ListarTipoPregunta(idTestModule) {
       this.showLoading({
         title: "Accediendo a la información",
-        color: "secondary",
+        color: "secondary"
       });
       try {
-        let response = await axios.get(`${this.$urlApi}Question/GetQuestionTypes/${idTestModule}`, {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: "Bearer " + sessionStorage.getItem("jwt"),
-          },
-        });
+        let response = await axios.get(
+          `${this.$urlApi}Question/GetQuestionTypes/${idTestModule}`,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + sessionStorage.getItem("jwt")
+            }
+          }
+        );
         this.listaDeTiposPregunta = response.data;
       } catch (error) {
         console.log(error);
@@ -760,15 +787,17 @@ export default {
     async EnviarCorreo() {
       try {
         let itemCertificado = {
-          idUser: this.$session.get("user").idUser,
+          idUser: this.$session.get("user").idUser
         };
         let response = await axios.post(
-          `${this.$urlApiInvision}Evaluacion/EnviarCertificadoEvaluacionEscrita`,
+          `${
+            this.$urlApiInvision
+          }Evaluacion/EnviarCertificadoEvaluacionEscrita`,
           itemCertificado,
           {
             headers: {
-              "Content-Type": "application/json",
-            },
+              "Content-Type": "application/json"
+            }
           }
         );
         this.respuestaBD = response.data;
@@ -807,14 +836,14 @@ export default {
     async ListarModulo() {
       this.showLoading({
         title: "Accediendo a la información",
-        color: "secondary",
+        color: "secondary"
       });
       try {
         let response = await axios.get(`${this.$urlApi}TestModule`, {
           headers: {
             "Content-Type": "application/json",
-            Authorization: "Bearer " + sessionStorage.getItem("jwt"),
-          },
+            Authorization: "Bearer " + sessionStorage.getItem("jwt")
+          }
         });
         this.listaDeModulos = response.data;
       } catch (error) {
@@ -840,12 +869,12 @@ export default {
         confirmButtonColor: "#3085d6",
         cancelButtonColor: "#d33",
         confirmButtonText: "Sí, eliminar",
-        cancelButtonText: "Cancelar",
+        cancelButtonText: "Cancelar"
       });
       if (alerta.value) {
         this.showLoading({
           title: "Accediendo a la información",
-          color: "secondary",
+          color: "secondary"
         });
         try {
           let response = await axios.delete(
@@ -853,8 +882,8 @@ export default {
             {
               headers: {
                 "Content-Type": "application/json",
-                Authorization: "Bearer " + sessionStorage.getItem("jwt"),
-              },
+                Authorization: "Bearer " + sessionStorage.getItem("jwt")
+              }
             }
           );
           if (response.data > 0) {
@@ -864,8 +893,8 @@ export default {
               "success"
             );
             this.ListarModulo();
-          } else if(response.data == -1){
-              this.$swal(
+          } else if (response.data == -1) {
+            this.$swal(
               "¡Error!",
               "El módulo no puede ser eliminado porque contiene una o mas preguntas asociadas a los resultados de la evaluación.",
               "success"
@@ -896,7 +925,7 @@ export default {
     async ListarSeccion(idTestModule) {
       this.showLoading({
         title: "Accediendo a la información",
-        color: "secondary",
+        color: "secondary"
       });
       try {
         let response = await axios.get(
@@ -904,8 +933,8 @@ export default {
           {
             headers: {
               "Content-Type": "application/json",
-              Authorization: "Bearer " + sessionStorage.getItem("jwt"),
-            },
+              Authorization: "Bearer " + sessionStorage.getItem("jwt")
+            }
           }
         );
         this.listaDeSecciones = response.data;
@@ -933,12 +962,12 @@ export default {
         confirmButtonColor: "#3085d6",
         cancelButtonColor: "#d33",
         confirmButtonText: "Sí, eliminar",
-        cancelButtonText: "Cancelar",
+        cancelButtonText: "Cancelar"
       });
       if (alerta.value) {
         this.showLoading({
           title: "Accediendo a la información",
-          color: "secondary",
+          color: "secondary"
         });
         try {
           let response = await axios.delete(
@@ -946,8 +975,8 @@ export default {
             {
               headers: {
                 "Content-Type": "application/json",
-                Authorization: "Bearer " + sessionStorage.getItem("jwt"),
-              },
+                Authorization: "Bearer " + sessionStorage.getItem("jwt")
+              }
             }
           );
           if (response.data > 0) {
@@ -957,8 +986,8 @@ export default {
               "success"
             );
             this.ListarSeccion(this.itemModelSeccion.idTestModule);
-          } else if(response.data == -1){
-              this.$swal(
+          } else if (response.data == -1) {
+            this.$swal(
               "¡Error!",
               "La sección no puede ser eliminada porque contiene una o mas preguntas asociadas a los resultados de la evaluación.",
               "success"
@@ -984,7 +1013,7 @@ export default {
     async ListarPregunta(idTestPart) {
       this.showLoading({
         title: "Accediendo a la información",
-        color: "secondary",
+        color: "secondary"
       });
       try {
         let response = await axios.get(
@@ -992,8 +1021,8 @@ export default {
           {
             headers: {
               "Content-Type": "application/json",
-              Authorization: "Bearer " + sessionStorage.getItem("jwt"),
-            },
+              Authorization: "Bearer " + sessionStorage.getItem("jwt")
+            }
           }
         );
         this.listaDePreguntas = response.data;
@@ -1015,12 +1044,12 @@ export default {
         this.itemModelPregunta.timeLimit = item.timeLimit;
         this.itemModelPregunta.indications = item.indications;
         this.itemModelPregunta.value = item.value;
-        item.answers.forEach((element) => {
+        item.answers.forEach(element => {
           this.listaDeRespuestas.push({
             text: element.text,
             url: `${this.$urlImage}${element.image}`,
             image: "",
-            isCorrect: element.isCorrect,
+            isCorrect: element.isCorrect
           });
         });
         this.dialogPregunta = true;
@@ -1029,7 +1058,7 @@ export default {
     async eliminarPregunta(item) {
       this.showLoading({
         title: "Accediendo a la información",
-        color: "secondary",
+        color: "secondary"
       });
       try {
         let response = await axios.delete(
@@ -1037,8 +1066,8 @@ export default {
           {
             headers: {
               "Content-Type": "application/json",
-              Authorization: "Bearer " + sessionStorage.getItem("jwt"),
-            },
+              Authorization: "Bearer " + sessionStorage.getItem("jwt")
+            }
           }
         );
         if (response.data > 0) {
@@ -1048,12 +1077,12 @@ export default {
             "success"
           );
           this.ListarPregunta(this.itemModelPregunta.idTestPart);
-        } else if(response.data == -1){
-              this.$swal(
-              "¡Error!",
-              "La pregunta no puede ser eliminada porque esta asociada a resultados de la evaluación.",
-              "success"
-            );
+        } else if (response.data == -1) {
+          this.$swal(
+            "¡Error!",
+            "La pregunta no puede ser eliminada porque esta asociada a resultados de la evaluación.",
+            "success"
+          );
         } else {
           this.$swal(
             "¡Error!",
@@ -1069,111 +1098,117 @@ export default {
       }
     },
     async GuardarModulo() {
-      var response = "";
-      this.showLoading({
-        title: "Accediendo a la información",
-        color: "secondary",
-      });
-      try {
-        if (this.editModulo) {
-          response = await axios.put(
-            `${this.$urlApi}TestModule`,
-            this.itemModelModulo,
-            {
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: "Bearer " + sessionStorage.getItem("jwt"),
-              },
-            }
-          );
-        } else {
-          response = await axios.post(
-            `${this.$urlApi}TestModule`,
-            this.itemModelModulo,
-            {
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: "Bearer " + sessionStorage.getItem("jwt"),
-              },
-            }
-          );
+      if(this.$refs.form.validate()){
+        var response = "";
+        this.showLoading({
+          title: "Accediendo a la información",
+          color: "secondary"
+        });
+        try {
+          if (this.editModulo) {
+            response = await axios.put(
+              `${this.$urlApi}TestModule`,
+              this.itemModelModulo,
+              {
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: "Bearer " + sessionStorage.getItem("jwt")
+                }
+              }
+            );
+          } else {
+            response = await axios.post(
+              `${this.$urlApi}TestModule`,
+              this.itemModelModulo,
+              {
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: "Bearer " + sessionStorage.getItem("jwt")
+                }
+              }
+            );
+          }
+          if (response.data > 0) {
+            this.$swal(
+              "Guardado!",
+              "El módulo ha sido guardado con éxito",
+              "success"
+            );
+            this.ListarModulo();
+            this.CerrarModulo();
+          } else {
+            this.$swal(
+              "¡Error!",
+              "El módulo no ha sido guardado correctamente, comuniquese con soporte",
+              "error"
+            );
+          }
+        } catch (error) {
+          console.log(error);
+        } finally {
+          this.hideLoading();
         }
-        if (response.data > 0) {
-          this.$swal(
-            "Guardado!",
-            "El módulo ha sido guardado con éxito",
-            "success"
-          );
-          this.ListarModulo();
-          this.CerrarModulo();
-        } else {
-          this.$swal(
-            "¡Error!",
-            "El módulo no ha sido guardado correctamente, comuniquese con soporte",
-            "error"
-          );
-        }
-      } catch (error) {
-        console.log(error);
-      } finally {
-        this.hideLoading();
       }
+      
     },
     async GuardarSeccion() {
-      var response = "";
-      this.showLoading({
-        title: "Accediendo a la información",
-        color: "secondary",
-      });
-      try {
-        if (this.editSeccion) {
-          response = await axios.put(
-            `${this.$urlApi}TestPart`,
-            this.itemModelSeccion,
-            {
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: "Bearer " + sessionStorage.getItem("jwt"),
-              },
-            }
-          );
-        } else {
-          response = await axios.post(
-            `${this.$urlApi}TestPart`,
-            this.itemModelSeccion,
-            {
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: "Bearer " + sessionStorage.getItem("jwt"),
-              },
-            }
-          );
+      if(this.$refs.form1.validate()){
+        var response = "";
+        this.showLoading({
+          title: "Accediendo a la información",
+          color: "secondary"
+        });
+        try {
+          if (this.editSeccion) {
+            response = await axios.put(
+              `${this.$urlApi}TestPart`,
+              this.itemModelSeccion,
+              {
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: "Bearer " + sessionStorage.getItem("jwt")
+                }
+              }
+            );
+          } else {
+            response = await axios.post(
+              `${this.$urlApi}TestPart`,
+              this.itemModelSeccion,
+              {
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: "Bearer " + sessionStorage.getItem("jwt")
+                }
+              }
+            );
+          }
+          if (response.data > 0) {
+            this.$swal(
+              "Guardado!",
+              "La sección ha sido guardada con éxito",
+              "success"
+            );
+            this.ListarSeccion(this.itemModelSeccion.idTestModule);
+            this.CerrarSeccion();
+          } else {
+            this.$swal(
+              "¡Error!",
+              "La sección no ha sido guardada correctamente, comuniquese con soporte",
+              "error"
+            );
+          }
+        } catch (error) {
+          console.log(error);
+        } finally {
+          this.hideLoading();
         }
-        if (response.data > 0) {
-          this.$swal(
-            "Guardado!",
-            "La sección ha sido guardada con éxito",
-            "success"
-          );
-          this.ListarSeccion(this.itemModelSeccion.idTestModule);
-          this.CerrarSeccion();
-        } else {
-          this.$swal(
-            "¡Error!",
-            "La sección no ha sido guardada correctamente, comuniquese con soporte",
-            "error"
-          );
-        }
-      } catch (error) {
-        console.log(error);
-      } finally {
-        this.hideLoading();
       }
+      
     },
     async GuardarPregunta() {
       var response = "";
       this.itemModelPregunta.answers = this.listaDeRespuestas;
-      this.listaDeRespuestas.forEach((element) => {
+      this.listaDeRespuestas.forEach(element => {
         element.isCorrect = element.isCorrect == "1" ? true : false;
       });
       const fd = new FormData();
@@ -1206,14 +1241,14 @@ export default {
       }
       this.showLoading({
         title: "Accediendo a la información",
-        color: "secondary",
+        color: "secondary"
       });
       try {
         response = await axios.post(`${this.$urlApi}Question`, fd, {
           headers: {
             "Content-Type": "multipart/form-data",
-            Authorization: "Bearer " + sessionStorage.getItem("jwt"),
-          },
+            Authorization: "Bearer " + sessionStorage.getItem("jwt")
+          }
         });
         if (response.data > 0) {
           this.$swal(
@@ -1242,6 +1277,7 @@ export default {
       this.itemModelModulo.id = "";
       this.itemModelModulo.name = "";
       this.itemModelModulo.active = true;
+      this.$refs.form.resetValidation()
     },
     CerrarSeccion() {
       this.dialogSeccion = false;
@@ -1251,6 +1287,7 @@ export default {
       this.itemModelSeccion.instructions = "";
       this.itemModelSeccion.type = "";
       this.itemModelSeccion.active = true;
+      this.$refs.form1.resetValidation()
     },
     CerrarPregunta() {
       this.dialogPregunta = false;
@@ -1266,13 +1303,14 @@ export default {
       this.itemModelPregunta.indications = "";
       this.itemModelPregunta.value = "";
       this.listaDeRespuestas = [];
+      this.$refs.form2.resetValidation()
     },
     AgregarLineaVacia() {
       this.listaDeRespuestas.push({
         text: "",
         image: null,
         isCorrect: false,
-        url: "",
+        url: ""
       });
     },
     save() {},
@@ -1291,8 +1329,8 @@ export default {
       this.listaDeRespuestas[index].url = URL.createObjectURL(
         this.listaDeRespuestas[index].image
       );
-    },
-  },
+    }
+  }
 };
 </script>
 
