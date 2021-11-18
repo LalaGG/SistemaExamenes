@@ -59,35 +59,46 @@ export default {
       this.opcionesDialog = true;
     },
     async limpiarBase() {
-      this.showLoading({
-        title: "Accediendo a la información",
-        color: "secondary"
+       let alerta = await this.$swal({
+        title: `Esta operación eliminará toda la base de datos del sistema. ¿Desea continuar?`,
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Sí, Eliminar",
+        cancelButtonText: "Cancelar"
       });
-      try {
-        let response = await axios.post(`${this.$urlApi}Test/RestartDb`, {}, {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: "Bearer " + sessionStorage.getItem("jwt")
-          }
+      if (alerta.value) {
+          this.showLoading({
+          title: "Accediendo a la información",
+          color: "secondary"
         });
-        if (response.data > 0) {
-          this.$swal(
-            "Eliminado!",
-            "Base de datos Eliminada con éxito",
-            "success"
-          );
-          location.reload()
-        } else {
-          this.$swal(
-            "¡Error!",
-            "La base de datos no ha sido borrada correctamente, comuniquese con soporte",
-            "error"
-          );
+        try {
+          let response = await axios.post(`${this.$urlApi}Test/RestartDb`, {}, {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + sessionStorage.getItem("jwt")
+            }
+          });
+          if (response.data > 0) {
+            this.$swal(
+              "Eliminado!",
+              "Base de datos Eliminada con éxito",
+              "success"
+            );
+            location.reload()
+          } else {
+            this.$swal(
+              "¡Error!",
+              "La base de datos no ha sido borrada correctamente, comuniquese con soporte",
+              "error"
+            );
+          }
+        } catch (error) {
+          console.log(error);
+        } finally {
+          this.hideLoading();
         }
-      } catch (error) {
-        console.log(error);
-      } finally {
-        this.hideLoading();
       }
     },
     async exportData() {

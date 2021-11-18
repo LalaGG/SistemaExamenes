@@ -437,6 +437,16 @@
                 </v-data-table>
               </v-col>
             </v-row>
+            <v-row>
+              <v-col sm="6">
+                <v-switch
+                  v-model="itemModelPregunta.active"
+                  label="Activo"
+                  color="primary"
+                >
+                </v-switch>
+              </v-col>
+            </v-row>
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
@@ -613,7 +623,8 @@ export default {
       timeLimit: "",
       url: "",
       indications: "",
-      answers: []
+      answers: [],
+      active : true
     },
     editPregunta: false,
     listaDeTiposPregunta: [],
@@ -946,6 +957,7 @@ export default {
         this.itemModelPregunta.timeLimit = item.timeLimit;
         this.itemModelPregunta.indications = item.indications;
         this.itemModelPregunta.value = item.value;
+        this.itemModelPregunta.active = item.active
         item.answers.forEach(element => {
           this.listaDeRespuestas.push({
             text: element.text,
@@ -1129,6 +1141,7 @@ export default {
         fd.append("timeLimit", this.itemModelPregunta.timeLimit);
         fd.append("indications", this.itemModelPregunta.indications);
         fd.append("value", this.itemModelPregunta.value);
+        fd.append("active", this.itemModelPregunta.active);
         for (var i = 0; i < this.listaDeRespuestas.length; i++) {
           fd.append("answers[" + i + "].text", this.listaDeRespuestas[i].text);
           fd.append(

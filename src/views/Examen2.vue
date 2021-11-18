@@ -134,7 +134,7 @@
               <a
                 class="button"
                 :class="userResponses[questionIndex] == null ? '' : 'is-active'"
-                v-on:click="!endButton ? next() : hideQuestions()"
+                v-on:click.once="!endButton ? next() : hideQuestions()"
               >
                 {{ !endButton ? "Siguiente" : "Terminar" }}
               </a>
@@ -808,7 +808,9 @@ body {
       background: rgba(0, 0, 0, 0.025);
       border-top: 1px solid rgba(0, 0, 0, 0.1);
       width: 100%;
+      display: flex;
       align-self: flex-end;
+      justify-content: flex-end;
 
       .pagination {
         margin: 15px 25px;
