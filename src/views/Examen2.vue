@@ -22,7 +22,7 @@
           "
           v-bind:key="questionIndex"
         >
-          <header class="questionHeader">
+        <div class="divTimer">
             <div
               v-show="startDemo && currentModule != 'Módulo Prueba'"
               class="base-timer"
@@ -54,15 +54,16 @@
               </svg>
               <span class="base-timer__label">{{ formattedTimeLeft }}</span>
             </div>
-            <h1 class="title is-6">
-              {{ quiz.questions[questionIndex].testModuleName }} -
-              {{ quiz.questions[questionIndex].testPartName }}
-            </h1>
+        </div>
+          
+          <header class="questionHeader">
+            
+            
             <h1 v-if="quiz.questions[questionIndex].testPartInstructions != null && quiz.questions[questionIndex].testPartInstructions != ''" class="title is-6">
               {{ quiz.questions[questionIndex].testPartInstructions }}
             </h1>
             <!--progress-->
-            <div class="progressContainer" v-if="finishDemo">
+            <!-- <div class="progressContainer" v-if="finishDemo">
               <progress
                 class="progress is-info is-small"
                 :value="((questionIndex - totalQuestionDemo) / (quiz.questions.length - totalQuestionDemo)) * 100"
@@ -73,7 +74,7 @@
                 {{ Math.floor(((questionIndex - totalQuestionDemo) / (quiz.questions.length - totalQuestionDemo)) * 100) }}%
                 Completo
               </p>
-            </div>
+            </div> -->
             <!--/progress-->
           </header>
  
@@ -117,7 +118,7 @@
               <div v-if="response.image != null" class="imageAnswerContainer">
                 <v-img
                   :src="`${urlImage}${response.image}`"
-                  width="30%"
+                  width="50%"
                   aspect-ratio="1"
                   contain
                 ></v-img>
@@ -134,7 +135,7 @@
               <a
                 class="button"
                 :class="userResponses[questionIndex] == null ? '' : 'is-active'"
-                v-on:click.once="!endButton ? next() : hideQuestions()"
+                v-on:click="!endButton ? next() : hideQuestions()"
               >
                 {{ !endButton ? "Siguiente" : "Terminar" }}
               </a>
@@ -161,15 +162,14 @@
           </span>
  
           <h2 class="title">
-            Tomate un respiro
+            Tómate un respiro
           </h2>
           <p class="subtitle">
-            da a iniciar cuando estes listo para el {{ currentModule }}
+            da a <a @click="next()"
+            >iniciar <i class="fa fa-refresh"></i
+          ></a> cuando estes listo para el {{ currentModule }}
           </p>
           <br />
-          <a class="button" @click="next()"
-            >Iniciar <i class="fa fa-refresh"></i
-          ></a>
         </div>
  
         <div
@@ -217,7 +217,7 @@
           </h2>
           <p class="subtitle">
             En caso tengas problemas con el internet, puedes volver a ingresar
-            con el mismo enlace” ¡Muchos éxitos!
+            con el mismo enlace ¡Muchos éxitos!
           </p>
           <br />
           <a class="button" @click="IniciarPractica()"
@@ -272,8 +272,9 @@ export default {
     timePassed: 0,
     timeQuestion: 0,
     urlImage: "http://evaluacionescrita.ino.gob.pe/img/",
-    totalQuestionDemo : 0,
-    finishTest : "",
+    totalQuestionDemo: 0,
+    finishTest: "",
+    timeOut: false
   }),
   filters: {
     charIndex: function(i) {
@@ -330,18 +331,30 @@ export default {
   async created() {
     this.finishDemo = this.$session.get("user").finishDemo;
     this.finishTest = this.$session.get("user").testFinish;
-      await this.ListarExamen();
-      if(this.finishDemo && !this.finishTest){
-        this.startDemo = true
-        this.timeQuestion = this.quiz.questions[this.questionIndex].timeLimit * 60;
-        this.startTimer();
-      }
+    await this.ListarExamen();
+    if (this.finishDemo && !this.finishTest) {
+      this.startDemo = true;
+      this.timeQuestion =
+        this.quiz.questions[this.questionIndex].timeLimit * 60;
+      this.startTimer();
+    }
   },
   methods: {
     ...mapMutations(["showLoading", "hideLoading", "showNotification"]),
     onTimesUp() {
       clearInterval(this.timerInterval);
-      this.next();
+      this.timeOut = true;
+      this.$swal({
+        title: "Se acabó el tiempo de esta pregunta",
+        text: "No te preocupes, pasemos al siguiente",
+        icon: "info",
+        confirmButtonColor: "#3085d6",
+        confirmButtonText: "Continuar"
+      }).then(result => {
+        if (result.isConfirmed) {
+          this.next();
+        }
+      });
     },
     async startTimer() {
       this.timerInterval = setInterval(() => (this.timePassed += 1), 1000);
@@ -364,10 +377,21 @@ export default {
           }
         );
         this.quiz = response.data;
-        this.currentModule = this.quiz.questions.length > 0 ? this.quiz.questions[this.questionIndex].testModuleName : '';
-        this.userResponses = this.quiz.questions.length > 0 ? Array(this.quiz.questions.length).fill(null) : [];
-        var filteredQuiz = this.quiz.questions.length > 0 ? this.quiz.questions.filter(q => q.testModuleName == 'Módulo Prueba') : []
-        this.totalQuestionDemo = filteredQuiz.length
+        this.currentModule =
+          this.quiz.questions.length > 0
+            ? this.quiz.questions[this.questionIndex].testModuleName
+            : "";
+        this.userResponses =
+          this.quiz.questions.length > 0
+            ? Array(this.quiz.questions.length).fill(null)
+            : [];
+        var filteredQuiz =
+          this.quiz.questions.length > 0
+            ? this.quiz.questions.filter(
+                q => q.testModuleName == "Módulo Prueba"
+              )
+            : [];
+        this.totalQuestionDemo = filteredQuiz.length;
       } catch (error) {
         console.log(error);
       } finally {
@@ -379,7 +403,8 @@ export default {
         index: index,
         idQuestion: item.id,
         idAnswer: item.answers[index].id,
-        idUser: this.$session.get("user").idUser
+        idUser: this.$session.get("user").idUser,
+        timePassed: this.timePassed
       };
       this.$set(this.userResponses, this.questionIndex, selectedAnswer);
     },
@@ -391,40 +416,100 @@ export default {
         ].testModuleName;
         if (!this.startNewModule) {
           if (this.finishDemo) {
-            if(this.userResponses[this.questionIndex] == null){
-              var selectedAnswer = {
-                idQuestion: this.quiz.questions[this.questionIndex].id,
-                idAnswer: 0,
-                idUser: this.$session.get("user").idUser
-              };
-              this.$set(this.userResponses, this.questionIndex, selectedAnswer);
-            }
-            try {
-              var idUser = this.$session.get("user").idUser;
-              let response = await axios.post(
-                `${this.$urlApi}Test/SubmitAnswer`,
-                this.userResponses[this.questionIndex],
-                {
-                  headers: {
-                    "Content-Type": "application/json",
-                    Authorization: "Bearer " + sessionStorage.getItem("jwt")
+            if (this.userResponses[this.questionIndex] == null) {
+              if (!this.timeOut) {
+                this.$swal({
+                  title: "No has marcado aún",
+                  text: "¿deseas continuar de todos modos?",
+                  icon: "question",
+                  confirmButtonColor: "#3085d6",
+                  confirmButtonText: "Continuar",
+                  showCancelButton: true,
+                  cancelButtonColor: "#d33",
+                  cancelButtonText: "Cancelar"
+                }).then(result => {
+                  if (result.isConfirmed) {
+                    var selectedAnswer = {
+                      index: -2,
+                      idQuestion: this.quiz.questions[this.questionIndex].id,
+                      idAnswer: 0,
+                      idUser: this.$session.get("user").idUser,
+                      timePassed: this.timePassed
+                    };
+                    this.$set(
+                      this.userResponses,
+                      this.questionIndex,
+                      selectedAnswer
+                    );
+                    try {
+                      axios.post(
+                        `${this.$urlApi}Test/SubmitAnswer`,
+                        this.userResponses[this.questionIndex],
+                        {
+                          headers: {
+                            "Content-Type": "application/json",
+                            Authorization:
+                              "Bearer " + sessionStorage.getItem("jwt")
+                          }
+                        }
+                      );
+                    } catch (error) {
+                      console.log(error);
+                    }
+                    
+                    this.questionIndex++;
+                  } else if (
+                    result.dismiss === this.$swal.DismissReason.cancel
+                  ) {
+                    return;
                   }
-                }
-              );
-              if (response.data > 0) {
-                console.log("respuesta registrada satisfactoriamente");
+                });
               } else {
-                this.$swal(
-                  "¡Error!",
-                  "Ha ocurrido un error al registrar su exámen, comuniquese con soporte",
-                  "error"
-                );
+                var selectedAnswer = {
+                  index: -1,
+                  idQuestion: this.quiz.questions[this.questionIndex].id,
+                  idAnswer: 0,
+                  idUser: this.$session.get("user").idUser,
+                  timePassed: this.timePassed
+                };
+                this.$set(this.userResponses, this.questionIndex, selectedAnswer);
+                try {
+                  axios.post(
+                    `${this.$urlApi}Test/SubmitAnswer`,
+                    this.userResponses[this.questionIndex],
+                    {
+                      headers: {
+                        "Content-Type": "application/json",
+                        Authorization: "Bearer " + sessionStorage.getItem("jwt")
+                      }
+                    }
+                  );
+                } catch (error) {
+                  console.log(error);
+                }
+                this.questionIndex++;
               }
-            } catch (error) {
-              console.log(error);
+            } else {
+              try {
+                  axios.post(
+                    `${this.$urlApi}Test/SubmitAnswer`,
+                    this.userResponses[this.questionIndex],
+                    {
+                      headers: {
+                        "Content-Type": "application/json",
+                        Authorization: "Bearer " + sessionStorage.getItem("jwt")
+                      }
+                    }
+                  );
+                } catch (error) {
+                  console.log(error);
+                }
+                this.questionIndex++;
             }
+          } else {
+            this.questionIndex++;
           }
-          this.questionIndex++;
+          this.timeOut = false
         } else {
           this.startNewModule = false;
           this.changeModule = false;
@@ -456,7 +541,7 @@ export default {
       }
     },
     async hideQuestions() {
-      if(this.finishDemo){
+      if (this.finishDemo) {
         try {
           var idUser = this.$session.get("user").idUser;
           let response = await axios.post(
@@ -576,8 +661,8 @@ export default {
         console.log(error);
       }
       this.startDemo = true;
-      if(this.totalQuestionDemo == 1){
-        this.endButton = true
+      if (this.totalQuestionDemo == 1) {
+        this.endButton = true;
       }
     }
   }
@@ -586,7 +671,7 @@ export default {
  
 <style lang="scss" scoped>
 $trans_duration: 0.3s;
-$primary_color: #378bf8;
+$primary_color: #77dd77;
 
 @import url("https://fonts.googleapis.com/css?family=Montserrat:400,400i,700");
 @import url("https://fonts.googleapis.com/css?family=Open+Sans:400,400i,700");
@@ -609,13 +694,21 @@ body {
   justify-content: center;
 }
 
+.divTimer {
+  background-color: $primary_color;
+}
 .button {
   transition: $trans_duration;
 }
-.title,
+.title{
+  font-family: Montserrat, sans-serif;
+  font-weight: 700;
+  font-size: larger;
+}
 .subtitle {
   font-family: Montserrat, sans-serif;
   font-weight: normal;
+  font-size: larger;
 }
 .animated {
   transition-duration: $trans_duration/2;
@@ -776,7 +869,7 @@ body {
         &.is-selected {
           border-color: rgba(black, 0.25);
           background-color: $primary-color;
-          color: white;
+          color: black;
         }
         &:hover {
           background-color: rgba(0, 0, 0, 0.1);
@@ -825,7 +918,7 @@ body {
   justify-content: space-between;
 }
 .button {
-  padding: 0.5rem 1rem;
+  padding: 1rem 4rem;
   border: 1px solid rgba(0, 0, 0, 0.25);
   border-radius: 5rem;
   margin: 0 0.25rem;
@@ -849,10 +942,12 @@ body {
 }
 .base-timer {
   position: relative;
-  width: 120px;
-  height: 120px;
-  margin: 0 auto;
-
+  width: 50px;
+  height: 50px;
+  float: right;
+  display: flex;
+  align-self: flex-end;
+  justify-content: flex-end;
   &__svg {
     transform: scaleX(-1);
   }
@@ -891,13 +986,13 @@ body {
 
   &__label {
     position: absolute;
-    width: 120px;
-    height: 120px;
+    width: 50px;
+    height: 50px;
     top: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 25px;
+    font-size: 15px;
   }
 }
 
@@ -907,7 +1002,7 @@ body {
     z-index: 100;
 
     &__label {
-      font-size: 25px;
+      font-size: 14px;
     }
   }
   .questionBox {
@@ -920,14 +1015,14 @@ body {
     }
   }
 
-    .quizCompleted {
-      margin: 0;
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      -ms-transform: translate(-50%, -50%);
-      transform: translate(-50%, -50%);
-    }
+  .quizCompleted {
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    -ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+  }
 }
 @media screen and (min-width: 769px) {
   .questionBox {

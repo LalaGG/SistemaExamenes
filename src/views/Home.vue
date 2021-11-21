@@ -445,6 +445,14 @@
                   color="primary"
                 >
                 </v-switch>
+              </v-col> 
+              <v-col sm="6">
+                <v-switch
+                  v-model="itemModelPregunta.isDemo"
+                  label="¿Es pregunta demo?"
+                  color="primary"
+                >
+                </v-switch>
               </v-col>
             </v-row>
           </v-card-text>
@@ -624,7 +632,8 @@ export default {
       url: "",
       indications: "",
       answers: [],
-      active : true
+      active : true,
+      isDemo: false
     },
     editPregunta: false,
     listaDeTiposPregunta: [],
@@ -958,6 +967,7 @@ export default {
         this.itemModelPregunta.indications = item.indications;
         this.itemModelPregunta.value = item.value;
         this.itemModelPregunta.active = item.active
+        this.itemModelPregunta.isDemo = item.isDemo
         item.answers.forEach(element => {
           this.listaDeRespuestas.push({
             text: element.text,
@@ -1142,6 +1152,7 @@ export default {
         fd.append("indications", this.itemModelPregunta.indications);
         fd.append("value", this.itemModelPregunta.value);
         fd.append("active", this.itemModelPregunta.active);
+        fd.append("isDemo", this.itemModelPregunta.isDemo);
         for (var i = 0; i < this.listaDeRespuestas.length; i++) {
           fd.append("answers[" + i + "].text", this.listaDeRespuestas[i].text);
           fd.append(
@@ -1219,6 +1230,7 @@ export default {
       this.itemModelPregunta.answers = [];
       this.itemModelPregunta.indications = "";
       this.itemModelPregunta.value = "";
+      this.itemModelPregunta.isDemo = false;
       this.listaDeRespuestas = [];
       this.$refs.form2.resetValidation()
     },
