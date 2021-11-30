@@ -24,7 +24,6 @@
         >
         <div class="divTimer">
             <div
-              v-show="startDemo && currentModule != 'Módulo Prueba'"
               class="base-timer"
             >
               <svg
@@ -116,6 +115,7 @@
                 {{ index | charIndex }}. {{ response.text }}
               </div>
               <div v-if="response.image != null" class="imageAnswerContainer">
+                <h3>{{ index | charIndex }}.</h3>
                 <v-img
                   :src="`${urlImage}${response.image}`"
                   width="50%"
@@ -213,11 +213,10 @@
           </span>
  
           <h2 class="title">
-            Empezaremos con una sección de práctica
+            Empezaremos practicando
           </h2>
           <p class="subtitle">
-            En caso tengas problemas con el internet, puedes volver a ingresar
-            con el mismo enlace ¡Muchos éxitos!
+            A continuación, encontrarás 4 preguntas. Haz un clic en la alternativa que mejor responde cada una
           </p>
           <br />
           <a class="button" @click="IniciarPractica()"
@@ -274,7 +273,9 @@ export default {
     urlImage: "http://evaluacionescrita.ino.gob.pe/img/",
     totalQuestionDemo: 0,
     finishTest: "",
-    timeOut: false
+    timeOut: false,
+    timeOutDemo: false,
+    flag : false
   }),
   filters: {
     charIndex: function(i) {
@@ -323,8 +324,67 @@ export default {
   },
   watch: {
     timeLeft(newValue) {
-      if (newValue === 0) {
+      if (this.finishDemo && newValue === 0) {
         this.onTimesUp();
+      }
+      if (!this.finishDemo && newValue == 60) {
+        clearInterval(this.timerInterval);
+        this.$swal({
+          title: "No olvides elegir una de las cuatro opciones",
+          icon: "info",
+          confirmButtonColor: "#3085d6",
+          confirmButtonText: "Continuar"
+        }).then(result => {
+          if (result.isConfirmed) {
+            this.timeQuestion = 120;
+            this.timePassed = 60;
+            this.startTimer();
+          }
+        });
+      }
+      if (!this.finishDemo && newValue == 0) {
+        clearInterval(this.timerInterval);
+        this.$swal({
+          title:
+            "Pasemos a la siguiente pregunta. No olvides elegir una de las cuatro opciones",
+          icon: "info",
+          confirmButtonColor: "#3085d6",
+          confirmButtonText: "Continuar"
+        }).then(result => {
+          if (result.isConfirmed) {
+            this.timeOutDemo = true;
+            this.next();
+          }
+        });
+      }
+      if (!this.finishDemo && newValue == 0 && this.questionIndex == 3) {
+        try {
+          let response = axios.get(
+            `${this.$urlApi}Test/ValidateDemoByUser/${
+              this.$session.get("user").idUser
+            }`,
+            {
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: "Bearer " + sessionStorage.getItem("jwt")
+              }
+            }
+          );
+          if (response.data != 1) {
+            this.$swal({
+              title: "Muchas gracias por tu tiempo, la prueba ha terminado",
+              icon: "info",
+              confirmButtonColor: "#3085d6",
+              confirmButtonText: "Continuar"
+            }).then(result => {
+              if (result.isConfirmed) {
+                this.Expulsado();
+              }
+            });
+          }
+        } catch (error) {
+          console.log(error);
+        }
       }
     }
   },
@@ -332,7 +392,7 @@ export default {
     this.finishDemo = this.$session.get("user").finishDemo;
     this.finishTest = this.$session.get("user").testFinish;
     await this.ListarExamen();
-    if (this.finishDemo && !this.finishTest) {
+    if (this.finishDemo) {
       this.startDemo = true;
       this.timeQuestion =
         this.quiz.questions[this.questionIndex].timeLimit * 60;
@@ -341,6 +401,11 @@ export default {
   },
   methods: {
     ...mapMutations(["showLoading", "hideLoading", "showNotification"]),
+    Expulsado() {
+      sessionStorage.clear();
+      this.$session.destroy();
+      this.$router.push("/Login");
+    },
     onTimesUp() {
       clearInterval(this.timerInterval);
       this.timeOut = true;
@@ -404,7 +469,8 @@ export default {
         idQuestion: item.id,
         idAnswer: item.answers[index].id,
         idUser: this.$session.get("user").idUser,
-        timePassed: this.timePassed
+        timePassed: this.timePassed,
+        attempts: 0
       };
       this.$set(this.userResponses, this.questionIndex, selectedAnswer);
     },
@@ -456,7 +522,7 @@ export default {
                     } catch (error) {
                       console.log(error);
                     }
-                    
+
                     this.questionIndex++;
                   } else if (
                     result.dismiss === this.$swal.DismissReason.cancel
@@ -472,7 +538,11 @@ export default {
                   idUser: this.$session.get("user").idUser,
                   timePassed: this.timePassed
                 };
-                this.$set(this.userResponses, this.questionIndex, selectedAnswer);
+                this.$set(
+                  this.userResponses,
+                  this.questionIndex,
+                  selectedAnswer
+                );
                 try {
                   axios.post(
                     `${this.$urlApi}Test/SubmitAnswer`,
@@ -491,6 +561,89 @@ export default {
               }
             } else {
               try {
+                axios.post(
+                  `${this.$urlApi}Test/SubmitAnswer`,
+                  this.userResponses[this.questionIndex],
+                  {
+                    headers: {
+                      "Content-Type": "application/json",
+                      Authorization: "Bearer " + sessionStorage.getItem("jwt")
+                    }
+                  }
+                );
+              } catch (error) {
+                console.log(error);
+              }
+              this.questionIndex++;
+            }
+          } else {
+            if (this.userResponses[this.questionIndex] == null) {
+              if (!this.timeOutDemo) {
+                this.$swal({
+                  title: "No has marcado aún",
+                  text: "Seleccione una opción",
+                  icon: "question",
+                  confirmButtonColor: "#3085d6",
+                  confirmButtonText: "OK",
+                  showCancelButton: false,
+                  cancelButtonColor: "#d33",
+                  cancelButtonText: "Cancelar"
+                }).then(result => {
+                  if (result.isConfirmed) {
+                    
+                    // var selectedAnswer = {
+                    //   index: -2,
+                    //   idQuestion: this.quiz.questions[this.questionIndex].id,
+                    //   idAnswer: 0,
+                    //   idUser: this.$session.get("user").idUser,
+                    //   timePassed: this.timePassed
+                    // };
+                    // this.$set(
+                    //   this.userResponses,
+                    //   this.questionIndex,
+                    //   selectedAnswer
+                    // );
+                    // try {
+                    //   axios.post(
+                    //     `${this.$urlApi}Test/SubmitAnswer`,
+                    //     this.userResponses[this.questionIndex],
+                    //     {
+                    //       headers: {
+                    //         "Content-Type": "application/json",
+                    //         Authorization:
+                    //           "Bearer " + sessionStorage.getItem("jwt")
+                    //       }
+                    //     }
+                    //   );
+                    // } catch (error) {
+                    //   console.log(error);
+                    // }
+
+                    // this.questionIndex++;
+                    this.flag = true
+                    console.log(this.flag)
+                    return
+                  } else if (
+                    result.dismiss === this.$swal.DismissReason.cancel
+                  ) {
+                    return;
+                  }
+                });
+              } else {
+                var selectedAnswer = {
+                  index: -1,
+                  idQuestion: this.quiz.questions[this.questionIndex].id,
+                  idAnswer: 0,
+                  idUser: this.$session.get("user").idUser,
+                  timePassed: 120,
+                  attempts: 2
+                };
+                this.$set(
+                  this.userResponses,
+                  this.questionIndex,
+                  selectedAnswer
+                );
+                try {
                   axios.post(
                     `${this.$urlApi}Test/SubmitAnswer`,
                     this.userResponses[this.questionIndex],
@@ -504,12 +657,30 @@ export default {
                 } catch (error) {
                   console.log(error);
                 }
+                this.timeOutDemo = false;
                 this.questionIndex++;
+              }
+            } else {
+              this.userResponses[this.questionIndex].attempts =
+                this.userResponses[this.questionIndex].timePassed < 60 ? 0 : 1;
+              try {
+                axios.post(
+                  `${this.$urlApi}Test/SubmitAnswer`,
+                  this.userResponses[this.questionIndex],
+                  {
+                    headers: {
+                      "Content-Type": "application/json",
+                      Authorization: "Bearer " + sessionStorage.getItem("jwt")
+                    }
+                  }
+                );
+              } catch (error) {
+                console.log(error);
+              }
+              this.questionIndex++;
             }
-          } else {
-            this.questionIndex++;
           }
-          this.timeOut = false
+          this.timeOutDemo = false;
         } else {
           this.startNewModule = false;
           this.changeModule = false;
@@ -533,14 +704,66 @@ export default {
         if (this.questionIndex == this.quiz.questions.length - 1) {
           this.endButton = true;
         }
-        clearInterval(this.timerInterval);
+        if(!this.flag){
+          console.log('entre')
+          clearInterval(this.timerInterval);
         this.timeQuestion =
           this.quiz.questions[this.questionIndex].timeLimit * 60;
         this.timePassed = 0;
         this.startTimer();
+        }
+        this.flag = false
       }
     },
     async hideQuestions() {
+      if (this.userResponses[this.questionIndex] == null) {
+        if (!this.timeOutDemo) {
+        } else {
+          var selectedAnswer = {
+            index: -1,
+            idQuestion: this.quiz.questions[this.questionIndex].id,
+            idAnswer: 0,
+            idUser: this.$session.get("user").idUser,
+            timePassed: 120,
+            attempts: 2
+          };
+          this.$set(this.userResponses, this.questionIndex, selectedAnswer);
+          try {
+            axios.post(
+              `${this.$urlApi}Test/SubmitAnswer`,
+              this.userResponses[this.questionIndex],
+              {
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: "Bearer " + sessionStorage.getItem("jwt")
+                }
+              }
+            );
+          } catch (error) {
+            console.log(error);
+          }
+          this.timeOutDemo = false;
+          this.questionIndex++;
+        }
+      } else {
+        this.userResponses[this.questionIndex].attempts =
+          this.userResponses[this.questionIndex].timePassed < 60 ? 0 : 1;
+        try {
+          axios.post(
+            `${this.$urlApi}Test/SubmitAnswer`,
+            this.userResponses[this.questionIndex],
+            {
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: "Bearer " + sessionStorage.getItem("jwt")
+              }
+            }
+          );
+        } catch (error) {
+          console.log(error);
+        }
+      }
+      this.timeOut = false;
       if (this.finishDemo) {
         try {
           var idUser = this.$session.get("user").idUser;
@@ -661,6 +884,9 @@ export default {
         console.log(error);
       }
       this.startDemo = true;
+      this.timeQuestion =
+        this.quiz.questions[this.questionIndex].timeLimit * 60;
+      this.startTimer();
       if (this.totalQuestionDemo == 1) {
         this.endButton = true;
       }
@@ -700,7 +926,7 @@ body {
 .button {
   transition: $trans_duration;
 }
-.title{
+.title {
   font-family: Montserrat, sans-serif;
   font-weight: 700;
   font-size: larger;

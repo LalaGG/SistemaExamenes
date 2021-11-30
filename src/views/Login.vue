@@ -1,13 +1,10 @@
 <template>
 
-  <!-- <v-container fluid :style="{'height' : '100vh','background-image': `url(${require('@/assets/png/fondo_exam.jpg')})`, 'background-size': 'cover'}">
-   -->
-   <v-container fluid :style="{'height' : '100vh'}">
+  <v-container fluid :style="{'height' : '100vh','background-image': `url(${require('@/assets/png/Imagen_aplicativo.jpeg')})`, 'background-size': 'cover'}">
     <v-layout align-center justify-center>
       <v-flex xs12 sm6 md3>
         <v-card class="elevation-20 login-box">
-          <!-- <img src="../assets/png/logo_invision.png" class="avatar" /> -->
-          <v-toolbar-title class="pl-10 display-1"><b>Evaluaciones</b></v-toolbar-title>
+          <img src="../assets/png/logo_GRADE.png" class="avatar" />
           <v-card-text>
             <v-form v-model="valid" ref="form" lazy-validation>
               <v-text-field
