@@ -521,7 +521,7 @@ export default {
           if (this.finishDemo) {
             if (this.userResponses[this.questionIndex] == null) {
               if (!this.timeOut) {
-                this.$swal({
+                const confirm = await this.$swal({
                   title: "No has marcado aún",
                   text: "¿deseas continuar de todos modos?",
                   icon: "question",
@@ -530,43 +530,41 @@ export default {
                   showCancelButton: true,
                   cancelButtonColor: "#d33",
                   cancelButtonText: "Cancelar",
-                }).then((result) => {
-                  if (result.isConfirmed) {
-                    var selectedAnswer = {
-                      index: -2,
-                      idQuestion: this.quiz.questions[this.questionIndex].id,
-                      idAnswer: 0,
-                      idUser: this.$session.get("user").idUser,
-                      timePassed: this.timePassed,
-                    };
-                    this.$set(
-                      this.userResponses,
-                      this.questionIndex,
-                      selectedAnswer
-                    );
-                    try {
-                      axios.post(
-                        `${this.$urlApi}Test/SubmitAnswer`,
-                        this.userResponses[this.questionIndex],
-                        {
-                          headers: {
-                            "Content-Type": "application/json",
-                            Authorization:
-                              "Bearer " + sessionStorage.getItem("jwt"),
-                          },
-                        }
-                      );
-                    } catch (error) {
-                      console.log(error);
-                    }
-
-                    this.questionIndex++;
-                  } else if (
-                    result.dismiss === this.$swal.DismissReason.cancel
-                  ) {
-                    return;
-                  }
                 });
+
+                if (confirm.isConfirmed) {
+                  var selectedAnswer = {
+                    index: -2,
+                    idQuestion: this.quiz.questions[this.questionIndex].id,
+                    idAnswer: 0,
+                    idUser: this.$session.get("user").idUser,
+                    timePassed: this.timePassed,
+                  };
+                  this.$set(
+                    this.userResponses,
+                    this.questionIndex,
+                    selectedAnswer
+                  );
+                  try {
+                    axios.post(
+                      `${this.$urlApi}Test/SubmitAnswer`,
+                      this.userResponses[this.questionIndex],
+                      {
+                        headers: {
+                          "Content-Type": "application/json",
+                          Authorization:
+                            "Bearer " + sessionStorage.getItem("jwt"),
+                        },
+                      }
+                    );
+                  } catch (error) {
+                    console.log(error);
+                  }
+
+                  this.questionIndex++;
+                } else if (result.dismiss === this.$swal.DismissReason.cancel) {
+                  return;
+                }
               } else {
                 var selectedAnswer = {
                   index: -1,
@@ -617,7 +615,7 @@ export default {
           } else {
             if (this.userResponses[this.questionIndex] == null) {
               if (!this.timeOutDemo) {
-                this.$swal({
+                const confirm = await this.$swal({
                   title: "No has marcado aún",
                   text: "¿deseas continuar de todos modos?",
                   icon: "question",
@@ -626,46 +624,44 @@ export default {
                   showCancelButton: true,
                   cancelButtonColor: "#d33",
                   cancelButtonText: "Cancelar",
-                }).then((result) => {
-                  if (result.isConfirmed) {
-                    var selectedAnswer = {
-                      index: -2,
-                      idQuestion: this.quiz.questions[this.questionIndex].id,
-                      idAnswer: 0,
-                      idUser: this.$session.get("user").idUser,
-                      timePassed: this.timePassed,
-                    };
-                    this.$set(
-                      this.userResponses,
-                      this.questionIndex,
-                      selectedAnswer
-                    );
-                    try {
-                      axios.post(
-                        `${this.$urlApi}Test/SubmitAnswer`,
-                        this.userResponses[this.questionIndex],
-                        {
-                          headers: {
-                            "Content-Type": "application/json",
-                            Authorization:
-                              "Bearer " + sessionStorage.getItem("jwt"),
-                          },
-                        }
-                      );
-                    } catch (error) {
-                      console.log(error);
-                    }
-
-                    this.questionIndex++;
-                    // this.flag = true
-                    // console.log(this.flag)
-                    // return
-                  } else if (
-                    result.dismiss === this.$swal.DismissReason.cancel
-                  ) {
-                    return;
-                  }
                 });
+
+                if (confirm.isConfirmed) {
+                  var selectedAnswer = {
+                    index: -2,
+                    idQuestion: this.quiz.questions[this.questionIndex].id,
+                    idAnswer: 0,
+                    idUser: this.$session.get("user").idUser,
+                    timePassed: this.timePassed,
+                  };
+                  this.$set(
+                    this.userResponses,
+                    this.questionIndex,
+                    selectedAnswer
+                  );
+                  try {
+                    axios.post(
+                      `${this.$urlApi}Test/SubmitAnswer`,
+                      this.userResponses[this.questionIndex],
+                      {
+                        headers: {
+                          "Content-Type": "application/json",
+                          Authorization:
+                            "Bearer " + sessionStorage.getItem("jwt"),
+                        },
+                      }
+                    );
+                  } catch (error) {
+                    console.log(error);
+                  }
+
+                  this.questionIndex++;
+                  // this.flag = true
+                  // console.log(this.flag)
+                  // return
+                } else if (result.dismiss === this.$swal.DismissReason.cancel) {
+                  return;
+                }
               } else {
                 var selectedAnswer = {
                   index: -1,
