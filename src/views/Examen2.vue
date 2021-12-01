@@ -17,15 +17,13 @@
             questionIndex < quiz.questions.length &&
               startDemo &&
               !changeModule &&
-              !startNewModule  && 
+              !startNewModule &&
               !finishTest
           "
           v-bind:key="questionIndex"
         >
-        <div class="divTimer">
-            <div
-              class="base-timer"
-            >
+          <div class="divTimer">
+            <div class="base-timer">
               <svg
                 class="base-timer__svg"
                 viewBox="0 0 100 100"
@@ -53,12 +51,16 @@
               </svg>
               <span class="base-timer__label">{{ formattedTimeLeft }}</span>
             </div>
-        </div>
-          
+          </div>
+
           <header class="questionHeader">
-            
-            
-            <h1 v-if="quiz.questions[questionIndex].testPartInstructions != null && quiz.questions[questionIndex].testPartInstructions != ''" class="title is-6">
+            <h1
+              v-if="
+                quiz.questions[questionIndex].testPartInstructions != null &&
+                  quiz.questions[questionIndex].testPartInstructions != ''
+              "
+              class="title is-6"
+            >
               {{ quiz.questions[questionIndex].testPartInstructions }}
             </h1>
             <!--progress-->
@@ -76,29 +78,59 @@
             </div> -->
             <!--/progress-->
           </header>
- 
+
           <!-- questionTitle -->
-          <h2 v-if="quiz.questions[questionIndex].indications != null && quiz.questions[questionIndex].indications != ''" class="titleContainer title">
+          <h2
+            v-if="
+              quiz.questions[questionIndex].indications != null &&
+                quiz.questions[questionIndex].indications != ''
+            "
+            class="titleContainer title"
+          >
             {{ quiz.questions[questionIndex].indications }}
           </h2>
-          <div v-if="quiz.questions[questionIndex].text != null && quiz.questions[questionIndex].text != ''" :class="quiz.questions[questionIndex].text.length > 200 ? 'titletext' : 'titletext1'" v-html="quiz.questions[questionIndex].text">
-
-          </div>
-          <div class="imageContainer" v-if="quiz.questions[questionIndex].image != null">
-            <v-img 
+          <div
+            v-if="
+              quiz.questions[questionIndex].text != null &&
+                quiz.questions[questionIndex].text != ''
+            "
+            :class="
+              quiz.questions[questionIndex].text.length > 200
+                ? 'titletext'
+                : 'titletext1'
+            "
+            v-html="quiz.questions[questionIndex].text"
+          ></div>
+          <div
+            class="imageContainer"
+            v-if="quiz.questions[questionIndex].image != null"
+          >
+            <v-img
               :src="`${urlImage}${quiz.questions[questionIndex].image}`"
               width="50%"
               aspect-ratio="1"
               contain
             ></v-img>
           </div>
-          <h2 v-if="quiz.questions[questionIndex].value != null && quiz.questions[questionIndex].value != ''" class="titlevalue">
+          <h2
+            v-if="
+              quiz.questions[questionIndex].value != null &&
+                quiz.questions[questionIndex].value != ''
+            "
+            class="titlevalue"
+          >
             {{ quiz.questions[questionIndex].value }}
           </h2>
 
- 
           <!-- quizOptions -->
-          <div v-bind:class="{ 'optionContainerImage': quiz.questions[questionIndex].answers[0].image != null , 'optionContainer' : quiz.questions[questionIndex].answers[0].image == null }">
+          <div
+            v-bind:class="{
+              optionContainerImage:
+                quiz.questions[questionIndex].answers[0].image != null,
+              optionContainer:
+                quiz.questions[questionIndex].answers[0].image == null,
+            }"
+          >
             <div
               v-for="(response, index) in quiz.questions[questionIndex].answers"
               class="option"
@@ -125,12 +157,11 @@
               </div>
             </div>
           </div>
- 
+
           <!--quizFooter: navigation and progress-->
           <footer class="questionFooter">
             <!--pagination-->
             <nav class="pagination" role="navigation" aria-label="pagination">
- 
               <!-- next button -->
               <a
                 class="button"
@@ -145,10 +176,12 @@
           <!--/quizFooter-->
         </div>
         <!--/questionContainer-->
- 
+
         <!--quizCompletedResult-->
         <div
-          v-if="questionIndex >= 0 && changeModule && startNewModule && !finishTest"
+          v-if="
+            questionIndex >= 0 && changeModule && startNewModule && !finishTest
+          "
           v-bind:key="questionIndex"
           class="quizCompleted has-text-centered"
         >
@@ -160,20 +193,23 @@
               "
             ></i>
           </span>
- 
+
           <h2 class="title">
             Tómate un respiro
           </h2>
           <p class="subtitle">
-            da a <a @click="next()"
-            >iniciar <i class="fa fa-refresh"></i
-          ></a> cuando estes listo para el {{ currentModule }}
+            da a
+            <a @click="next()">iniciar <i class="fa fa-refresh"></i></a> cuando
+            estes listo para el {{ currentModule }}
           </p>
           <br />
         </div>
- 
+
         <div
-          v-if="(questionIndex > 0 && questionIndex == quiz.questions.length) || finishTest"
+          v-if="
+            (questionIndex > 0 && questionIndex == quiz.questions.length) ||
+              finishTest
+          "
           v-bind:key="questionIndex"
           class="quizCompleted has-text-centered"
         >
@@ -185,9 +221,9 @@
               "
             ></i>
           </span>
- 
+
           <h2 class="title">
-             ¡FELICIDADES!
+            ¡FELICIDADES!
           </h2>
           <p class="subtitle">
             FIN DE LA PRUEBA.
@@ -197,7 +233,7 @@
             >Salir <i class="fa fa-refresh"></i
           ></a>
         </div>
- 
+
         <div
           v-if="questionIndex == 0 && !startDemo && !finishTest"
           v-bind:key="questionIndex"
@@ -211,19 +247,20 @@
               "
             ></i>
           </span>
- 
+
           <h2 class="title">
             Empezaremos practicando
           </h2>
           <p class="subtitle">
-            A continuación, encontrarás 4 preguntas. Haz un clic en la alternativa que mejor responde cada una
+            A continuación, encontrarás 4 preguntas. Haz un clic en la
+            alternativa que mejor responde cada una
           </p>
           <br />
           <a class="button" @click="IniciarPractica()"
             >Iniciar Prueba<i class="fa fa-refresh"></i
           ></a>
         </div>
- 
+
         <!--/quizCompetedResult-->
       </transition>
     </div>
@@ -231,7 +268,7 @@
   </section>
   <!--/container-->
 </template>
- 
+
 <script>
 import axios from "axios";
 import { mapMutations } from "vuex";
@@ -242,16 +279,16 @@ const ALERT_THRESHOLD = 30;
 
 const COLOR_CODES = {
   info: {
-    color: "green"
+    color: "green",
   },
   warning: {
     color: "orange",
-    threshold: WARNING_THRESHOLD
+    threshold: WARNING_THRESHOLD,
   },
   alert: {
     color: "red",
-    threshold: ALERT_THRESHOLD
-  }
+    threshold: ALERT_THRESHOLD,
+  },
 };
 
 export default {
@@ -275,12 +312,12 @@ export default {
     finishTest: "",
     timeOut: false,
     timeOutDemo: false,
-    flag : false
+    flag: false,
   }),
   filters: {
     charIndex: function(i) {
       return String.fromCharCode(97 + i);
-    }
+    },
   },
   computed: {
     circleDasharray() {
@@ -307,7 +344,7 @@ export default {
 
     timeFraction() {
       const rawTimeFraction = this.timeLeft / this.timeQuestion;
-      return rawTimeFraction - 1 / this.timeQuestion * (1 - rawTimeFraction);
+      return rawTimeFraction - (1 / this.timeQuestion) * (1 - rawTimeFraction);
     },
 
     remainingPathColor() {
@@ -320,7 +357,7 @@ export default {
       } else {
         return info.color;
       }
-    }
+    },
   },
   watch: {
     timeLeft(newValue) {
@@ -333,8 +370,8 @@ export default {
           title: "No olvides elegir una de las cuatro opciones",
           icon: "info",
           confirmButtonColor: "#3085d6",
-          confirmButtonText: "Continuar"
-        }).then(result => {
+          confirmButtonText: "Continuar",
+        }).then((result) => {
           if (result.isConfirmed) {
             this.timeQuestion = 120;
             this.timePassed = 60;
@@ -349,8 +386,8 @@ export default {
             "Pasemos a la siguiente pregunta. No olvides elegir una de las cuatro opciones",
           icon: "info",
           confirmButtonColor: "#3085d6",
-          confirmButtonText: "Continuar"
-        }).then(result => {
+          confirmButtonText: "Continuar",
+        }).then((result) => {
           if (result.isConfirmed) {
             this.timeOutDemo = true;
             this.next();
@@ -366,8 +403,8 @@ export default {
             {
               headers: {
                 "Content-Type": "application/json",
-                Authorization: "Bearer " + sessionStorage.getItem("jwt")
-              }
+                Authorization: "Bearer " + sessionStorage.getItem("jwt"),
+              },
             }
           );
           if (response.data != 1) {
@@ -375,8 +412,8 @@ export default {
               title: "Muchas gracias por tu tiempo, la prueba ha terminado",
               icon: "info",
               confirmButtonColor: "#3085d6",
-              confirmButtonText: "Continuar"
-            }).then(result => {
+              confirmButtonText: "Continuar",
+            }).then((result) => {
               if (result.isConfirmed) {
                 this.Expulsado();
               }
@@ -386,7 +423,7 @@ export default {
           console.log(error);
         }
       }
-    }
+    },
   },
   async created() {
     this.finishDemo = this.$session.get("user").finishDemo;
@@ -414,8 +451,8 @@ export default {
         text: "No te preocupes, pasemos al siguiente",
         icon: "info",
         confirmButtonColor: "#3085d6",
-        confirmButtonText: "Continuar"
-      }).then(result => {
+        confirmButtonText: "Continuar",
+      }).then((result) => {
         if (result.isConfirmed) {
           this.next();
         }
@@ -427,7 +464,7 @@ export default {
     async ListarExamen() {
       this.showLoading({
         title: "Accediendo a la información",
-        color: "secondary"
+        color: "secondary",
       });
       try {
         let response = await axios.get(
@@ -437,8 +474,8 @@ export default {
           {
             headers: {
               "Content-Type": "application/json",
-              Authorization: "Bearer " + sessionStorage.getItem("jwt")
-            }
+              Authorization: "Bearer " + sessionStorage.getItem("jwt"),
+            },
           }
         );
         this.quiz = response.data;
@@ -453,7 +490,7 @@ export default {
         var filteredQuiz =
           this.quiz.questions.length > 0
             ? this.quiz.questions.filter(
-                q => q.testModuleName == "Módulo Prueba"
+                (q) => q.testModuleName == "Módulo Prueba"
               )
             : [];
         this.totalQuestionDemo = filteredQuiz.length;
@@ -470,7 +507,7 @@ export default {
         idAnswer: item.answers[index].id,
         idUser: this.$session.get("user").idUser,
         timePassed: this.timePassed,
-        attempts: 0
+        attempts: 0,
       };
       this.$set(this.userResponses, this.questionIndex, selectedAnswer);
     },
@@ -492,15 +529,15 @@ export default {
                   confirmButtonText: "Continuar",
                   showCancelButton: true,
                   cancelButtonColor: "#d33",
-                  cancelButtonText: "Cancelar"
-                }).then(result => {
+                  cancelButtonText: "Cancelar",
+                }).then((result) => {
                   if (result.isConfirmed) {
                     var selectedAnswer = {
                       index: -2,
                       idQuestion: this.quiz.questions[this.questionIndex].id,
                       idAnswer: 0,
                       idUser: this.$session.get("user").idUser,
-                      timePassed: this.timePassed
+                      timePassed: this.timePassed,
                     };
                     this.$set(
                       this.userResponses,
@@ -515,8 +552,8 @@ export default {
                           headers: {
                             "Content-Type": "application/json",
                             Authorization:
-                              "Bearer " + sessionStorage.getItem("jwt")
-                          }
+                              "Bearer " + sessionStorage.getItem("jwt"),
+                          },
                         }
                       );
                     } catch (error) {
@@ -536,7 +573,7 @@ export default {
                   idQuestion: this.quiz.questions[this.questionIndex].id,
                   idAnswer: 0,
                   idUser: this.$session.get("user").idUser,
-                  timePassed: this.timePassed
+                  timePassed: this.timePassed,
                 };
                 this.$set(
                   this.userResponses,
@@ -550,8 +587,9 @@ export default {
                     {
                       headers: {
                         "Content-Type": "application/json",
-                        Authorization: "Bearer " + sessionStorage.getItem("jwt")
-                      }
+                        Authorization:
+                          "Bearer " + sessionStorage.getItem("jwt"),
+                      },
                     }
                   );
                 } catch (error) {
@@ -567,8 +605,8 @@ export default {
                   {
                     headers: {
                       "Content-Type": "application/json",
-                      Authorization: "Bearer " + sessionStorage.getItem("jwt")
-                    }
+                      Authorization: "Bearer " + sessionStorage.getItem("jwt"),
+                    },
                   }
                 );
               } catch (error) {
@@ -581,48 +619,47 @@ export default {
               if (!this.timeOutDemo) {
                 this.$swal({
                   title: "No has marcado aún",
-                  text: "Seleccione una opción",
+                  text: "¿deseas continuar de todos modos?",
                   icon: "question",
                   confirmButtonColor: "#3085d6",
                   confirmButtonText: "OK",
-                  showCancelButton: false,
+                  showCancelButton: true,
                   cancelButtonColor: "#d33",
-                  cancelButtonText: "Cancelar"
-                }).then(result => {
+                  cancelButtonText: "Cancelar",
+                }).then((result) => {
                   if (result.isConfirmed) {
-                    
-                    // var selectedAnswer = {
-                    //   index: -2,
-                    //   idQuestion: this.quiz.questions[this.questionIndex].id,
-                    //   idAnswer: 0,
-                    //   idUser: this.$session.get("user").idUser,
-                    //   timePassed: this.timePassed
-                    // };
-                    // this.$set(
-                    //   this.userResponses,
-                    //   this.questionIndex,
-                    //   selectedAnswer
-                    // );
-                    // try {
-                    //   axios.post(
-                    //     `${this.$urlApi}Test/SubmitAnswer`,
-                    //     this.userResponses[this.questionIndex],
-                    //     {
-                    //       headers: {
-                    //         "Content-Type": "application/json",
-                    //         Authorization:
-                    //           "Bearer " + sessionStorage.getItem("jwt")
-                    //       }
-                    //     }
-                    //   );
-                    // } catch (error) {
-                    //   console.log(error);
-                    // }
+                    var selectedAnswer = {
+                      index: -2,
+                      idQuestion: this.quiz.questions[this.questionIndex].id,
+                      idAnswer: 0,
+                      idUser: this.$session.get("user").idUser,
+                      timePassed: this.timePassed,
+                    };
+                    this.$set(
+                      this.userResponses,
+                      this.questionIndex,
+                      selectedAnswer
+                    );
+                    try {
+                      axios.post(
+                        `${this.$urlApi}Test/SubmitAnswer`,
+                        this.userResponses[this.questionIndex],
+                        {
+                          headers: {
+                            "Content-Type": "application/json",
+                            Authorization:
+                              "Bearer " + sessionStorage.getItem("jwt"),
+                          },
+                        }
+                      );
+                    } catch (error) {
+                      console.log(error);
+                    }
 
-                    // this.questionIndex++;
-                    this.flag = true
-                    console.log(this.flag)
-                    return
+                    this.questionIndex++;
+                    // this.flag = true
+                    // console.log(this.flag)
+                    // return
                   } else if (
                     result.dismiss === this.$swal.DismissReason.cancel
                   ) {
@@ -636,7 +673,7 @@ export default {
                   idAnswer: 0,
                   idUser: this.$session.get("user").idUser,
                   timePassed: 120,
-                  attempts: 2
+                  attempts: 2,
                 };
                 this.$set(
                   this.userResponses,
@@ -650,8 +687,9 @@ export default {
                     {
                       headers: {
                         "Content-Type": "application/json",
-                        Authorization: "Bearer " + sessionStorage.getItem("jwt")
-                      }
+                        Authorization:
+                          "Bearer " + sessionStorage.getItem("jwt"),
+                      },
                     }
                   );
                 } catch (error) {
@@ -670,8 +708,8 @@ export default {
                   {
                     headers: {
                       "Content-Type": "application/json",
-                      Authorization: "Bearer " + sessionStorage.getItem("jwt")
-                    }
+                      Authorization: "Bearer " + sessionStorage.getItem("jwt"),
+                    },
                   }
                 );
               } catch (error) {
@@ -704,15 +742,20 @@ export default {
         if (this.questionIndex == this.quiz.questions.length - 1) {
           this.endButton = true;
         }
-        if(!this.flag){
-          console.log('entre')
-          clearInterval(this.timerInterval);
+        clearInterval(this.timerInterval);
         this.timeQuestion =
           this.quiz.questions[this.questionIndex].timeLimit * 60;
         this.timePassed = 0;
         this.startTimer();
-        }
-        this.flag = false
+        // if(!this.flag){
+        //   console.log('entre')
+        //   clearInterval(this.timerInterval);
+        // this.timeQuestion =
+        //   this.quiz.questions[this.questionIndex].timeLimit * 60;
+        // this.timePassed = 0;
+        // this.startTimer();
+        // }
+        // this.flag = false
       }
     },
     async hideQuestions() {
@@ -725,7 +768,7 @@ export default {
             idAnswer: 0,
             idUser: this.$session.get("user").idUser,
             timePassed: 120,
-            attempts: 2
+            attempts: 2,
           };
           this.$set(this.userResponses, this.questionIndex, selectedAnswer);
           try {
@@ -735,8 +778,8 @@ export default {
               {
                 headers: {
                   "Content-Type": "application/json",
-                  Authorization: "Bearer " + sessionStorage.getItem("jwt")
-                }
+                  Authorization: "Bearer " + sessionStorage.getItem("jwt"),
+                },
               }
             );
           } catch (error) {
@@ -755,8 +798,8 @@ export default {
             {
               headers: {
                 "Content-Type": "application/json",
-                Authorization: "Bearer " + sessionStorage.getItem("jwt")
-              }
+                Authorization: "Bearer " + sessionStorage.getItem("jwt"),
+              },
             }
           );
         } catch (error) {
@@ -773,8 +816,8 @@ export default {
             {
               headers: {
                 "Content-Type": "application/json",
-                Authorization: "Bearer " + sessionStorage.getItem("jwt")
-              }
+                Authorization: "Bearer " + sessionStorage.getItem("jwt"),
+              },
             }
           );
           if (response.data > 0) {
@@ -800,8 +843,8 @@ export default {
             {
               headers: {
                 "Content-Type": "application/json",
-                Authorization: "Bearer " + sessionStorage.getItem("jwt")
-              }
+                Authorization: "Bearer " + sessionStorage.getItem("jwt"),
+              },
             }
           );
           if (response.data > 0) {
@@ -830,8 +873,8 @@ export default {
             {
               headers: {
                 "Content-Type": "application/json",
-                Authorization: "Bearer " + sessionStorage.getItem("jwt")
-              }
+                Authorization: "Bearer " + sessionStorage.getItem("jwt"),
+              },
             }
           );
           if (response.data > 0) {
@@ -869,8 +912,8 @@ export default {
           {
             headers: {
               "Content-Type": "application/json",
-              Authorization: "Bearer " + sessionStorage.getItem("jwt")
-            }
+              Authorization: "Bearer " + sessionStorage.getItem("jwt"),
+            },
           }
         );
         if (response.data > 0) {
@@ -890,11 +933,11 @@ export default {
       if (this.totalQuestionDemo == 1) {
         this.endButton = true;
       }
-    }
-  }
+    },
+  },
 };
 </script>
- 
+
 <style lang="scss" scoped>
 $trans_duration: 0.3s;
 $primary_color: #77dd77;
