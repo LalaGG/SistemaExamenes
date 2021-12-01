@@ -395,6 +395,34 @@ export default {
         });
       }
       if (!this.finishDemo && newValue == 0 && this.questionIndex == 3) {
+        var selectedAnswer = {
+                  index: -1,
+                  idQuestion: this.quiz.questions[this.questionIndex].id,
+                  idAnswer: 0,
+                  idUser: this.$session.get("user").idUser,
+                  timePassed: 120,
+                  attempts : 2
+                };
+                this.$set(
+                  this.userResponses,
+                  this.questionIndex,
+                  selectedAnswer
+                );
+                try {
+                  axios.post(
+                    `${this.$urlApi}Test/SubmitAnswer`,
+                    this.userResponses[this.questionIndex],
+                    {
+                      headers: {
+                        "Content-Type": "application/json",
+                        Authorization:
+                          "Bearer " + sessionStorage.getItem("jwt"),
+                      },
+                    }
+                  );
+                } catch (error) {
+                  console.log(error);
+                }
         try {
           let response = axios.get(
             `${this.$urlApi}Test/ValidateDemoByUser/${
