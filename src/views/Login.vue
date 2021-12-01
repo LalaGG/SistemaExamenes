@@ -1,10 +1,10 @@
 <template>
 
-  <v-container fluid :style="{'height' : '100vh','background-image': `url(${require('@/assets/png/Imagen_aplicativo.jpeg')})`, 'background-size': 'cover'}">
+  <v-container fluid :style="{'height' : '100vh','background-image': `url(${require('@/assets/png/fondo_grade.jpg')})`, 'background-size': 'cover'}">
     <v-layout align-center justify-center>
       <v-flex xs12 sm6 md3>
         <v-card class="elevation-20 login-box">
-          <img src="../assets/png/logo_GRADE.png" class="avatar" />
+          <!-- <img src="../assets/png/logo_GRADE.png" class="avatar" /> -->
           <v-card-text>
             <v-form v-model="valid" ref="form" lazy-validation>
               <v-text-field
@@ -102,9 +102,9 @@ export default {
 .login-box{
     width: 330px;
     height: 350px;
-    background: rgba(110, 201, 211, 0.5);
+    background: rgba(110, 201, 211, 0.3);
     color: #031781;
-    top: 50%;
+    top: 60%;
     left: 50%;
     position: absolute;
     transform: translate(-50%,-50%);
