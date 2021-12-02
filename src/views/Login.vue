@@ -25,8 +25,8 @@
                 label="Contraseña"
                 @click:append="show1 = !show1"
                 v-on:keyup.enter="getCredenciales"
-                :rules="ReglasPaciente"
                 required
+                v-show="false"
               >
               </v-text-field>
             </v-form>
@@ -67,6 +67,7 @@ export default {
           title: "Accediendo a la información",
           color: "secondary",
         });
+        this.usuarioLogin.password = this.usuarioLogin.username
         try {
           let response = await axios.post(
             `${this.$urlApi}User/Login`,
