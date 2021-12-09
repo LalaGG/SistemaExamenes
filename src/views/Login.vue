@@ -1,10 +1,10 @@
 <template>
 
-  <v-container fluid :style="{'height' : '100vh','background-image': `url(${require('@/assets/png/fondo_grade.jpg')})`, 'background-size': 'cover'}">
+  <v-container fluid :class="{'smallImage': $vuetify.breakpoint.smAndDown, 'bigImage': $vuetify.breakpoint.mdAndUp}" :style="{'background-image': `url(${require('@/assets/png/fondo_exam.jpg')})`}">
     <v-layout align-center justify-center>
       <v-flex xs12 sm6 md3>
         <v-card class="elevation-20 login-box">
-          <!-- <img src="../assets/png/logo_GRADE.png" class="avatar" /> -->
+          <img src="../assets/png/logo_invision.png" class="avatar" />
           <v-card-text>
             <v-form v-model="valid" ref="form" lazy-validation>
               <v-text-field
@@ -26,7 +26,6 @@
                 @click:append="show1 = !show1"
                 v-on:keyup.enter="getCredenciales"
                 required
-                v-show="false"
               >
               </v-text-field>
             </v-form>
@@ -103,7 +102,7 @@ export default {
 .login-box{
     width: 330px;
     height: 350px;
-    background: rgba(110, 201, 211, 0.3);
+    background: rgba(110, 201, 211, 0.95);
     color: #031781;
     top: 60%;
     left: 50%;
@@ -120,5 +119,13 @@ export default {
     left: -110px;
     -webkit-transform: scale(0.5);
     transform: scale(0.5);
+}
+.smallImage{
+  background-size: cover;
+  height: 100%;
+}
+.bigImage{
+  background-size: cover;
+  height: 100%;
 }
 </style>

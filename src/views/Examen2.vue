@@ -199,7 +199,7 @@
           </h2>
           <p class="subtitle">
             da a
-            <a @click="next()">iniciar <i class="fa fa-refresh"></i></a> cuando
+            <a @click="next()" class="iniciarText">iniciar <i class="fa fa-refresh"></i></a> cuando
             estes listo para el {{ currentModule }}
           </p>
           <br />
@@ -1055,6 +1055,10 @@ body {
   justify-content: center;
 }
 
+.iniciarText{
+  border : solid 2px black;
+  padding : 5px;
+}
 .divTimer {
   background-color: $primary_color;
 }
