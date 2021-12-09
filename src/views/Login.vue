@@ -12,7 +12,7 @@
     <v-layout align-center justify-center>
       <v-flex xs12 sm6 md3>
         <v-card class="elevation-20 login-box">
-          <img src="../assets/png/logo_invision.png" class="avatar" />
+          <!-- <img src="../assets/png/logo_invision.png" class="avatar" /> -->
           <!-- <img src="../assets/png/logo_GRADE.png" class="avatar" /> -->
           <v-card-text>
             <v-form v-model="valid" ref="form" lazy-validation>
