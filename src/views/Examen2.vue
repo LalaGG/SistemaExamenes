@@ -307,7 +307,8 @@ export default {
     finishDemo: "",
     timePassed: 0,
     timeQuestion: 0,
-    urlImage: "http://evaluacionescrita.ino.gob.pe/img/",
+    //urlImage: "http://evaluacionescrita.ino.gob.pe/img/",
+    urlImage: "http://crecelee.net/img/",
     totalQuestionDemo: 0,
     finishTest: "",
     timeOut: false,
@@ -360,7 +361,7 @@ export default {
     },
   },
   watch: {
-    timeLeft(newValue) {
+    async timeLeft(newValue) {
       if (this.finishDemo && newValue === 0) {
         this.onTimesUp();
       }
@@ -396,35 +397,30 @@ export default {
       }
       if (!this.finishDemo && newValue == 0 && this.questionIndex == 3) {
         var selectedAnswer = {
-                  index: -1,
-                  idQuestion: this.quiz.questions[this.questionIndex].id,
-                  idAnswer: 0,
-                  idUser: this.$session.get("user").idUser,
-                  timePassed: 120,
-                  attempts : 2
-                };
-                this.$set(
-                  this.userResponses,
-                  this.questionIndex,
-                  selectedAnswer
-                );
-                try {
-                  axios.post(
-                    `${this.$urlApi}Test/SubmitAnswer`,
-                    this.userResponses[this.questionIndex],
-                    {
-                      headers: {
-                        "Content-Type": "application/json",
-                        Authorization:
-                          "Bearer " + sessionStorage.getItem("jwt"),
-                      },
-                    }
-                  );
-                } catch (error) {
-                  console.log(error);
-                }
+          index: -1,
+          idQuestion: this.quiz.questions[this.questionIndex].id,
+          idAnswer: 0,
+          idUser: this.$session.get("user").idUser,
+          timePassed: 120,
+          attempts: 2,
+        };
+        this.$set(this.userResponses, this.questionIndex, selectedAnswer);
         try {
-          let response = axios.get(
+          axios.post(
+            `${this.$urlApi}Test/SubmitAnswer`,
+            this.userResponses[this.questionIndex],
+            {
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: "Bearer " + sessionStorage.getItem("jwt"),
+              },
+            }
+          );
+        } catch (error) {
+          console.log(error);
+        }
+        try {
+          let response = await axios.get(
             `${this.$urlApi}Test/ValidateDemoByUser/${
               this.$session.get("user").idUser
             }`,
@@ -468,33 +464,32 @@ export default {
     ...mapMutations(["showLoading", "hideLoading", "showNotification"]),
     async Expulsado() {
       try {
-              var token = sessionStorage.getItem("jwt");
-              let response = await axios.post(
-                `${this.$urlApi}Test/Finish`,
-                { token },
-                {
-                  headers: {
-                    "Content-Type": "application/json",
-                    Authorization: "Bearer " + sessionStorage.getItem("jwt"),
-                  },
-                }
-              );
-              if (response.data > 0) {
-                console.log("examen terminado satisfactoriamente");
-              } else {
-                this.$swal(
-                  "¡Error!",
-                  "Ha ocurrido un error al registrar su exámen, comuniquese con soporte",
-                  "error"
-                );
-              }
-            } catch (error) {
-              console.log(error);
-            }
+        var token = sessionStorage.getItem("jwt");
+        let response = await axios.post(
+          `${this.$urlApi}Test/Finish`,
+          { token },
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + sessionStorage.getItem("jwt"),
+            },
+          }
+        );
+        if (response.data > 0) {
+          console.log("examen terminado satisfactoriamente");
+        } else {
+          this.$swal(
+            "¡Error!",
+            "Ha ocurrido un error al registrar su exámen, comuniquese con soporte",
+            "error"
+          );
+        }
+      } catch (error) {
+        console.log(error);
+      }
       sessionStorage.clear();
       this.$session.destroy();
       this.$router.push("/Login");
-
     },
     onTimesUp() {
       clearInterval(this.timerInterval);
@@ -646,7 +641,7 @@ export default {
                 } catch (error) {
                   console.log(error);
                 }
-                this.timeOut = false
+                this.timeOut = false;
                 this.questionIndex++;
               }
             } else {
@@ -803,53 +798,53 @@ export default {
       if (this.userResponses[this.questionIndex] == null) {
         if (!this.timeOutDemo) {
           try {
-          let response = axios.get(
-            `${this.$urlApi}Test/ValidateDemoByUser/${
-              this.$session.get("user").idUser
-            }`,
-            {
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: "Bearer " + sessionStorage.getItem("jwt"),
-              },
-            }
-          );
-          if (response.data != 1) {
-            try {
-              var token = sessionStorage.getItem("jwt");
-              let response = await axios.post(
-                `${this.$urlApi}Test/Finish`,
-                { token },
-                {
-                  headers: {
-                    "Content-Type": "application/json",
-                    Authorization: "Bearer " + sessionStorage.getItem("jwt"),
-                  },
-                }
-              );
-              if (response.data > 0) {
-                console.log("examen terminado satisfactoriamente");
-              } else {
-                this.$swal(
-                  "¡Error!",
-                  "Ha ocurrido un error al registrar su exámen, comuniquese con soporte",
-                  "error"
+            let response = await axios.get(
+              `${this.$urlApi}Test/ValidateDemoByUser/${
+                this.$session.get("user").idUser
+              }`,
+              {
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: "Bearer " + sessionStorage.getItem("jwt"),
+                },
+              }
+            );
+            if (response.data != 1) {
+              try {
+                var token = sessionStorage.getItem("jwt");
+                let response = await axios.post(
+                  `${this.$urlApi}Test/Finish`,
+                  { token },
+                  {
+                    headers: {
+                      "Content-Type": "application/json",
+                      Authorization: "Bearer " + sessionStorage.getItem("jwt"),
+                    },
+                  }
                 );
+                if (response.data > 0) {
+                  console.log("examen terminado satisfactoriamente");
+                } else {
+                  this.$swal(
+                    "¡Error!",
+                    "Ha ocurrido un error al registrar su exámen, comuniquese con soporte",
+                    "error"
+                  );
+                }
+              } catch (error) {
+                console.log(error);
               }
-            } catch (error) {
-              console.log(error);
+              this.$swal({
+                title: "Muchas gracias por tu tiempo, la prueba ha terminado",
+                icon: "info",
+                confirmButtonColor: "#3085d6",
+                confirmButtonText: "Continuar",
+              }).then((result) => {
+                if (result.isConfirmed) {
+                  this.Expulsado();
+                }
+              });
             }
-            this.$swal({
-              title: "Muchas gracias por tu tiempo, la prueba ha terminado",
-              icon: "info",
-              confirmButtonColor: "#3085d6",
-              confirmButtonText: "Continuar",
-            }).then((result) => {
-              if (result.isConfirmed) {
-                this.Expulsado();
-              }
-            });
-          }
           } catch (error) {
             console.log(error);
           }
@@ -881,21 +876,23 @@ export default {
           this.questionIndex++;
         }
       } else {
-        this.userResponses[this.questionIndex].attempts =
-          this.userResponses[this.questionIndex].timePassed < 60 ? 0 : 1;
-        try {
-          axios.post(
-            `${this.$urlApi}Test/SubmitAnswer`,
-            this.userResponses[this.questionIndex],
-            {
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: "Bearer " + sessionStorage.getItem("jwt"),
-              },
-            }
-          );
-        } catch (error) {
-          console.log(error);
+        if (!this.finishDemo) {
+          this.userResponses[this.questionIndex].attempts =
+            this.userResponses[this.questionIndex].timePassed < 60 ? 0 : 1;
+          try {
+            axios.post(
+              `${this.$urlApi}Test/SubmitAnswer`,
+              this.userResponses[this.questionIndex],
+              {
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: "Bearer " + sessionStorage.getItem("jwt"),
+                },
+              }
+            );
+          } catch (error) {
+            console.log(error);
+          }
         }
       }
       this.timeOut = false;

@@ -4,7 +4,6 @@
     v-if="this.$session.get('user').userType != 'adm'"
   >
     <BarraNavegacion />
-    
   </v-container>
 
   <v-container fluid class="container-personalizado" v-else>
@@ -180,7 +179,7 @@
             <v-toolbar-title>Mantenimiento de Módulos</v-toolbar-title>
           </v-toolbar>
           <v-card-text>
-            <v-row class="pt-5" >
+            <v-row class="pt-5">
               <v-col sm="6">
                 <v-text-field
                   v-model="itemModelModulo.name"
@@ -211,7 +210,6 @@
           </v-card-actions>
         </v-card>
       </v-form>
-      
     </v-dialog>
 
     <v-dialog v-model="dialogSeccion" max-width="1200px">
@@ -222,7 +220,7 @@
           </v-toolbar>
           <v-card-text>
             <v-row class="pt-5">
-              <v-col  sm="6">
+              <v-col sm="6">
                 <v-text-field
                   v-model="itemModelSeccion.name"
                   type="text"
@@ -234,19 +232,19 @@
                 </v-text-field>
               </v-col>
               <v-col sm="6">
-                    <v-combobox
-                      v-model="itemModelSeccion.type"
-                      :items="listaDeTiposPregunta"
-                      label="Tipo de Pregunta"
-                      hint="Eliga el tipo de pregunta que desea crear"
-                      item-value="id"
-                      item-text="description"
-                      clearable
-                      filled
-                      hide-selected
-                      outlined
-                      :rules="ReglasCombo"
-                    ></v-combobox>
+                <v-combobox
+                  v-model="itemModelSeccion.type"
+                  :items="listaDeTiposPregunta"
+                  label="Tipo de Pregunta"
+                  hint="Eliga el tipo de pregunta que desea crear"
+                  item-value="id"
+                  item-text="description"
+                  clearable
+                  filled
+                  hide-selected
+                  outlined
+                  :rules="ReglasCombo"
+                ></v-combobox>
               </v-col>
               <v-col class="pt-5" sm="12">
                 <v-textarea
@@ -278,7 +276,6 @@
           </v-card-actions>
         </v-card>
       </v-form>
-      
     </v-dialog>
 
     <v-dialog v-model="dialogPregunta" max-width="1200px">
@@ -445,7 +442,7 @@
                   color="primary"
                 >
                 </v-switch>
-              </v-col> 
+              </v-col>
               <v-col sm="6">
                 <v-switch
                   v-model="itemModelPregunta.isDemo"
@@ -463,7 +460,6 @@
           </v-card-actions>
         </v-card>
       </v-form>
-      
     </v-dialog>
   </v-container>
 </template>
@@ -488,14 +484,14 @@ import {
   Blockquote,
   HardBreak,
   HorizontalRule,
-  History
+  History,
 } from "tiptap-vuetify";
 
 export default {
   name: "Home",
   data: () => ({
     valid: true,
-    valid1 : true,
+    valid1: true,
     valid2: true,
     usuario: "",
     e1: 1,
@@ -506,101 +502,97 @@ export default {
     search: "",
     search1: "",
     search2: "",
-    ReglasGenerales: [
-      v => !!v || 'Este campo es necesario',
-    ],
-    ReglasCombo: [
-      v => v.id > 0 || 'Este campo es necesario',
-    ],
+    ReglasGenerales: [(v) => !!v || "Este campo es necesario"],
+    ReglasCombo: [(v) => v.id > 0 || "Este campo es necesario"],
     headersModulos: [
       {
         text: "Nombre",
         align: "left",
         sortable: false,
-        value: "name"
+        value: "name",
       },
-      { text: "Opciones", align: "right", sortable: false, value: "opciones" }
+      { text: "Opciones", align: "right", sortable: false, value: "opciones" },
     ],
     headersSeccion: [
       {
         text: "Módulo",
         align: "left",
         sortable: false,
-        value: "testModuleName"
+        value: "testModuleName",
       },
       {
         text: "Nombre",
         align: "left",
         sortable: false,
-        value: "name"
+        value: "name",
       },
       {
         text: "Intrucciones",
         align: "left",
         sortable: false,
-        value: "instructions"
+        value: "instructions",
       },
       {
         text: "Tipo Pregunta",
         align: "left",
         sortable: false,
-        value: "type"
+        value: "type",
       },
-      { text: "Opciones", align: "right", sortable: false, value: "opciones" }
+      { text: "Opciones", align: "right", sortable: false, value: "opciones" },
     ],
     headersPreguntas: [
       {
         text: "Sección",
         align: "left",
         sortable: false,
-        value: "testPartName"
+        value: "testPartName",
       },
       {
         text: "Texto Pregunta",
         align: "left",
         sortable: false,
-        value: "value"
+        value: "value",
       },
       {
         text: "Imagen",
         align: "left",
         sortable: false,
-        value: "image"
+        value: "image",
       },
       {
         text: "Puntaje",
         align: "left",
         sortable: false,
-        value: "score"
+        value: "score",
       },
       {
         text: "Tiempo Límite",
         align: "left",
         sortable: false,
-        value: "timeLimit"
+        value: "timeLimit",
       },
-      { text: "Opciones", align: "right", sortable: false, value: "opciones" }
+      { text: "Opciones", align: "right", sortable: false, value: "opciones" },
     ],
     headersRespuestas: [
       {
         text: "Texto",
         align: "left",
         sortable: false,
-        value: "text"
+        value: "text",
       },
       {
         text: "Imagen",
         align: "left",
         sortable: false,
-        value: "image"
+        value: "image",
       },
       {
         text: "Es Correcta",
         align: "left",
         sortable: false,
-        value: "isCorrect"
+        value: "isCorrect",
       },
-      { text: "Opciones", align: "right", sortable: false, value: "opciones" }
+      { text: "Opciones", align: "right", sortable: false, value: "opciones" },
     ],
     listaDeModulos: [],
     listaDeSecciones: [],
@@ -609,7 +601,7 @@ export default {
     itemModelModulo: {
       id: "",
       name: "",
-      active: true
+      active: true,
     },
     editModulo: false,
     itemModelSeccion: {
@@ -618,7 +610,7 @@ export default {
       name: "",
       type: "",
       active: true,
-      instructions: ""
+      instructions: "",
     },
     editSeccion: false,
     itemModelPregunta: {
@@ -632,16 +624,17 @@ export default {
       url: "",
       indications: "",
       answers: [],
-      active : true,
-      isDemo: false
+      active: true,
+      isDemo: false,
     },
     editPregunta: false,
     listaDeTiposPregunta: [],
     listaDeRespuestasImagenes: [],
     itemModelNota: {
-      totalScore: 0
+      totalScore: 0,
     },
-    urlImage: "http://evaluacionescrita.ino.gob.pe/img/",
+    //urlImage: "http://evaluacionescrita.ino.gob.pe/img/",
+    urlImage: "http://crecelee.net/img/",
     extensions: [
       History,
       Blockquote,
@@ -656,20 +649,20 @@ export default {
         Heading,
         {
           options: {
-            levels: [1, 2, 3]
-          }
-        }
+            levels: [1, 2, 3],
+          },
+        },
       ],
       Bold,
       Code,
       HorizontalRule,
       Paragraph,
-      HardBreak
-    ]
+      HardBreak,
+    ],
   }),
   components: {
     BarraNavegacion,
-    TiptapVuetify
+    TiptapVuetify,
   },
   created() {
     if (this.$session.exists()) {
@@ -677,9 +670,9 @@ export default {
       this.showNotification({
         message: this.usuario.message,
         color: "success",
-        icon: "check-circle"
+        icon: "check-circle",
       });
-    } 
+    }
     this.ListarModulo();
   },
   methods: {
@@ -687,7 +680,7 @@ export default {
     async ListarTipoPregunta(idTestModule) {
       this.showLoading({
         title: "Accediendo a la información",
-        color: "secondary"
+        color: "secondary",
       });
       try {
         let response = await axios.get(
@@ -695,8 +688,8 @@ export default {
           {
             headers: {
               "Content-Type": "application/json",
-              Authorization: "Bearer " + sessionStorage.getItem("jwt")
-            }
+              Authorization: "Bearer " + sessionStorage.getItem("jwt"),
+            },
           }
         );
         this.listaDeTiposPregunta = response.data;
@@ -709,17 +702,15 @@ export default {
     async EnviarCorreo() {
       try {
         let itemCertificado = {
-          idUser: this.$session.get("user").idUser
+          idUser: this.$session.get("user").idUser,
         };
         let response = await axios.post(
-          `${
-            this.$urlApiInvision
-          }Evaluacion/EnviarCertificadoEvaluacionEscrita`,
+          `${this.$urlApiInvision}Evaluacion/EnviarCertificadoEvaluacionEscrita`,
           itemCertificado,
           {
             headers: {
-              "Content-Type": "application/json"
-            }
+              "Content-Type": "application/json",
+            },
           }
         );
         this.respuestaBD = response.data;
@@ -758,14 +749,14 @@ export default {
     async ListarModulo() {
       this.showLoading({
         title: "Accediendo a la información",
-        color: "secondary"
+        color: "secondary",
       });
       try {
         let response = await axios.get(`${this.$urlApi}TestModule`, {
           headers: {
             "Content-Type": "application/json",
-            Authorization: "Bearer " + sessionStorage.getItem("jwt")
-          }
+            Authorization: "Bearer " + sessionStorage.getItem("jwt"),
+          },
         });
         this.listaDeModulos = response.data;
       } catch (error) {
@@ -791,12 +782,12 @@ export default {
         confirmButtonColor: "#3085d6",
         cancelButtonColor: "#d33",
         confirmButtonText: "Sí, eliminar",
-        cancelButtonText: "Cancelar"
+        cancelButtonText: "Cancelar",
       });
       if (alerta.value) {
         this.showLoading({
           title: "Accediendo a la información",
-          color: "secondary"
+          color: "secondary",
         });
         try {
           let response = await axios.delete(
@@ -804,8 +795,8 @@ export default {
             {
               headers: {
                 "Content-Type": "application/json",
-                Authorization: "Bearer " + sessionStorage.getItem("jwt")
-              }
+                Authorization: "Bearer " + sessionStorage.getItem("jwt"),
+              },
             }
           );
           if (response.data > 0) {
@@ -847,7 +838,7 @@ export default {
     async ListarSeccion(idTestModule) {
       this.showLoading({
         title: "Accediendo a la información",
-        color: "secondary"
+        color: "secondary",
       });
       try {
         let response = await axios.get(
@@ -855,8 +846,8 @@ export default {
           {
             headers: {
               "Content-Type": "application/json",
-              Authorization: "Bearer " + sessionStorage.getItem("jwt")
-            }
+              Authorization: "Bearer " + sessionStorage.getItem("jwt"),
+            },
           }
         );
         this.listaDeSecciones = response.data;
@@ -884,12 +875,12 @@ export default {
         confirmButtonColor: "#3085d6",
         cancelButtonColor: "#d33",
         confirmButtonText: "Sí, eliminar",
-        cancelButtonText: "Cancelar"
+        cancelButtonText: "Cancelar",
       });
       if (alerta.value) {
         this.showLoading({
           title: "Accediendo a la información",
-          color: "secondary"
+          color: "secondary",
         });
         try {
           let response = await axios.delete(
@@ -897,8 +888,8 @@ export default {
             {
               headers: {
                 "Content-Type": "application/json",
-                Authorization: "Bearer " + sessionStorage.getItem("jwt")
-              }
+                Authorization: "Bearer " + sessionStorage.getItem("jwt"),
+              },
             }
           );
           if (response.data > 0) {
@@ -935,7 +926,7 @@ export default {
     async ListarPregunta(idTestPart) {
       this.showLoading({
         title: "Accediendo a la información",
-        color: "secondary"
+        color: "secondary",
       });
       try {
         let response = await axios.get(
@@ -943,8 +934,8 @@ export default {
           {
             headers: {
               "Content-Type": "application/json",
-              Authorization: "Bearer " + sessionStorage.getItem("jwt")
-            }
+              Authorization: "Bearer " + sessionStorage.getItem("jwt"),
+            },
           }
         );
         this.listaDePreguntas = response.data;
@@ -961,19 +952,19 @@ export default {
         this.itemModelPregunta.text = item.text;
         this.itemModelPregunta.type = item.type;
         this.itemModelPregunta.image = null;
-        this.itemModelPregunta.url = this.urlImage+`${item.image}`;
+        this.itemModelPregunta.url = this.urlImage + `${item.image}`;
         this.itemModelPregunta.score = item.score;
         this.itemModelPregunta.timeLimit = item.timeLimit;
         this.itemModelPregunta.indications = item.indications;
         this.itemModelPregunta.value = item.value;
-        this.itemModelPregunta.active = item.active
-        this.itemModelPregunta.isDemo = item.isDemo
-        item.answers.forEach(element => {
+        this.itemModelPregunta.active = item.active;
+        this.itemModelPregunta.isDemo = item.isDemo;
+        item.answers.forEach((element) => {
           this.listaDeRespuestas.push({
             text: element.text,
-            url: this.urlImage+`${element.image}`,
+            url: this.urlImage + `${element.image}`,
             image: "",
-            isCorrect: element.isCorrect
+            isCorrect: element.isCorrect,
           });
         });
         this.dialogPregunta = true;
@@ -982,7 +973,7 @@ export default {
     async eliminarPregunta(item) {
       this.showLoading({
         title: "Accediendo a la información",
-        color: "secondary"
+        color: "secondary",
       });
       try {
         let response = await axios.delete(
@@ -990,8 +981,8 @@ export default {
           {
             headers: {
               "Content-Type": "application/json",
-              Authorization: "Bearer " + sessionStorage.getItem("jwt")
-            }
+              Authorization: "Bearer " + sessionStorage.getItem("jwt"),
+            },
           }
         );
         if (response.data > 0) {
@@ -1022,11 +1013,11 @@ export default {
       }
     },
     async GuardarModulo() {
-      if(this.$refs.form.validate()){
+      if (this.$refs.form.validate()) {
         var response = "";
         this.showLoading({
           title: "Accediendo a la información",
-          color: "secondary"
+          color: "secondary",
         });
         try {
           if (this.editModulo) {
@@ -1036,8 +1027,8 @@ export default {
               {
                 headers: {
                   "Content-Type": "application/json",
-                  Authorization: "Bearer " + sessionStorage.getItem("jwt")
-                }
+                  Authorization: "Bearer " + sessionStorage.getItem("jwt"),
+                },
               }
             );
           } else {
@@ -1047,8 +1038,8 @@ export default {
               {
                 headers: {
                   "Content-Type": "application/json",
-                  Authorization: "Bearer " + sessionStorage.getItem("jwt")
-                }
+                  Authorization: "Bearer " + sessionStorage.getItem("jwt"),
+                },
               }
             );
           }
@@ -1073,14 +1064,13 @@ export default {
           this.hideLoading();
         }
       }
-      
     },
     async GuardarSeccion() {
-      if(this.$refs.form1.validate()){
+      if (this.$refs.form1.validate()) {
         var response = "";
         this.showLoading({
           title: "Accediendo a la información",
-          color: "secondary"
+          color: "secondary",
         });
         try {
           if (this.editSeccion) {
@@ -1090,8 +1080,8 @@ export default {
               {
                 headers: {
                   "Content-Type": "application/json",
-                  Authorization: "Bearer " + sessionStorage.getItem("jwt")
-                }
+                  Authorization: "Bearer " + sessionStorage.getItem("jwt"),
+                },
               }
             );
           } else {
@@ -1101,8 +1091,8 @@ export default {
               {
                 headers: {
                   "Content-Type": "application/json",
-                  Authorization: "Bearer " + sessionStorage.getItem("jwt")
-                }
+                  Authorization: "Bearer " + sessionStorage.getItem("jwt"),
+                },
               }
             );
           }
@@ -1127,13 +1117,12 @@ export default {
           this.hideLoading();
         }
       }
-      
     },
     async GuardarPregunta() {
-      if(this.$refs.form2.validate()){
+      if (this.$refs.form2.validate()) {
         var response = "";
         this.itemModelPregunta.answers = this.listaDeRespuestas;
-        this.listaDeRespuestas.forEach(element => {
+        this.listaDeRespuestas.forEach((element) => {
           element.isCorrect = element.isCorrect == "1" ? true : false;
         });
         const fd = new FormData();
@@ -1168,14 +1157,14 @@ export default {
         }
         this.showLoading({
           title: "Accediendo a la información",
-          color: "secondary"
+          color: "secondary",
         });
         try {
           response = await axios.post(`${this.$urlApi}Question`, fd, {
             headers: {
               "Content-Type": "multipart/form-data",
-              Authorization: "Bearer " + sessionStorage.getItem("jwt")
-            }
+              Authorization: "Bearer " + sessionStorage.getItem("jwt"),
+            },
           });
           if (response.data > 0) {
             this.$swal(
@@ -1205,7 +1194,7 @@ export default {
       this.itemModelModulo.id = "";
       this.itemModelModulo.name = "";
       this.itemModelModulo.active = true;
-      this.$refs.form.resetValidation()
+      this.$refs.form.resetValidation();
     },
     CerrarSeccion() {
       this.dialogSeccion = false;
@@ -1215,7 +1204,7 @@ export default {
       this.itemModelSeccion.instructions = "";
       this.itemModelSeccion.type = "";
       this.itemModelSeccion.active = true;
-      this.$refs.form1.resetValidation()
+      this.$refs.form1.resetValidation();
     },
     CerrarPregunta() {
       this.dialogPregunta = false;
@@ -1232,14 +1221,14 @@ export default {
       this.itemModelPregunta.value = "";
       this.itemModelPregunta.isDemo = false;
       this.listaDeRespuestas = [];
-      this.$refs.form2.resetValidation()
+      this.$refs.form2.resetValidation();
     },
     AgregarLineaVacia() {
       this.listaDeRespuestas.push({
         text: "",
         image: null,
         isCorrect: false,
-        url: ""
+        url: "",
       });
     },
     save() {},
@@ -1258,8 +1247,8 @@ export default {
       this.listaDeRespuestas[index].url = URL.createObjectURL(
         this.listaDeRespuestas[index].image
       );
-    }
-  }
+    },
+  },
 };
 </script>
 

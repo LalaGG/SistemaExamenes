@@ -1,6 +1,14 @@
 <template>
-
-  <v-container fluid :style="{'height' : '100vh','background-image': `url(${require('@/assets/png/fondo_grade.jpg')})`, 'background-size': 'cover'}">
+  <v-container
+    fluid
+    :class="{
+      smallImage: $vuetify.breakpoint.smAndDown,
+      bigImage: $vuetify.breakpoint.mdAndUp,
+    }"
+    :style="{
+      'background-image': `url(${require('@/assets/png/fondo_grade.jpg')})`,
+    }"
+  >
     <v-layout align-center justify-center>
       <v-flex xs12 sm6 md3>
         <v-card class="elevation-20 login-box">
@@ -59,6 +67,9 @@ export default {
     };
   },
   props: ["config"],
+  created() {
+    windows.location.reload();
+  },
   methods: {
     ...mapMutations(["showLoading", "hideLoading", "showNotification"]),
     async getCredenciales() {
@@ -67,7 +78,7 @@ export default {
           title: "Accediendo a la información",
           color: "secondary",
         });
-        this.usuarioLogin.password = this.usuarioLogin.username
+        this.usuarioLogin.password = this.usuarioLogin.username;
         try {
           let response = await axios.post(
             `${this.$urlApi}User/Login`,
@@ -78,9 +89,11 @@ export default {
             sessionStorage.setItem("jwt", response.data.token);
 
             this.$session.set("user", response.data);
-            if(this.$session.get('user').userType != 'adm') this.$router.push("/Examen/Principal");
-            if(this.$session.get('user').userType == 'adm') this.$router.push("/");
-            } else {
+            if (this.$session.get("user").userType != "adm")
+              this.$router.push("/Examen/Principal");
+            if (this.$session.get("user").userType == "adm")
+              this.$router.push("/");
+          } else {
             this.showNotification({
               message: response.data.message,
               color: "error",
@@ -100,25 +113,35 @@ export default {
 </script>
 
 <style scoped>
-.login-box{
-    width: 330px;
-    height: 350px;
-    background: rgba(110, 201, 211, 0.3);
-    color: #031781;
-    top: 60%;
-    left: 50%;
-    position: absolute;
-    transform: translate(-50%,-50%);
-    box-sizing: border-box;
-    padding: 70px 30px;
+.login-box {
+  width: 330px;
+  height: 250px;
+  background: rgba(110, 201, 211, 0.95);
+  color: #031781;
+  top: 60%;
+  left: 50%;
+  position: absolute;
+  transform: translate(-50%, -50%);
+  box-sizing: border-box;
+  padding: 70px 30px;
 }
-.avatar{
-    width: 544px;
-    height: 215px;
-    position: absolute;
-    top: -100px;
-    left: -110px;
-    -webkit-transform: scale(0.5);
-    transform: scale(0.5);
+.avatar {
+  width: 544px;
+  height: 215px;
+  position: absolute;
+  top: -100px;
+  left: -110px;
+  -webkit-transform: scale(0.5);
+  transform: scale(0.5);
+}
+.smallImage {
+  height: 230px;
+  background-size: 100% 100%;
+  opacity: 0.9;
+}
+.bigImage {
+  height: 900px;
+  background-size: 100% 100%;
+  opacity: 0.75;
 }
 </style>
