@@ -6,7 +6,7 @@
       bigImage: $vuetify.breakpoint.mdAndUp,
     }"
     :style="{
-      'background-image': `url(${require('@/assets/png/fondo_grade.jpg')})`,
+      'background-image': `url(${require('@/assets/png/Presentation1v4.png')})`,
     }"
   >
     <v-layout align-center justify-center>
@@ -116,15 +116,16 @@ export default {
 <style scoped>
 .login-box {
   width: 330px;
-  height: 250px;
-  background: rgba(110, 201, 211, 0.95);
+  height: 185px;
+  background: rgba(110, 201, 211, 0.90);
   color: #031781;
   top: 60%;
   left: 50%;
   position: absolute;
   transform: translate(-50%, -50%);
   box-sizing: border-box;
-  padding: 70px 30px;
+  padding: 20px 10px 0px 0px;
+  border-radius: 20px;
 }
 .avatar {
   width: 544px;
@@ -139,10 +140,13 @@ export default {
   height: 230px;
   background-size: 100% 100%;
   opacity: 0.9;
+  font-family: 'FrancoisOne'; 
 }
 .bigImage {
   height: 900px;
   background-size: 100% 100%;
-  opacity: 0.75;
+  opacity: 0.8;
+  font-family: 'FrancoisOne'; 
 }
+
 </style>
