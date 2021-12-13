@@ -380,7 +380,7 @@ export default {
           }
         });
       }
-      if (!this.finishDemo && newValue == 0) {
+      if (!this.finishDemo && newValue == 0 && this.questionIndex < 3) {
         clearInterval(this.timerInterval);
         this.$swal({
           title:
@@ -396,29 +396,29 @@ export default {
         });
       }
       if (!this.finishDemo && newValue == 0 && this.questionIndex == 3) {
-        var selectedAnswer = {
-          index: -1,
-          idQuestion: this.quiz.questions[this.questionIndex].id,
-          idAnswer: 0,
-          idUser: this.$session.get("user").idUser,
-          timePassed: 120,
-          attempts: 2,
-        };
-        this.$set(this.userResponses, this.questionIndex, selectedAnswer);
-        try {
-          axios.post(
-            `${this.$urlApi}Test/SubmitAnswer`,
-            this.userResponses[this.questionIndex],
-            {
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: "Bearer " + sessionStorage.getItem("jwt"),
-              },
-            }
-          );
-        } catch (error) {
-          console.log(error);
-        }
+        // var selectedAnswer = {
+        //   index: -1,
+        //   idQuestion: this.quiz.questions[this.questionIndex].id,
+        //   idAnswer: 0,
+        //   idUser: this.$session.get("user").idUser,
+        //   timePassed: 120,
+        //   attempts: 2,
+        // };
+        // this.$set(this.userResponses, this.questionIndex, selectedAnswer);
+        // try {
+        //   axios.post(
+        //     `${this.$urlApi}Test/SubmitAnswer`,
+        //     this.userResponses[this.questionIndex],
+        //     {
+        //       headers: {
+        //         "Content-Type": "application/json",
+        //         Authorization: "Bearer " + sessionStorage.getItem("jwt"),
+        //       },
+        //     }
+        //   );
+        // } catch (error) {
+        //   console.log(error);
+        // }
         try {
           let response = await axios.get(
             `${this.$urlApi}Test/ValidateDemoByUser/${
@@ -442,6 +442,9 @@ export default {
                 this.Expulsado();
               }
             });
+          } else {
+            this.timeOutDemo = true;
+            this.hideQuestions()
           }
         } catch (error) {
           console.log(error);
@@ -491,10 +494,10 @@ export default {
       this.$session.destroy();
       this.$router.push("/Login");
     },
-    onTimesUp() {
+    async onTimesUp() {
       clearInterval(this.timerInterval);
       this.timeOut = true;
-      this.$swal({
+      await this.$swal({
         title: "Se acabó el tiempo de esta pregunta",
         text: "No te preocupes, pasemos al siguiente",
         icon: "info",
@@ -502,7 +505,13 @@ export default {
         confirmButtonText: "Continuar",
       }).then((result) => {
         if (result.isConfirmed) {
-          this.next();
+          console.log(this.currentModule)
+          console.log(this.nextModule)
+          if(!this.endButton && this.finishDemo){
+            this.next()
+          } else {
+            this.hideQuestions()
+          }
         }
       });
     },
@@ -848,7 +857,7 @@ export default {
           } catch (error) {
             console.log(error);
           }
-        } else {
+        } else {     
           var selectedAnswer = {
             index: -1,
             idQuestion: this.quiz.questions[this.questionIndex].id,
@@ -878,7 +887,7 @@ export default {
       } else {
         if (!this.finishDemo) {
           this.userResponses[this.questionIndex].attempts =
-            this.userResponses[this.questionIndex].timePassed < 60 ? 0 : 1;
+            this.userResponses[this.questionIndex].timePassed < 60 ? 0 : this.userResponses[this.questionIndex].timePassed == 120 ? 2 : 1;
           try {
             axios.post(
               `${this.$urlApi}Test/SubmitAnswer`,
@@ -897,30 +906,70 @@ export default {
       }
       this.timeOut = false;
       if (this.finishDemo) {
-        try {
-          var idUser = this.$session.get("user").idUser;
-          let response = await axios.post(
-            `${this.$urlApi}Test/SubmitAnswer`,
-            this.userResponses[this.questionIndex],
-            {
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: "Bearer " + sessionStorage.getItem("jwt"),
-              },
-            }
-          );
-          if (response.data > 0) {
-            console.log("respuesta registrada satisfactoriamente");
-          } else {
-            this.$swal(
-              "¡Error!",
-              "Ha ocurrido un error al registrar su exámen, comuniquese con soporte",
-              "error"
+        if(this.userResponses[this.questionIndex] != null){
+          try {
+            var idUser = this.$session.get("user").idUser;
+            let response = await axios.post(
+              `${this.$urlApi}Test/SubmitAnswer`,
+              this.userResponses[this.questionIndex],
+              {
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: "Bearer " + sessionStorage.getItem("jwt"),
+                },
+              }
             );
+            if (response.data > 0) {
+              console.log("respuesta registrada satisfactoriamente");
+            } else {
+              this.$swal(
+                "¡Error!",
+                "Ha ocurrido un error al registrar su exámen, comuniquese con soporte",
+                "error"
+              );
+            }
+          } catch (error) {
+            console.log(error);
           }
-        } catch (error) {
-          console.log(error);
-        }
+        } else {
+          var selectedAnswer = {
+              index: -1,
+              idQuestion: this.quiz.questions[this.questionIndex].id,
+              idAnswer: 0,
+              idUser: this.$session.get("user").idUser,
+              timePassed: 120,
+              attempts: 0,
+            };
+            this.$set(
+                  this.userResponses,
+                  this.questionIndex,
+                  selectedAnswer
+                );
+          try {
+            var idUser = this.$session.get("user").idUser;
+            let response = await axios.post(
+              `${this.$urlApi}Test/SubmitAnswer`,
+              this.userResponses[this.questionIndex],
+              {
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: "Bearer " + sessionStorage.getItem("jwt"),
+                },
+              }
+            );
+            if (response.data > 0) {
+              console.log("respuesta registrada satisfactoriamente");
+            } else {
+              this.$swal(
+                "¡Error!",
+                "Ha ocurrido un error al registrar su exámen, comuniquese con soporte",
+                "error"
+              );
+            }
+          } catch (error) {
+            console.log(error);
+          } 
+        } 
       }
       this.questionIndex++;
       if (this.questionIndex == this.quiz.questions.length) {
@@ -953,6 +1002,7 @@ export default {
       this.currentModule = this.quiz.questions[
         this.questionIndex
       ].testModuleName;
+
       if (!this.finishDemo) {
         try {
           var idUser = this.$session.get("user").idUser;

@@ -6,7 +6,7 @@
       bigImage: $vuetify.breakpoint.mdAndUp,
     }"
     :style="{
-      'background-image': `url(${require('@/assets/png/Presentation1v4.png')})`,
+      'background-image': `url(${require('@/assets/png/fondo_grade.png')})`,
     }"
   >
     <v-layout align-center justify-center>
