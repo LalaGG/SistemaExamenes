@@ -1103,8 +1103,11 @@ body {
 }
 
 .iniciarText{
-  border : solid 2px black;
-  padding : 5px;
+  border : solid 1px black;
+  padding : 5px 5px 5px 10px;
+  text-align: center;
+  margin-right: 5px;
+  border-radius: 0.5rem;
 }
 .divTimer {
   background-color: $primary_color;
